@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "info@redpencil.io",
   "type": "module",
-  "main": "app.js",
+  "main": "app.ts",
   "dependencies": {
     "@lblod/mu-auth-sudo": "^1.1.0",
     "@rdfjs/data-model": "^2.1.2",
@@ -14,5 +14,8 @@
     "rdf-utils-dataset": "^2.0.1",
     "rdf-utils-fs": "^3.0.1",
     "shacl-engine": "^1.1.2"
+  },
+  "devDependencies": {
+    "mu-types": "git+https://github.com/rahien/mu-types.git"
   }
 }

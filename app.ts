@@ -6,7 +6,8 @@ import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
 import { resource } from "rdf-utils-dataset";
-import { readConfigFiles } from "./util/config";
+import { getRuleResource, listRuleForType, loadRules } from "./lib/rules";
+import { loadValidationShapes } from "./util/config";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -21,10 +22,12 @@ const RESOURCE_TYPE = {
 };
 
 // FIXME: should be moved to util/config and not be accessed directly
-export const RULES = rdfDataset.dataset();
+// FIXME: should be moved to util/config and lib/shapes, and not be accessed directly
 export const VALIDATION_SHAPES = rdfDataset.dataset();
-
-readConfigFiles();
+(async function startup() {
+  await loadRules();
+  await loadValidationShapes();
+})();
 
 app.get("/", async function (req, res) {
   res.send("Hello mu-javascript-template");
@@ -53,7 +56,7 @@ app.get("/test", async function (req, res) {
     // Check for each rule whether data conforms its conditions
     const validationShapeUris = [];
     for (const ruleUri of rules) {
-      const ruleResource = resource(RULES, rdf.namedNode(ruleUri));
+      const ruleResource = getRuleResource(ruleUri);
       // Create validator for rule
       const validator = new Validator(ruleResource, {
         factory: rdfDataModel,
@@ -95,16 +98,6 @@ app.get("/test", async function (req, res) {
     res.status(400).send("No applicable rules found.");
   }
 });
-
-function listRuleForType(resourceType) {
-  const rulesForType = RULES.match(
-    undefined,
-    rdf.namedNode("http://www.w3.org/ns/shacl#targetClass"),
-    rdf.namedNode(resourceType),
-  );
-  // FIXME: Should use the Dataset(Ext) map instead, or define a traverser
-  return Array.from(rulesForType).map((quad) => quad.subject.value);
-}
 
 async function collectConformRules(resourceType, resourceUri) {
   // Get some sample data (in practice this would be processing a delta

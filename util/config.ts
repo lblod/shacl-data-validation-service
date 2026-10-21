@@ -1,6 +1,6 @@
-import fromFile from "rdf-utils-fs/fromFile.js";
 import { readdir } from "node:fs/promises";
-import { VALIDATION_SHAPES, RULES } from "../app";
+import { VALIDATION_SHAPES } from "../app";
+import { insertContentInDataset } from "./dataset";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
 
@@ -26,24 +26,9 @@ async function listValidationShapeFiles() {
   }
 }
 
-async function insertContentInDataset(filename, dataset) {
-  // TODO: use @rdfjs/io instead
-  const filenameUrl = new URL(filename, import.meta.url);
-  for await (const quad of fromFile(filenameUrl.pathname)) {
-    dataset.add(quad);
-  }
-  return dataset;
-}
-
-async function readValidationShapeFiles() {
+export async function loadValidationShapes() {
   const shapeFiles = await listValidationShapeFiles();
   shapeFiles.forEach((filepath) =>
     insertContentInDataset("../" + filepath, VALIDATION_SHAPES),
   );
-}
-
-export async function readConfigFiles() {
-  await readValidationShapeFiles();
-
-  insertContentInDataset("../config/rules.ttl", RULES);
 }

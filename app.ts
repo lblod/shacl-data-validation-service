@@ -1,13 +1,13 @@
-import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdfDataModel from "@rdfjs/data-model";
 import rdfDataset from "@rdfjs/dataset";
-import { app, errorHandler, sparqlEscapeUri } from "mu";
+import { app, errorHandler } from "mu";
 import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
 import { resource } from "rdf-utils-dataset";
 import { getRuleResource, listRuleForType, loadRules } from "./lib/rules";
 import { loadValidationShapes } from "./util/config";
+import { getDataset } from "./lib/resource-retrieval";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -182,100 +182,5 @@ app.get("/validate", async function (req, res) {
   const enrichedReport = { conform: report.conforms, "full-report": report };
   res.send(JSON.stringify(enrichedReport));
 });
-
-// modified from lib-decision-validation
-function toRdfExtTerm(triple) {
-  switch (triple.type) {
-    case "uri":
-      return rdf.namedNode(triple.value);
-    case "literal":
-      return rdf.literal(triple.value);
-    default:
-      return triple;
-  }
-}
-
-// modified from lib-decision-validation
-function toDataset(bindings) {
-  return rdf.dataset(
-    bindings.map((b) =>
-      rdf.quad(
-        toRdfExtTerm(b["s"]),
-        toRdfExtTerm(b["p"]),
-        toRdfExtTerm(b["o"]),
-      ),
-    ),
-  );
-}
-
-async function getDataset(resourceType, uri) {
-  switch (resourceType) {
-    case "organization":
-      return await getOrganizationData(uri);
-    case "person":
-      return await getPersonData(uri);
-    default:
-      return;
-  }
-}
-
-async function getOrganizationData(orgUri) {
-  const orgQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX regorg: <http://www.w3.org/ns/regorg#>
-    CONSTRUCT {
-      ?org a org:Organization ;
-           ?predicate ?object .
-    } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
-        VALUES ?org {
-          ${sparqlEscapeUri(orgUri)}
-        }
-        ?org a org:Organization .
-
-        VALUES ?predicate {
-          skos:prefLabel
-          skos:altLabel
-          org:classification
-          regorg:orgStatus
-        }
-        OPTIONAL { ?org ?predicate ?object . }
-      }
-    }`;
-
-  const orgData = await query(orgQuery);
-  const bindings = orgData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
-}
-
-async function getPersonData(personUri) {
-  const personQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX person: <http://www.w3.org/ns/person#>
-    CONSTRUCT {
-      ?person a person:Person ;
-              ?predicate ?object .
-    } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
-        VALUES ?person {
-          ${sparqlEscapeUri(personUri)}
-        }
-        ?person a person:Person .
-
-        VALUES ?predicate {
-          foaf:givenName
-          foaf:familyName
-        }
-        OPTIONAL { ?person ?predicate ?object . }
-      }
-    }`;
-
-  const personData = await query(personQuery);
-  const bindings = personData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
-}
 
 app.use(errorHandler);

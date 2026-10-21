@@ -6,6 +6,7 @@ import rdf from "rdf-ext";
 import fromFile from "rdf-utils-fs/fromFile.js";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
+import { resource } from "rdf-utils-dataset";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -18,6 +19,17 @@ const RESOURCE_TYPE = {
   ORG: "organization",
   PERSON: "person",
 };
+
+// FIXME: Ideally this is all thrown into a single dataset
+const RULES = rdfDataset.dataset();
+const VALIDATION_SHAPES = rdfDataset.dataset();
+
+(function initializeDatasets() {
+  insertFileContent("rules.ttl", RULES);
+
+  insertFileContent("org.ttl", VALIDATION_SHAPES);
+  insertFileContent("person.ttl", VALIDATION_SHAPES);
+})();
 
 app.get("/", function (req, res) {
   res.send("Hello mu-javascript-template");
@@ -35,6 +47,70 @@ app.get("/rules", async function (req, res) {
   }
 });
 
+app.get("/test", async function (req, res) {
+  // const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
+  const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
+
+  // Filter possibly applicable rules based on resource type
+  const rules = listRuleForType("http://www.w3.org/ns/org#Organization");
+
+  if (rules?.length > 0) {
+    // Check for each rule whether data conforms its conditions
+    const validationShapeUris = [];
+    for (const ruleUri of rules) {
+      const ruleResource = resource(RULES, rdf.namedNode(ruleUri));
+      // Create validator for rule
+      const validator = new Validator(ruleResource, {
+        factory: rdfDataModel,
+      });
+      // Validate data against rule
+      const report = await validator.validate({ dataset: dataset });
+
+      if (report.conforms) {
+        // This rule is relevant for the data at hand, retrieve its validation shapes
+        const shapeTriples = ruleResource.match(
+          undefined,
+          rdf.namedNode("http://mu.semte.ch/vocabularies/ext/validationShape"),
+        );
+        const shapeUris = Array.from(shapeTriples).map(
+          (quad) => quad.object.value,
+        );
+        validationShapeUris.push(...shapeUris);
+      }
+    }
+
+    // Validate the data against the validation shapes determined above
+    if (validationShapeUris?.length > 0) {
+      console.info(`\n>> INFO applicable rules: ${validationShapeUris}`);
+
+      const shapes = rdfDataset.dataset();
+      for (const shape of validationShapeUris) {
+        const shapeResource = resource(VALIDATION_SHAPES, rdf.namedNode(shape));
+        shapeResource.forEach((quad) => shapes.add(quad));
+      }
+
+      const validator = new Validator(shapes, { factory: rdfDataModel });
+      const report = await validator.validate({ dataset });
+
+      res.send(report);
+    } else {
+      res.status(400).send("No applicable shapes found.");
+    }
+  } else {
+    res.status(400).send("No applicable rules found.");
+  }
+});
+
+function listRuleForType(resourceType) {
+  const rulesForType = RULES.match(
+    undefined,
+    rdf.namedNode("http://www.w3.org/ns/shacl#targetClass"),
+    rdf.namedNode(resourceType),
+  );
+  // FIXME: Should use the Dataset(Ext) map instead, or define a traverser
+  return Array.from(rulesForType).map((quad) => quad.subject.value);
+}
+
 async function collectConformRules(resourceType, resourceUri) {
   // Get some sample data (in practice this would be processing a delta
   // message)
@@ -48,7 +124,7 @@ async function collectConformRules(resourceType, resourceUri) {
     // Check to which rules the data conforms
     for (const ruleFile of ruleFiles) {
       // Read rule from file
-      const ruleData = await readFileAsDataset(ruleFile);
+      const ruleData = await insertFileContent(ruleFile);
       // Create validator for rule
       const validator = new Validator(ruleData, {
         factory: rdfDataModel,
@@ -67,9 +143,8 @@ async function collectConformRules(resourceType, resourceUri) {
   }
 }
 
-async function readFileAsDataset(filename) {
+async function insertFileContent(filename, dataset) {
   const filenameUrl = new URL(filename, import.meta.url);
-  const dataset = rdfDataset.dataset();
   for await (const quad of fromFile(filenameUrl.pathname)) {
     dataset.add(quad);
   }
@@ -97,9 +172,9 @@ function listRuleFiles(resourceType) {
 async function getRules(resourceType) {
   switch (resourceType) {
     case "organization":
-      return await readFileAsDataset("organization.ttl");
+      return await insertFileContent("organization.ttl");
     case "person":
-      return await readFileAsDataset("person.ttl");
+      return await insertFileContent("person.ttl");
     default:
       return;
   }

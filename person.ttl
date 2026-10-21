@@ -3,7 +3,7 @@
 @prefix person: <http://www.w3.org/ns/person#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 
-ext:personRule a sh:NodeShape ;
+ext:personShape a sh:NodeShape ;
   sh:targetClass person:Person ;
   sh:property [
     sh:path foaf:givenName ;

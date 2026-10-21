@@ -11,6 +11,7 @@
     "@rdfjs/data-model": "^2.1.2",
     "@rdfjs/dataset": "^2.0.3",
     "rdf-ext": "^2.6.0",
+    "rdf-utils-dataset": "^2.0.1",
     "rdf-utils-fs": "^3.0.1",
     "shacl-engine": "^1.1.2"
   }

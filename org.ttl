@@ -3,6 +3,9 @@
 @prefix org: <http://www.w3.org/ns/org#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix regorg: <http://www.w3.org/ns/regorg#> .
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 ext:prefixes sh:declare [
     a sh:PrefixDeclaration ;
@@ -10,17 +13,22 @@ ext:prefixes sh:declare [
     sh:prefix "org" ;
     ] .
 
-ext:OrganizationShape a sh:NodeShape ;
+ext:organizationShape a sh:NodeShape ;
   sh:targetClass org:Organization ;
-  # sh:targetNode ext:AnotherOrganization ;
   sh:property [
     sh:path skos:prefLabel ;
     sh:datatype xsd:string ;
     sh:minCount 1
     ] ;
   sh:property [
-    sh:path skos:altLabel ;
+    sh:path org:classification ;
     sh:minCount 1 ;
+    sh:maxCount 1 ;
+    ] ;
+  sh:property [
+    sh:path regorg:orgStatus ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
     ] ;
   # TODO: using SPARQL-SHACL causes a type error in the comunica query engine
   # dependency of shacl-engine.  Not sure whether I am doing some wrong or
@@ -39,9 +47,21 @@ ext:OrganizationShape a sh:NodeShape ;
   #   ]
   .
 
-# ext:Organization a org:Organization ;
-#   skos:prefLabel "Preferred label" ;
-#   skos:altLabel "Alternative label" .
-#
-# ext:AnotherOrganization a org:Organization ;
-#   skos:prefLabel "Another preferred label" .
+# Fake validation that an organisation must have an alternative label.
+ext:organizationWithAltNameShape a sh:NodeShape ;
+  sh:targetClass org:Organization ;
+  sh:property [
+    sh:path skos:altLabel ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    ] .
+
+# TODO: This does not seem to work correctly
+# Fake validation shape that an AVZ may not be an administrative unit
+ext:organisationNotAdministrativeUnit a sh:NodeShape ;
+  sh:targetClass org:Organization ;
+  sh:not [
+    a sh:PropertyShape ;
+    sh:path rdf:type ;
+    sh:class besluit:Bestuurseenheid ;
+    ] .

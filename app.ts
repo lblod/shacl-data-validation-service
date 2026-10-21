@@ -3,10 +3,10 @@ import rdfDataModel from "@rdfjs/data-model";
 import rdfDataset from "@rdfjs/dataset";
 import { app, errorHandler, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
-import fromFile from "rdf-utils-fs/fromFile.js";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
 import { resource } from "rdf-utils-dataset";
+import { readConfigFiles } from "./util/config";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -20,18 +20,13 @@ const RESOURCE_TYPE = {
   PERSON: "person",
 };
 
-// FIXME: Ideally this is all thrown into a single dataset
-const RULES = rdfDataset.dataset();
-const VALIDATION_SHAPES = rdfDataset.dataset();
+// FIXME: should be moved to util/config and not be accessed directly
+export const RULES = rdfDataset.dataset();
+export const VALIDATION_SHAPES = rdfDataset.dataset();
 
-(function initializeDatasets() {
-  insertFileContent("rules.ttl", RULES);
+readConfigFiles();
 
-  insertFileContent("org.ttl", VALIDATION_SHAPES);
-  insertFileContent("person.ttl", VALIDATION_SHAPES);
-})();
-
-app.get("/", function (req, res) {
+app.get("/", async function (req, res) {
   res.send("Hello mu-javascript-template");
 });
 
@@ -141,14 +136,6 @@ async function collectConformRules(resourceType, resourceUri) {
 
     return conformRules;
   }
-}
-
-async function insertFileContent(filename, dataset) {
-  const filenameUrl = new URL(filename, import.meta.url);
-  for await (const quad of fromFile(filenameUrl.pathname)) {
-    dataset.add(quad);
-  }
-  return dataset;
 }
 
 function listRuleFiles(resourceType) {

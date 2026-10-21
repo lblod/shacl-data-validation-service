@@ -1,0 +1,47 @@
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ext:prefixes sh:declare [
+    a sh:PrefixDeclaration ;
+    sh:namespace "http://www.w3.org/ns/org#"^^xsd:anyURI ;
+    sh:prefix "org" ;
+    ] .
+
+ext:OrganizationShape a sh:NodeShape ;
+  sh:targetClass org:Organization ;
+  # sh:targetNode ext:AnotherOrganization ;
+  sh:property [
+    sh:path skos:prefLabel ;
+    sh:datatype xsd:string ;
+    sh:minCount 1
+    ] ;
+  sh:property [
+    sh:path skos:altLabel ;
+    sh:minCount 1 ;
+    ] ;
+  # TODO: using SPARQL-SHACL causes a type error in the comunica query engine
+  # dependency of shacl-engine.  Not sure whether I am doing some wrong or
+  # whether this is a bug.
+  # sh:property [
+  #   sh:path org:classification ;
+  #   sh:sparql [
+  #     a sh:SPARQLConstraint ;
+  #     sh:prefixes ext:prefixes ;
+  #     sh:select """SELECT $this ?value
+  #       WHERE {
+  #         $this $PATH ?value .
+  #         FILTER (!isIRI(?value))
+  #       }""" ;
+  #     ]
+  #   ]
+  .
+
+# ext:Organization a org:Organization ;
+#   skos:prefLabel "Preferred label" ;
+#   skos:altLabel "Alternative label" .
+#
+# ext:AnotherOrganization a org:Organization ;
+#   skos:prefLabel "Another preferred label" .

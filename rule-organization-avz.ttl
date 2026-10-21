@@ -1,0 +1,10 @@
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ext:avzOrganizationRule a sh:NodeShape ;
+  sh:targetClass org:Organization ;
+  sh:property [
+    sh:path org:classification ;
+    sh:hasValue <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/34b5af85-dc9f-468f-9e03-ef89b174c267> ;
+    ] .

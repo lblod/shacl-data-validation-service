@@ -1,0 +1,11 @@
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Autonoom gemeentebedrijf
+ext:agbOrganizationRule a sh:NodeShape ;
+  sh:targetClass org:Organization ;
+  sh:property [
+    sh:path org:classification ;
+    sh:hasValue <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/36a82ba0-7ff1-4697-a9dd-2e94df73b721> ;
+    ] .

@@ -4,7 +4,6 @@ import { app, errorHandler } from "mu";
 import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
-import { resource } from "rdf-utils-dataset";
 import {
   getRuleResource,
   loadRules,
@@ -83,16 +82,17 @@ app.get("/test", async function (req, res) {
 
     // Validate the data against the validation shapes determined above
     if (validationShapeUris?.length > 0) {
-      console.info(`\n>> INFO applicable rules: ${validationShapeUris}`);
+      console.info(
+        `\n>> INFO applicable validation shapes: ${validationShapeUris}`,
+      );
 
-      const shapes = rdfDataset.dataset();
+      const shapes = rdf.dataset();
       for (const shape of validationShapeUris) {
-        const shapeResource = resource(VALIDATION_SHAPES, rdf.namedNode(shape));
-        shapeResource.forEach((quad) => shapes.add(quad));
+        const shapeResource = await getValidationShape(shape);
+        shapes.addAll(shapeResource);
       }
 
-      const validator = new Validator(shapes, { factory: rdfDataModel });
-      const report = await validator.validate({ dataset });
+      const report = await validateResource(resourceToValidate, shapes);
 
       res.send(report);
     } else {

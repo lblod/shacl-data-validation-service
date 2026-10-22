@@ -6,8 +6,11 @@ import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
 import { resource } from "rdf-utils-dataset";
 import { getRuleResource, listRuleForType, loadRules } from "./lib/rules";
-import { loadValidationShapes } from "./util/config";
 import { getDataset } from "./lib/resource-retrieval";
+import {
+  getValidationShape,
+  loadValidationShapes,
+} from "./lib/validation-shapes";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -21,9 +24,6 @@ const RESOURCE_TYPE = {
   PERSON: "person",
 };
 
-// FIXME: should be moved to util/config and not be accessed directly
-// FIXME: should be moved to util/config and lib/shapes, and not be accessed directly
-export const VALIDATION_SHAPES = rdfDataset.dataset();
 (async function startup() {
   await loadRules();
   await loadValidationShapes();

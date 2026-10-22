@@ -1,3 +1,5 @@
+import rdf from "rdf-ext";
+import { resource } from "rdf-utils-dataset";
 import fromFile from "rdf-utils-fs/fromFile.js";
 
 export async function insertContentInDataset(filename, dataset) {
@@ -7,4 +9,8 @@ export async function insertContentInDataset(filename, dataset) {
     dataset.add(quad);
   }
   return dataset;
+}
+
+export async function getResource(uri, dataset) {
+  return resource(dataset, rdf.namedNode(uri));
 }

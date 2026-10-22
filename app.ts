@@ -9,12 +9,14 @@ import {
   getRuleResource,
   loadRules,
   listRulesForType,
+  listValidationShapes,
 } from "./lib/rules";
 import { getDataset } from "./lib/resource-retrieval";
 import {
   getValidationShape,
   loadValidationShapes,
 } from "./lib/validation-shapes";
+import { isConformResource, validateResource } from "./lib/engine";
 
 const RESOURCES = {
   AGB: "http://data.lblod.info/id/bestuurseenheden/6A1E9D09B277C35B6D8DF995", // in oprichting
@@ -51,7 +53,7 @@ app.get("/rules", async function (req, res) {
 
 app.get("/test", async function (req, res) {
   // const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
-  const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
+  const resourceToValidate = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
 
   // Get a set<term> containing named nodes for a rule applicable for the given
   // resource type
@@ -61,23 +63,20 @@ app.get("/test", async function (req, res) {
     // Check for each rule whether data conforms its conditions
     const validationShapeUris = [];
     for (const ruleUri of rules) {
-      const ruleResource = getRuleResource(ruleUri);
-      // Create validator for rule
-      const validator = new Validator(ruleResource, {
-        factory: rdfDataModel,
-      });
-      // Validate data against rule
-      const report = await validator.validate({ dataset: dataset });
+      const ruleResource = await getRuleResource(ruleUri);
+      // NOTE (22/10/2026): We check whether the incoming data resource conforms
+      // to the (node shape in the) rule.  If so, it means that we should
+      // validate the data resources against this rule in the next step.
+      const isConformRule = await isConformResource(
+        resourceToValidate,
+        ruleResource,
+      );
 
-      if (report.conforms) {
+      if (isConformRule) {
         // This rule is relevant for the data at hand, retrieve its validation shapes
-        const shapeTriples = ruleResource.match(
-          undefined,
-          rdf.namedNode("http://mu.semte.ch/vocabularies/ext/validationShape"),
-        );
-        const shapeUris = Array.from(shapeTriples).map(
-          (quad) => quad.object.value,
-        );
+        const shapeUris = listValidationShapes(ruleResource);
+        // TODO: Should use the shapeUris directly to construct dataset
+        // containing the appropriate shape resources.
         validationShapeUris.push(...shapeUris);
       }
     }

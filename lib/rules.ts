@@ -21,11 +21,15 @@ export function listRulesForType(resourceType: string) {
   return subjects;
 }
 
+
+export function listValidationShapes(ruleResource) {
+  const shapeTriples = ruleResource.match(
+    undefined,
+    rdf.namedNode("http://mu.semte.ch/vocabularies/ext/validationShape"),
   );
-  // FIXME: Should use the Dataset(Ext) map instead, or define a traverser
-  return Array.from(rulesForType).map((quad) => quad.subject.value);
+  return Array.from(shapeTriples).map((quad) => quad.object.value);
 }
 
 export function getRuleResource(uri) {
-  return resource(RULES, rdf.namedNode(uri));
+  return resource(RULES, uri);
 }

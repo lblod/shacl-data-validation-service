@@ -2,6 +2,10 @@ import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 
+// NOTE (22/10/2026): This is a highly simplified/hardcoded way to retrieve data
+// during the development of the service.  A more dynamic way to retrieve data
+// will be added later.
+
 // modified from lib-decision-validation
 function toRdfExtTerm(triple) {
   switch (triple.type) {
@@ -27,14 +31,22 @@ function toDataset(bindings) {
   );
 }
 
-export async function getDataset(resourceType, uri) {
-  switch (resourceType) {
-    case "organization":
-      return await getOrganizationData(uri);
-    case "person":
-      return await getPersonData(uri);
-    default:
-      return;
+export async function getResource(uri) {
+  const typesData = await query(`SELECT DISTINCT ?type {
+    ${sparqlEscapeUri(uri)} a ?type .
+  }`);
+
+  if (typesData.results.bindings.length > 0) {
+    const types = typesData.results.bindings.map(
+      (binding) => binding.type.value,
+    );
+
+    if (types.includes("http://www.w3.org/ns/org#Organization")) {
+      return getOrganizationData(uri);
+    }
+    if (types.includes("http://www.w3.org/ns/person#Person")) {
+      return getPersonData(uri);
+    }
   }
 }
 

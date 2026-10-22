@@ -16,6 +16,8 @@
     "shacl-engine": "^1.1.2"
   },
   "devDependencies": {
+    "@rdfjs/types": "^2.0.1",
+    "@types/rdf-ext": "^2.5.2",
     "mu-types": "git+https://github.com/rahien/mu-types.git"
   }
 }

@@ -5,7 +5,11 @@ import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 import { validations } from "shacl-engine/sparql.js";
 import { resource } from "rdf-utils-dataset";
-import { getRuleResource, listRuleForType, loadRules } from "./lib/rules";
+import {
+  getRuleResource,
+  loadRules,
+  listRulesForType,
+} from "./lib/rules";
 import { getDataset } from "./lib/resource-retrieval";
 import {
   getValidationShape,
@@ -49,10 +53,11 @@ app.get("/test", async function (req, res) {
   // const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
   const dataset = await getDataset(RESOURCE_TYPE.ORG, RESOURCES.AGB);
 
-  // Filter possibly applicable rules based on resource type
-  const rules = listRuleForType("http://www.w3.org/ns/org#Organization");
+  // Get a set<term> containing named nodes for a rule applicable for the given
+  // resource type
+  const rules = listRulesForType("http://www.w3.org/ns/org#Organization");
 
-  if (rules?.length > 0) {
+  if (rules?.size > 0) {
     // Check for each rule whether data conforms its conditions
     const validationShapeUris = [];
     for (const ruleUri of rules) {

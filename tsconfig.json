@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["mu-types"]
+    "types": ["mu-types"],
+    "target": "es2022"
   }
 }

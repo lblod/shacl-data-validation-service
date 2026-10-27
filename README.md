@@ -47,7 +47,10 @@ The SHACL node shapes used to actually validate data resources should be specifi
 For more information on defining SHACL node shapes see the [SHACL](https://www.w3.org/TR/shacl/) recommendation or the example files in the configuration folder.
 
 ### Environment variables.
-At the current time, no environment variables are provided by the service.
+
+|Name            |Description                           |Default value|
+|----------------|--------------------------------------|-------------|
+|KEEP_ALL_REPORTS|Whether to keep all generated reports.|false        |
 
 ## Methodology
 ### Resource retrieval

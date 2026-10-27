@@ -1,6 +1,7 @@
 import { app, errorHandler } from "mu";
 import rdf from "rdf-ext";
 import { validateResource } from "./lib/engine";
+import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import {
@@ -51,8 +52,9 @@ app.get("/test/validate/:uri", async function (req, res) {
         }
 
         const report = await validateResource(resourceToValidate, shapes);
+        writeReportFile(report);
 
-        res.send(report);
+        res.send("Resource validated, see report for result.");
       } else {
         res.status(400).send("No applicable validation shapes for resource");
       }

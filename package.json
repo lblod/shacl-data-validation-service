@@ -6,6 +6,11 @@
   "author": "info@redpencil.io",
   "type": "module",
   "main": "app.ts",
+  "scripts": {
+    "lint:js": "eslint . --cache --ext .ts",
+    "lint:js:fix": "eslint . --cache --ext .ts --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "@lblod/mu-auth-sudo": "^1.1.0",
     "@rdfjs/data-model": "^2.1.2",
@@ -16,8 +21,16 @@
     "shacl-engine": "^1.1.2"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
     "@rdfjs/types": "^2.0.1",
     "@types/rdf-ext": "^2.5.2",
-    "mu-types": "git+https://github.com/rahien/mu-types.git"
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.7",
+    "globals": "^17.13.0",
+    "mu-types": "git+https://github.com/rahien/mu-types.git",
+    "prettier": "^3.9.10"
   }
 }

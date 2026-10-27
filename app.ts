@@ -14,8 +14,8 @@ import { objectsForPredicate } from "./util/dataset";
   await loadValidationShapes();
 })();
 
-app.get("/", async function (req, res) {
-  res.send("Hello mu-javascript-template");
+app.get("/health", async function (_req, res) {
+  res.send({ status: "ok" });
 });
 
 app.get("/test/validate/:uri", async function (req, res) {

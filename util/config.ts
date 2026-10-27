@@ -10,7 +10,9 @@ export async function listFiles(dir) {
 
     return filenames.map((file) => dir + file);
   } catch (err) {
-    console.error(`\n>> ERROR: failed to read files from ${dir}`);
+    console.error(
+      `\n>> ERROR: failed to read files from ${dir}\n>> Full error: "${err}"`,
+    );
     return [];
   }
 }

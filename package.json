@@ -6,10 +6,18 @@
   "author": "info@redpencil.io",
   "type": "module",
   "main": "app.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@lblod/mu-auth-sudo": "^1.1.0",
     "@rdfjs/data-model": "^2.1.2",
     "@rdfjs/dataset": "^2.0.3",
+    "@rdfjs/formats": "^4.0.1",
+    "@traqula/generator-sparql-1-1": "^1.4.0",
+    "@traqula/parser-sparql-1-1": "^1.4.0",
+    "@traqula/rules-sparql-1-1": "^1.4.0",
+    "lru-cache": "^5.1.1",
     "rdf-ext": "^2.6.0",
     "rdf-utils-dataset": "^2.0.1",
     "rdf-utils-fs": "^3.0.1",
@@ -18,6 +26,7 @@
   "devDependencies": {
     "@rdfjs/types": "^2.0.1",
     "@types/rdf-ext": "^2.5.2",
-    "mu-types": "git+https://github.com/rahien/mu-types.git"
+    "mu-types": "git+https://github.com/rahien/mu-types.git",
+    "vitest": "^3.2.4"
   }
 }

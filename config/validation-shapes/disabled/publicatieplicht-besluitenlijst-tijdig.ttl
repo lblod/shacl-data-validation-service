@@ -1,0 +1,37 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix pp: <http://data.lblod.info/shapes/publicatieplicht#> .
+
+# ext:daysAfterSession is derived by the service: the publication date of the document minus the date of the session,
+# in calendar days (Europe/Brussels).
+pp:BesluitenlijstTijdig a sh:NodeShape ;
+  sh:name "Besluitenlijst tijdig gepubliceerd"@nl ;
+  sh:description "De besluitenlijst van een publicatieplichtig orgaan wordt binnen de 10 dagen na de zitting gepubliceerd (art. 285 DLB)."@nl ;
+  dct:source <https://www.vlaanderen.be/lokaal-bestuur/organisatie-en-werking/publicatieplicht> ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+      PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+      PREFIX org: <http://www.w3.org/ns/org#>
+      SELECT DISTINCT ?this WHERE {
+        VALUES ?classificatie {
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006>
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/4955bd72cd0e4eb895fdbfab08da0284>
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007>
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000008>
+        }
+        ?zitting a besluit:Zitting ;
+          besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) ?classificatie ;
+          besluit:heeftBesluitenlijst ?this .
+      }"""
+  ] ;
+  sh:property pp:BesluitenlijstTijdig-binnen10Dagen .
+
+pp:BesluitenlijstTijdig-binnen10Dagen a sh:PropertyShape ;
+  sh:path ext:daysAfterSession ;
+  sh:maxInclusive 10 ;
+  sh:severity sh:Violation ;
+  sh:message "De besluitenlijst werd meer dan 10 dagen na de zitting gepubliceerd."@nl .

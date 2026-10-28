@@ -1,0 +1,37 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pp: <http://data.lblod.info/shapes/publicatieplicht#> .
+
+pp:RMWBesluitenlijst a sh:NodeShape ;
+  sh:name "Besluitenlijst raad voor maatschappelijk welzijn"@nl ;
+  sh:description "Elke zitting van de raad voor maatschappelijk welzijn heeft een gepubliceerde besluitenlijst."@nl ;
+  dct:source <https://www.vlaanderen.be/lokaal-bestuur/organisatie-en-werking/publicatieplicht/publicatieplichtige-documenten> ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+      PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+      PREFIX org: <http://www.w3.org/ns/org#>
+      SELECT DISTINCT ?this WHERE {
+        ?this a besluit:Zitting ;
+          besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007> .
+      }"""
+  ] ;
+  sh:property pp:RMWBesluitenlijst-aanwezig .
+
+# Only besluitenlijsten with content count: a document the session or its besluiten are derived from
+# (prov:wasDerivedFrom). A link to a document without linked data, e.g. a PDF, isn't enough.
+pp:RMWBesluitenlijst-aanwezig a sh:PropertyShape ;
+  sh:path besluit:heeftBesluitenlijst ;
+  sh:qualifiedValueShape [
+    sh:property [
+      sh:path [ sh:inversePath prov:wasDerivedFrom ] ;
+      sh:qualifiedValueShape [ sh:or ( [ sh:class besluit:Zitting ] [ sh:class besluit:Besluit ] ) ] ;
+      sh:qualifiedMinCount 1
+    ]
+  ] ;
+  sh:qualifiedMinCount 1 ;
+  sh:severity sh:Violation ;
+  sh:message "Er is geen besluitenlijst van de raad voor maatschappelijk welzijn gepubliceerd voor deze zitting: geen enkel document gekoppeld met besluit:heeftBesluitenlijst beschrijft de zitting of haar besluiten (prov:wasDerivedFrom)."@nl .

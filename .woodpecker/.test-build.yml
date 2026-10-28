@@ -1,0 +1,14 @@
+steps:
+  lint:
+    image: node:20-bookworm
+    commands:
+      - npm ci
+      - npm run lint:js
+  build:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/amd64,linux/arm64
+      repo: "${CI_REPO_OWNER}/${CI_REPO_NAME}"
+      dry_run: true
+when:
+  event: pull_request

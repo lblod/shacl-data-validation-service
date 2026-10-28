@@ -68,7 +68,10 @@ pp:GemeenteraadNotulen a sh:NodeShape ;
 The `publicatieplicht-*.ttl` files are the shapes of the publicatieplicht of [lib-publicatieplicht-validation](https://github.com/lblod/lib-publicatieplicht-validation): whether the bestuursorgaan holding a session (`besluit:Zitting`) published its agenda, besluitenlijst and notulen, and in time.  They are copies of the files in its `shapes` folder, keep them in sync.
 
 ### Environment variables.
-At the current time, no environment variables are provided by the service.
+
+|Name            |Description                           |Default value|
+|----------------|--------------------------------------|-------------|
+|KEEP_ALL_REPORTS|Whether to keep all generated reports.|false        |
 
 ## Methodology
 ### Resource retrieval

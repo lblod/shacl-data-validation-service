@@ -1,6 +1,7 @@
 import formatsPretty from "@rdfjs/formats/pretty.js";
 import { app, errorHandler } from "mu";
 import rdf from "rdf-ext";
+import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules } from "./lib/rules";
 import { validate } from "./lib/validation";
@@ -40,6 +41,7 @@ app.get("/test/validate/:uri", async function (req, res) {
     // validation shapes, so it contains the triples these shapes need.
     const { report } = await validate(resourceToValidate);
     if (report) {
+      writeReportFile(report);
       // The report object refers to its RDF factory, which can't be
       // serialized as JSON. Its dataset is the SHACL validation report.
       res.type("application/n-triples").send(report.dataset.toString());

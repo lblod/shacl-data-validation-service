@@ -13,7 +13,9 @@ export async function listFiles(dir) {
       .filter((entry) => entry.isFile())
       .map((entry) => dir + entry.name);
   } catch (err) {
-    console.error(`\n>> ERROR: failed to read files from ${dir}`);
+    console.error(
+      `\n>> ERROR: failed to read files from ${dir}\n>> Full error: "${err}"`,
+    );
     return [];
   }
 }

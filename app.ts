@@ -25,6 +25,7 @@ const PREFIXES = new Map(
     dct: "http://purl.org/dc/terms/",
     eli: "http://data.europa.eu/eli/ontology#",
     skos: "http://www.w3.org/2004/02/skos/core#",
+    ext: "http://mu.semte.ch/vocabularies/ext/",
   }).map(([prefix, namespace]) => [prefix, rdf.namedNode(namespace)]),
 );
 

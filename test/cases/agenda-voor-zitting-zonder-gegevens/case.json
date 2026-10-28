@@ -1,0 +1,15 @@
+{
+  "description": "Zitting van de gemeenteraad zonder gegevens afgeleid van de gekoppelde agenda's: de agenda is niet gepubliceerd.",
+  "resource": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+  "shapes": ["http://data.lblod.info/shapes/publicatieplicht#AgendaVoorZitting"],
+  "expected": {
+    "conforms": false,
+    "results": [
+      {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#AgendaVoorZitting-gepubliceerd",
+        "severity": "http://www.w3.org/ns/shacl#Violation"
+      }
+    ]
+  }
+}

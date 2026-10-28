@@ -1,0 +1,20 @@
+{
+  "description": "Zitting van de gemeenteraad van Zottegem op 21/09/2026: de agenda is gepubliceerd, maar de agendapunten zijn afgeleid van de URI's van de gekoppelde agenda's zonder fragment en zonder '/' voor de '?'.",
+  "resource": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+  "shapes": ["http://data.lblod.info/shapes/publicatieplicht#AgendaVoorZitting"],
+  "expected": {
+    "conforms": false,
+    "results": [
+      {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#AgendaVoorZitting-uriGenormaliseerd",
+        "severity": "http://www.w3.org/ns/shacl#Warning"
+      },
+      {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#AgendaVoorZitting-uriGenormaliseerd",
+        "severity": "http://www.w3.org/ns/shacl#Warning"
+      }
+    ]
+  }
+}

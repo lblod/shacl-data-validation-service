@@ -1,0 +1,500 @@
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#>.
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/>.
+@prefix mandaat: <http://data.vlaanderen.be/ns/mandaat#>.
+@prefix org: <http://www.w3.org/ns/org#>.
+@prefix prov: <http://www.w3.org/ns/prov#>.
+
+<http://data.lblod.info/id/bestuursorganen/8be6f67728e602e926b80f2a7baad4b03a5d9f67a435d5364596c5252d683004>
+  mandaat:isTijdspecialisatieVan <http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>;
+  org:classification <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>;
+  prov:wasDerivedFrom
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>,
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>
+  besluit:classificatie <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>;
+  org:classification <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>;
+  prov:wasDerivedFrom
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>,
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b7ec021-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b8094e1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b821b81-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b837b11-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b846571-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b8528c1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b861321-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b872491-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b883601-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b899591-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2b8a7ff1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba29bd1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba47091-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba55af1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba66c61-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba72fb1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba81a11-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2ba95291-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2baa6401-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bab4e61-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bacfc11-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2baf9421-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb07e81-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb364b1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb42801-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb53971-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb623d1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb75c51-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb846b1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bb93111-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bbb53f1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bbc6561-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bbd76d1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bbeaf51-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bbfe7d1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bc0ab21-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bc16e71-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<http://data.lblod.info/id/files/2bc27fe1-ce18-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>
+  ext:afwijkendeBronUri <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Agenda_Gemeenteraad_21-09-2026.html>;
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>
+  ext:afwijkendeBronUri <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html>;
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/01c916f005f046d691ce2c54d5927df8-71437>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/03162e328cce46be85c4614d8fc66834-72116>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/05420dfdf6a44c2683230a395d857764-72113>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/06fe0211919040bd814edbfdb26e4f0f-71996>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/177a52f7af4148b9a479948889c756ce-72269>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/1acbeb32f15245309ae8e106a08a9dc9-72283>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/1e4c8d0386a84ecea6f7aa32349a6c10-71440>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/1f83294467f14a66b7f457f46d9d27ef-71435>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/2bd2987da5354d139cd1641cb8fb5fd6-72131>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/39c27ca42cee491e92b7ad0d8ceefc06-71993>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/448594bb25c243c5b78fdd36b590c0be-72115>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4b49431e57054ae69808e184585ce3a8-71990>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4f1a16f093234114a45110f363d2d057-71995>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4f1d093195464559abd08455475ec51f-72277>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/51026ea5f74741e4bc7fe250e5954b47-72250>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/65b1582e7f93418b8af2106e4bb2d930-72249>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/6bead8c810a04e24a58f78214f15c7d4-71991>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/6d2c8eb78711407a97d2d6ba687e00b7-72114>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/758ae6ae60964e89be29065834aba80b-71444>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/780dd4210c39434785d2e3c6797b48c7-72257>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/7a8cefeb16e846d2a78d79168d3ae2f9-72285>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/833b52830ed44a478bb0f87e230d1cf2-72258>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/862e3634095f4775a0b740b0cdc13658-72264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/92379117fa5e4e49b4c7630785a9886b-71446>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/959ebb3f606f4317a13556096951f9a9-71536>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/a4213c2131774b3fbd6460ce5c9199c7-66264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/a46909caf52d45d3973e87481a98fb01-72286>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/a92d4c093e7f401daa22f3121b930509-71445>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/b263dcebf4c64e0195eb595a4c396ac5-71443>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/b44625286bcf449183ec91c4bbe22ce4-66263>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/baa314df4a194c8599ce1fc55764e672-71989>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/bbdf413ea0f646c5af5d2fe445de89ad-71992>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/d1bff739a9a34ec68e103da8e5fa258d-71441>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/dad1c80597e0479d88ee7603897f19d3-71434>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/df348756292e484093507ebfebf92aaf-72287>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/e0915f7e56304cb39c0470d6a6ea1b72-71438>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/fb04b15fb0ad4c628490dd414b0fc6a2-71442>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/fe0939cd5b3248a3b21a6e4dfcc0c854-71994>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/01c916f005f046d691ce2c54d5927df8-71437>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/03162e328cce46be85c4614d8fc66834-72116>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/05420dfdf6a44c2683230a395d857764-72113>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/06fe0211919040bd814edbfdb26e4f0f-71996>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/177a52f7af4148b9a479948889c756ce-72269>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/1acbeb32f15245309ae8e106a08a9dc9-72283>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/1e4c8d0386a84ecea6f7aa32349a6c10-71440>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/1f83294467f14a66b7f457f46d9d27ef-71435>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/2bd2987da5354d139cd1641cb8fb5fd6-72131>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/39c27ca42cee491e92b7ad0d8ceefc06-71993>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/448594bb25c243c5b78fdd36b590c0be-72115>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/4b49431e57054ae69808e184585ce3a8-71990>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/4f1a16f093234114a45110f363d2d057-71995>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/4f1d093195464559abd08455475ec51f-72277>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/51026ea5f74741e4bc7fe250e5954b47-72250>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/65b1582e7f93418b8af2106e4bb2d930-72249>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/6bead8c810a04e24a58f78214f15c7d4-71991>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/6d2c8eb78711407a97d2d6ba687e00b7-72114>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/758ae6ae60964e89be29065834aba80b-71444>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/780dd4210c39434785d2e3c6797b48c7-72257>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/7a8cefeb16e846d2a78d79168d3ae2f9-72285>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/833b52830ed44a478bb0f87e230d1cf2-72258>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/862e3634095f4775a0b740b0cdc13658-72264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/92379117fa5e4e49b4c7630785a9886b-71446>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/959ebb3f606f4317a13556096951f9a9-71536>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/a4213c2131774b3fbd6460ce5c9199c7-66264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/a46909caf52d45d3973e87481a98fb01-72286>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/a92d4c093e7f401daa22f3121b930509-71445>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/b263dcebf4c64e0195eb595a4c396ac5-71443>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/b44625286bcf449183ec91c4bbe22ce4-66263>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/baa314df4a194c8599ce1fc55764e672-71989>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/bbdf413ea0f646c5af5d2fe445de89ad-71992>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/d1bff739a9a34ec68e103da8e5fa258d-71441>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/dad1c80597e0479d88ee7603897f19d3-71434>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/df348756292e484093507ebfebf92aaf-72287>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/e0915f7e56304cb39c0470d6a6ea1b72-71438>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/fb04b15fb0ad4c628490dd414b0fc6a2-71442>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/fe0939cd5b3248a3b21a6e4dfcc0c854-71994>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/01c916f005f046d691ce2c54d5927df8-71437>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/03162e328cce46be85c4614d8fc66834-72116>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/05420dfdf6a44c2683230a395d857764-72113>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/06fe0211919040bd814edbfdb26e4f0f-71996>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/177a52f7af4148b9a479948889c756ce-72269>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/1acbeb32f15245309ae8e106a08a9dc9-72283>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/1e4c8d0386a84ecea6f7aa32349a6c10-71440>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/1f83294467f14a66b7f457f46d9d27ef-71435>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/2bd2987da5354d139cd1641cb8fb5fd6-72131>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/39c27ca42cee491e92b7ad0d8ceefc06-71993>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/448594bb25c243c5b78fdd36b590c0be-72115>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/4b49431e57054ae69808e184585ce3a8-71990>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/4f1a16f093234114a45110f363d2d057-71995>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/4f1d093195464559abd08455475ec51f-72277>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/51026ea5f74741e4bc7fe250e5954b47-72250>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/65b1582e7f93418b8af2106e4bb2d930-72249>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/6bead8c810a04e24a58f78214f15c7d4-71991>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/6d2c8eb78711407a97d2d6ba687e00b7-72114>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/758ae6ae60964e89be29065834aba80b-71444>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/780dd4210c39434785d2e3c6797b48c7-72257>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/7a8cefeb16e846d2a78d79168d3ae2f9-72285>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/833b52830ed44a478bb0f87e230d1cf2-72258>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/862e3634095f4775a0b740b0cdc13658-72264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/92379117fa5e4e49b4c7630785a9886b-71446>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/959ebb3f606f4317a13556096951f9a9-71536>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/a4213c2131774b3fbd6460ce5c9199c7-66264>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/a46909caf52d45d3973e87481a98fb01-72286>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/a92d4c093e7f401daa22f3121b930509-71445>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/b263dcebf4c64e0195eb595a4c396ac5-71443>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/b44625286bcf449183ec91c4bbe22ce4-66263>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/baa314df4a194c8599ce1fc55764e672-71989>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/bbdf413ea0f646c5af5d2fe445de89ad-71992>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/d1bff739a9a34ec68e103da8e5fa258d-71441>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/dad1c80597e0479d88ee7603897f19d3-71434>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/df348756292e484093507ebfebf92aaf-72287>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/e0915f7e56304cb39c0470d6a6ea1b72-71438>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/fb04b15fb0ad4c628490dd414b0fc6a2-71442>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/fe0939cd5b3248a3b21a6e4dfcc0c854-71994>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011> a besluit:Zitting;
+  besluit:heeftAgenda
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>,
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>;
+  besluit:isGehoudenDoor
+    <http://data.lblod.info/id/bestuursorganen/8be6f67728e602e926b80f2a7baad4b03a5d9f67a435d5364596c5252d683004>,
+    <http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>;
+  prov:wasDerivedFrom
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>,
+    <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011>.

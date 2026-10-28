@@ -130,7 +130,7 @@ Endpoint meant for testing during service development.  Returns the data the ser
 The tests validate the data of resources against the service's configuration, without a triplestore.  Run them with `npm test`.
 
 Each test case is a folder in `test/cases/` with two files:
-- `data.ttl`: the data of the resource, as returned by `/test/data/:uri`;
+- `data.ttl`: the data of the resource, as returned by `/test/data/:uri`, or written by hand as it would be in the store;
 - `case.json`: the resource, the URIs of the validation shapes the service should select for it, and the expected validation result.
 
 ```json
@@ -151,7 +151,7 @@ Each test case is a folder in `test/cases/` with two files:
 }
 ```
 
-The test checks that the service selects exactly the given validation shapes for the data (through the rules and the SPARQL-based targets), and that the validation report conforms as expected.  If `expected.results` is given, the validation results of the report (focus node, source shape and severity) must match it as well.
+The test checks that the service selects exactly the given validation shapes for the data (through the rules and the SPARQL-based targets), and that the validation report conforms as expected.  Before validation, the SPARQL rules (`sh:rule`) of those shapes are applied to the data, like the service applies them to the store, with `$this` bound to the `resource` of the case.  If `expected.results` is given, the validation results of the report (focus node, source shape and severity) must match it as well.
 
 To add a test case for a resource, retrieve its data from a running service:
 
@@ -159,4 +159,4 @@ To add a test case for a resource, retrieve its data from a running service:
 curl "http://localhost:8897/test/data/$(jq -rn --arg uri "$URI" '$uri|@uri')" > test/cases/<name>/data.ttl
 ```
 
-The SPARQL rules (`sh:rule`) of the shapes are applied when the data is retrieved, so `data.ttl` already contains the triples they construct.
+The data returned by `/test/data/:uri` already contains the triples the SPARQL rules construct on the store.  For the current rules, applying them again to it constructs the same triples.

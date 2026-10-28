@@ -1,0 +1,24 @@
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#>.
+@prefix mandaat: <http://data.vlaanderen.be/ns/mandaat#>.
+@prefix org: <http://www.w3.org/ns/org#>.
+@prefix prov: <http://www.w3.org/ns/prov#>.
+
+# The session links its agenda with a '/' before the '?', the agendapunt is derived from the URI without: the agenda
+# is published thanks to the URI normalization, which is reported.
+
+<http://data.lblod.info/id/bestuursorganen/8be6f67728e602e926b80f2a7baad4b03a5d9f67a435d5364596c5252d683004>
+  mandaat:isTijdspecialisatieVan <http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>;
+  org:classification <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>.
+
+<http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>
+  besluit:classificatie <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>;
+  org:classification <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4f1d093195464559abd08455475ec51f-72277>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Agenda_Gemeenteraad_21-09-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011> a besluit:Zitting;
+  besluit:heeftAgenda <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011>;
+  besluit:isGehoudenDoor
+    <http://data.lblod.info/id/bestuursorganen/8be6f67728e602e926b80f2a7baad4b03a5d9f67a435d5364596c5252d683004>,
+    <http://data.lblod.info/id/bestuursorganen/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a>.

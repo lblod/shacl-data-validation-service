@@ -3,10 +3,11 @@
 @prefix besluit: <http://data.vlaanderen.be/ns/besluit#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix pp: <http://data.lblod.info/shapes/publicatieplicht#> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
 
 pp:AgendaVoorZitting a sh:NodeShape ;
   sh:name "Agenda gepubliceerd voor de zitting"@nl ;
-  sh:description "Een zitting van de gemeenteraad en de raad voor maatschappelijk welzijn heeft een agenda, die gepubliceerd wordt voor de dag van de zitting."@nl ;
+  sh:description "Een zitting van de gemeenteraad, het college van burgemeester en schepenen, de raad voor maatschappelijk welzijn en het vast bureau heeft een agenda (HTML formaat) gepubliceerd."@nl ;
   dct:source <https://www.vlaanderen.be/lokaal-bestuur/organisatie-en-werking/publicatieplicht/publicatieplichtige-documenten> ;
   sh:target [
     a sh:SPARQLTarget ;
@@ -16,15 +17,17 @@ pp:AgendaVoorZitting a sh:NodeShape ;
       PREFIX org: <http://www.w3.org/ns/org#>
       SELECT DISTINCT ?this WHERE {
         VALUES ?classificatie {
-          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005>
-          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007>
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005> # gemeenteraad
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006> # college van burgemeester en schepenen
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007> # raad voor maatschappelijk welzijn
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000008> # vast bureau
         }
         ?this a besluit:Zitting ;
           besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) ?classificatie .
       }"""
   ] ;
-  sh:property pp:AgendaVoorZitting-gepubliceerd ;
-  sh:rule pp:AgendaVoorZitting-bronZonderFragment .
+  sh:property pp:AgendaVoorZitting-gepubliceerd, pp:AgendaVoorZitting-uriGenormaliseerd ;
+  sh:rule pp:AgendaVoorZitting-bronZonderFragment, pp:AgendaVoorZitting-afwijkendeBronUri .
 
 # The harvester pipeline links the data it harvests with the URI of the page it harvested it from
 # (prov:wasDerivedFrom), which doesn't always match the URI the publisher links the agenda with, e.g. Zottegem
@@ -60,3 +63,39 @@ pp:AgendaVoorZitting-gepubliceerd a sh:PropertyShape ;
   sh:qualifiedMinCount 1 ;
   sh:severity sh:Violation ;
   sh:message "Er is geen agenda gepubliceerd voor deze zitting: geen enkel document gekoppeld met besluit:heeftAgenda is de bron van gegevens (prov:wasDerivedFrom)."@nl .
+
+# Links the agenda with the deviating URIs data is derived from (ext:afwijkendeBronUri): URIs that differ from the
+# linked URI in a '/' before the '?', see pp:AgendaVoorZitting-bronZonderFragment. A URI that only differs in its fragment
+# isn't a problem: the harvester pipeline can't know the fragment, it isn't part of the HTTP request. Like that rule, the service
+# runs it on the store, so it sees the prov:wasDerivedFrom links before that rule repairs them in the data graph.
+pp:AgendaVoorZitting-afwijkendeBronUri a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    CONSTRUCT {
+      ?agenda ext:afwijkendeBronUri ?source .
+    } WHERE {
+      $this besluit:heeftAgenda ?agenda .
+      FILTER(isIRI(?agenda))
+      BIND(REPLACE(STR(?agenda), "#.*$", "") AS ?withoutFragment)
+      BIND(REPLACE(?withoutFragment, "/[?]", "?") AS ?withoutSlash)
+      VALUES ?slash { "" "/" }
+      BIND(REPLACE(?withoutSlash, "[?]", CONCAT(?slash, "?")) AS ?normalized)
+      FILTER(?normalized != ?withoutFragment)
+      BIND(IRI(?normalized) AS ?source)
+      FILTER EXISTS { ?entity prov:wasDerivedFrom ?source . }
+    }""" .
+
+# The agenda is linked with the URI its data is derived from. If not, the agenda only counts as published thanks to
+# the normalization of pp:AgendaVoorZitting-bronZonderFragment, which the publisher or the harvester pipeline should fix.
+pp:AgendaVoorZitting-uriGenormaliseerd a sh:PropertyShape ;
+  sh:path besluit:heeftAgenda ;
+  sh:node [
+    sh:property [
+      sh:path ext:afwijkendeBronUri ;
+      sh:maxCount 0
+    ]
+  ] ;
+  sh:severity sh:Warning ;
+  sh:message "De URI waarmee de agenda gekoppeld is (besluit:heeftAgenda) verschilt van de URI waarvan gegevens afgeleid zijn (prov:wasDerivedFrom): ze verschillen in een '/' voor de '?'."@nl .

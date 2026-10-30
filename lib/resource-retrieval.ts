@@ -182,7 +182,7 @@ async function getShapesData(uri: string) {
 
 /*
  * The SPARQL-based target of a validation shape can select focus nodes other
- * than the resource in its data, e.g. pp:PublicatiedatumGekend selects the
+ * than the resource in its data, e.g. a shape whose target selects the
  * documents of a session. Adds the data the shape needs for those focus nodes,
  * until the targets don't select new focus nodes.
  */

@@ -1,0 +1,291 @@
+{
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/test/validate/https%3A%2F%2Flblod.zottegem.be%2FLBLODWeb%2FHome%2FOverzicht%2F6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657%2FGetPublication%2F%3Ffilename%3DBesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html%23Zitting"
+  },
+  "meta": {
+    "resource": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+    "conforms": false,
+    "checks": [
+      "agendaFound",
+      "besluitenlijstFound",
+      "notulenFound",
+      "publicationDateKnown",
+      "published",
+      "publishedOnTime",
+      "sessionLinksWithADocument",
+      "sessionLinksWithExpectedDocumentURI"
+    ]
+  },
+  "data": [
+    {
+      "type": "overview-rows",
+      "id": "a75bd36f351ed7092a85710ac99af958",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "checks": {
+          "agendaFound": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Info",
+            "resultMessage": "The Zitting doesn't link an Agenda (besluit:heeftAgenda), which it doesn't have to: only a session of the city council or the council for social welfare has to publish one."
+          },
+          "besluitenlijstFound": {
+            "conforms": true,
+            "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+          },
+          "notulenFound": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Info",
+            "resultMessage": "The Zitting doesn't link any Notulen (besluit:heeftNotulen), which it doesn't have to: only a session of the city council or the council for social welfare has to publish them."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "110783f0e8c9632e35a47929a182cfed"
+            },
+            {
+              "type": "validation-results",
+              "id": "4d583f4c70225f091b612a17dd1ecdac"
+            },
+            {
+              "type": "validation-results",
+              "id": "755a7801758dac111393be3655e68d3e"
+            },
+            {
+              "type": "validation-results",
+              "id": "87d2ed9591e020bd4cd1d79e4f6b647d"
+            },
+            {
+              "type": "validation-results",
+              "id": "d9e44f9fbb2b7925454ae1286ea235d9"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "overview-rows",
+      "id": "c1b528ab458e8ca61299ce7b6779d9b5",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "checks": {
+          "publicationDateKnown": {
+            "conforms": true,
+            "resultMessage": "Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations."
+          },
+          "published": {
+            "conforms": true,
+            "resultMessage": "Besluitenlijst HTML with RDFa annotations found that contains the Zitting."
+          },
+          "publishedOnTime": {
+            "conforms": true,
+            "resultMessage": "The Besluitenlijst wasn't published after 2026-10-15, 10 days after the Zitting of 2026-10-05. Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time."
+          },
+          "sessionLinksWithADocument": {
+            "conforms": true,
+            "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+          },
+          "sessionLinksWithExpectedDocumentURI": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "2472a93346f137ee0c6692435062fd3c"
+            },
+            {
+              "type": "validation-results",
+              "id": "24e15d65d7fa867140bca6cc71b3ac58"
+            },
+            {
+              "type": "validation-results",
+              "id": "66fb44e69e7eefbccd6c11d9b2331ba2"
+            },
+            {
+              "type": "validation-results",
+              "id": "6bb9125a340ad7417afe53b7b0f2e8da"
+            },
+            {
+              "type": "validation-results",
+              "id": "83759f43279289b0751c4e66c75b2868"
+            },
+            {
+              "type": "validation-results",
+              "id": "a9778e9205c68a96e4084c1aaabb17e4"
+            },
+            {
+              "type": "validation-results",
+              "id": "f26eb58bfd88b2120a8ef62fe9361f6a"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "validation-results",
+      "id": "110783f0e8c9632e35a47929a182cfed",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/110783f0e8c9632e35a47929a182cfed",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaNietVerplichtGekoppeld",
+        "name": "agendaFound",
+        "severity": "http://www.w3.org/ns/shacl#Info",
+        "resultMessage": "The Zitting doesn't link an Agenda (besluit:heeftAgenda), which it doesn't have to: only a session of the city council or the council for social welfare has to publish one."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "4d583f4c70225f091b612a17dd1ecdac",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/4d583f4c70225f091b612a17dd1ecdac",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaGekoppeld",
+        "name": "agendaFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "755a7801758dac111393be3655e68d3e",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/755a7801758dac111393be3655e68d3e",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGekoppeld",
+        "name": "besluitenlijstFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "87d2ed9591e020bd4cd1d79e4f6b647d",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/87d2ed9591e020bd4cd1d79e4f6b647d",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenNietVerplichtGekoppeld",
+        "name": "notulenFound",
+        "severity": "http://www.w3.org/ns/shacl#Info",
+        "resultMessage": "The Zitting doesn't link any Notulen (besluit:heeftNotulen), which it doesn't have to: only a session of the city council or the council for social welfare has to publish them."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "d9e44f9fbb2b7925454ae1286ea235d9",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/d9e44f9fbb2b7925454ae1286ea235d9",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenGekoppeld",
+        "name": "notulenFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links Notulen (besluit:heeftNotulen)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "83759f43279289b0751c4e66c75b2868",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/83759f43279289b0751c4e66c75b2868",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstPublicatiedatumGekend",
+        "name": "publicationDateKnown",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "24e15d65d7fa867140bca6cc71b3ac58",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/24e15d65d7fa867140bca6cc71b3ac58",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstBevatLinkedData",
+        "name": "published",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Besluitenlijst HTML with RDFa annotations found that contains the Zitting."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "6bb9125a340ad7417afe53b7b0f2e8da",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/6bb9125a340ad7417afe53b7b0f2e8da",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigGepubliceerd",
+        "name": "publishedOnTime",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Besluitenlijst wasn't published after 2026-10-15, 10 days after the Zitting of 2026-10-05."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "a9778e9205c68a96e4084c1aaabb17e4",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/a9778e9205c68a96e4084c1aaabb17e4",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigheidGekend",
+        "name": "publishedOnTime",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "f26eb58bfd88b2120a8ef62fe9361f6a",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/f26eb58bfd88b2120a8ef62fe9361f6a",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstHtmlGekoppeld",
+        "name": "sessionLinksWithADocument",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "2472a93346f137ee0c6692435062fd3c",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/2472a93346f137ee0c6692435062fd3c",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGelijkAanDerivedFrom",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "66fb44e69e7eefbccd6c11d9b2331ba2",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/66fb44e69e7eefbccd6c11d9b2331ba2",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstNietAndersGekoppeld",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting doesn't link another document as Besluitenlijst (besluit:heeftBesluitenlijst) instead of its HTML with RDFa annotations."
+      }
+    }
+  ]
+}

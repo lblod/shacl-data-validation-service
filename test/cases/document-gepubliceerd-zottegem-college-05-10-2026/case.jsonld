@@ -1,0 +1,242 @@
+{
+  "@context": "http://localhost:8897/contexts/validation-report.jsonld",
+  "@id": "",
+  "@type": "mf:Manifest",
+  "mf:entries": [
+    {
+      "@id": "document-gepubliceerd-zottegem-college-05-10-2026",
+      "@type": "sht:Validate",
+      "rdfs:label": "Checks the documents of a session are published correctly and on time.",
+      "mf:action": {
+        "sht:dataGraph": "data.ttl",
+        "sht:shapesGraph": "../../../config/validation-shapes/publicatieplicht-document-gepubliceerd.ttl"
+      },
+      "mf:result": {
+        "@type": "sh:ValidationReport",
+        "conforms": false,
+        "result": [
+          {
+            "@id": "http://data.lblod.info/id/validation-results/110783f0e8c9632e35a47929a182cfed",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "resultPath": {
+              "alternativePath": [
+                "http://mu.semte.ch/vocabularies/ext/gekoppeldeAgenda",
+                "http://mu.semte.ch/vocabularies/ext/agendaVerplicht"
+              ]
+            },
+            "resultSeverity": "sh:Info",
+            "resultMessage": {
+              "nl": "De Zitting koppelt geen Agenda (besluit:heeftAgenda), wat ze niet moet: enkel een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet er een publiceren.",
+              "en": "The Zitting doesn't link an Agenda (besluit:heeftAgenda), which it doesn't have to: only a session of the city council or the council for social welfare has to publish one."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaNietVerplichtGekoppeld",
+              "name": "agendaFound"
+            },
+            "sourceConstraintComponent": "sh:MinCountConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/2472a93346f137ee0c6692435062fd3c",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "sh:Warning",
+            "resultMessage": {
+              "nl": "De Besluitenlijst is gekoppeld (besluit:heeftBesluitenlijst) met https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html, die anders geschreven is dan de URI van de HTML met RDFa-annotaties, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html (http of https, www., of een '/' voor de '?' of op het einde).",
+              "en": "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGelijkAanDerivedFrom",
+              "name": "sessionLinksWithExpectedDocumentURI"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/24e15d65d7fa867140bca6cc71b3ac58",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "en": "Besluitenlijst HTML with RDFa annotations found that contains the Zitting.",
+              "nl": "Besluitenlijst in HTML met RDFa-annotaties gevonden die de Zitting bevat."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstBevatLinkedData",
+              "name": "published"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/4d583f4c70225f091b612a17dd1ecdac",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "resultPath": {
+              "alternativePath": [
+                "http://mu.semte.ch/vocabularies/ext/gekoppeldeAgenda",
+                "http://mu.semte.ch/vocabularies/ext/agendaNietVerplicht"
+              ]
+            },
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Zitting koppelt een Agenda (besluit:heeftAgenda).",
+              "en": "The Zitting links an Agenda (besluit:heeftAgenda)."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaGekoppeld",
+              "name": "agendaFound"
+            },
+            "sourceConstraintComponent": "sh:MinCountConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/66fb44e69e7eefbccd6c11d9b2331ba2",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Zitting koppelt geen ander document als Besluitenlijst (besluit:heeftBesluitenlijst) in plaats van de HTML met RDFa-annotaties.",
+              "en": "The Zitting doesn't link another document as Besluitenlijst (besluit:heeftBesluitenlijst) instead of its HTML with RDFa annotations."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstNietAndersGekoppeld",
+              "name": "sessionLinksWithExpectedDocumentURI"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/6bb9125a340ad7417afe53b7b0f2e8da",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Besluitenlijst is niet gepubliceerd na 2026-10-15, 10 dagen na de Zitting van 2026-10-05.",
+              "en": "The Besluitenlijst wasn't published after 2026-10-15, 10 days after the Zitting of 2026-10-05."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigGepubliceerd",
+              "name": "publishedOnTime"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/755a7801758dac111393be3655e68d3e",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gekoppeldeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Zitting koppelt een Besluitenlijst (besluit:heeftBesluitenlijst).",
+              "en": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGekoppeld",
+              "name": "besluitenlijstFound"
+            },
+            "sourceConstraintComponent": "sh:MinCountConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/83759f43279289b0751c4e66c75b2868",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "Publicatiedatum (eli:date_publication) 2026-10-14 gevonden voor de Besluitenlijst in HTML met RDFa-annotaties.",
+              "en": "Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstPublicatiedatumGekend",
+              "name": "publicationDateKnown"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/87d2ed9591e020bd4cd1d79e4f6b647d",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "resultPath": {
+              "alternativePath": [
+                "http://mu.semte.ch/vocabularies/ext/gekoppeldeNotulen",
+                "http://mu.semte.ch/vocabularies/ext/notulenVerplicht"
+              ]
+            },
+            "resultSeverity": "sh:Info",
+            "resultMessage": {
+              "nl": "De Zitting koppelt geen Notulen (besluit:heeftNotulen), wat ze niet moet: enkel een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet ze publiceren.",
+              "en": "The Zitting doesn't link any Notulen (besluit:heeftNotulen), which it doesn't have to: only a session of the city council or the council for social welfare has to publish them."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenNietVerplichtGekoppeld",
+              "name": "notulenFound"
+            },
+            "sourceConstraintComponent": "sh:MinCountConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/a9778e9205c68a96e4084c1aaabb17e4",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gecontroleerdeBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "Publicatiedatum (eli:date_publication) 2026-10-14 gevonden voor de Besluitenlijst in HTML met RDFa-annotaties, dus kan gecontroleerd worden of ze tijdig gepubliceerd is.",
+              "en": "Publication date (eli:date_publication) 2026-10-14 found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigheidGekend",
+              "name": "publishedOnTime"
+            },
+            "sourceConstraintComponent": "sh:NodeConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/d9e44f9fbb2b7925454ae1286ea235d9",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "resultPath": {
+              "alternativePath": [
+                "http://mu.semte.ch/vocabularies/ext/gekoppeldeNotulen",
+                "http://mu.semte.ch/vocabularies/ext/notulenNietVerplicht"
+              ]
+            },
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Zitting koppelt Notulen (besluit:heeftNotulen).",
+              "en": "The Zitting links Notulen (besluit:heeftNotulen)."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenGekoppeld",
+              "name": "notulenFound"
+            },
+            "sourceConstraintComponent": "sh:MinCountConstraintComponent"
+          },
+          {
+            "@id": "http://data.lblod.info/id/validation-results/f26eb58bfd88b2120a8ef62fe9361f6a",
+            "@type": "sh:ValidationResult",
+            "focusNode": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting",
+            "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html",
+            "resultPath": "http://mu.semte.ch/vocabularies/ext/gekoppeldeHtmlBesluitenlijst",
+            "resultSeverity": "shn:Debug",
+            "resultMessage": {
+              "nl": "De Zitting koppelt een Besluitenlijst (besluit:heeftBesluitenlijst).",
+              "en": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+            },
+            "sourceShape": {
+              "@id": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstHtmlGekoppeld",
+              "name": "sessionLinksWithADocument"
+            },
+            "sourceConstraintComponent": "sh:NodeKindConstraintComponent"
+          }
+        ]
+      },
+      "mf:status": "sht:proposed"
+    }
+  ]
+}

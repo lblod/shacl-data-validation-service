@@ -11,9 +11,19 @@ export async function validateResource(resource, shapes) {
 }
 
 // Also resolves SPARQL-based targets (sh:target [ a sh:SPARQLTarget ]), see
-// targetedShapesForResource
-export async function validateResourceWithSparqlTargets(resource, shapes) {
-  const validator = new Validator(shapes, { factory: rdf, targetResolvers });
+// targetedShapesForResource. With debug, the report also has a result for each
+// passed validation, with severity shn:Debug
+// (https://schemas.link/shacl-next#Debug), which doesn't affect conforms.
+export async function validateResourceWithSparqlTargets(
+  resource,
+  shapes,
+  { debug = false } = {},
+) {
+  const validator = new Validator(shapes, {
+    factory: rdf,
+    targetResolvers,
+    debug,
+  });
   const report = await validator.validate({ dataset: resource });
 
   return report;

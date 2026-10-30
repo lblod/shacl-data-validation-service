@@ -1,0 +1,23 @@
+# The results of a validation report, for an overview per value of the results (see lib/overview.ts): per result, its
+# focus node, value, if any, its source shape and the name of that shape (sh:name, or the URI of the shape if it has no
+# name), e.g. published, its severity and its English message (sh:resultMessage). With the passed validations
+# (shn:Debug), as /test/validate/:uri gives them.
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+SELECT ?result ?focusNode ?value ?shape ?name ?severity ?message
+WHERE {
+  ?report sh:result ?result .
+  ?result sh:focusNode ?focusNode ;
+    sh:sourceShape ?shape ;
+    sh:resultSeverity ?severity .
+  OPTIONAL { ?result sh:value ?value }
+  OPTIONAL { ?shape sh:name ?shapeName }
+  BIND(COALESCE(?shapeName, STR(?shape)) AS ?name)
+  # Only the variables of the group are in scope of its filter
+  OPTIONAL {
+    {
+      ?result sh:resultMessage ?message .
+      FILTER(LANG(?message) = "en")
+    }
+  }
+}
+ORDER BY ?focusNode ?value ?name ?result

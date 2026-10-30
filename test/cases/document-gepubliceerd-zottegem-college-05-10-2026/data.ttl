@@ -1,0 +1,558 @@
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#>.
+@prefix eli: <http://data.europa.eu/eli/ontology#>.
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/>.
+@prefix org: <http://www.w3.org/ns/org#>.
+@prefix prov: <http://www.w3.org/ns/prov#>.
+
+<http://data.lblod.info/id/bestuurseenheden/3e3d8146912fb57b6f7c4c665051351b6dd1a92730f363a17bddabe58bcdeb51>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/bestuursorganen/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657>
+  org:classification <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006>;
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/bestuursorganen/a7769d9bef367fe5cf3b9b95a581492c43790f4c2f3c0a44e5d6732d85bb6ac2>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38f66ec1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38f7ce51-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38f8dfc1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38f9ca21-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38fb50c1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38fc1411-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38fcfe71-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38fdc1c1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38fed331-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/38ffbd91-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3900a7f1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39019251-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39027cb1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39038e21-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39047881-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390562e1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39064d41-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390737a1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3907faf1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3908e550-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3909cfb1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390aba11-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390b7d61-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390c8ed1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390da041-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390eb1b1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/390f7501-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39108671-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3911bef1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3912f771-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3913e1d1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/3914cc31-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/391652d1-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/files/39173d31-ce17-11f1-b058-b97ec898cf84>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/functionarissen/6658805179A0F1636172CEC7>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.lblod.info/id/mandatarissen/695BD3CB40CAA5D5980E0937>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>
+  ext:datumVolgendeZitting "2026-10-12"^^<http://www.w3.org/2001/XMLSchema#date>;
+  ext:uitersteDatumBesluitenlijst "2026-10-15"^^<http://www.w3.org/2001/XMLSchema#date>;
+  ext:uitersteDatumNotulen "2026-10-22"^^<http://www.w3.org/2001/XMLSchema#date>;
+  ext:zittingsdatum "2026-10-05"^^<http://www.w3.org/2001/XMLSchema#date>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>
+  eli:date_publication "2026-10-14"^^<http://www.w3.org/2001/XMLSchema#date>;
+  ext:bronUriAfwijkendeNotatie <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>;
+  ext:uitersteDatumBesluitenlijst "2026-10-15"^^<http://www.w3.org/2001/XMLSchema#date>;
+  ext:zittingsdatum "2026-10-05"^^<http://www.w3.org/2001/XMLSchema#date>.
+
+<https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html#Zitting> a besluit:Zitting;
+  besluit:isGehoudenDoor <http://data.lblod.info/id/bestuursorganen/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657>;
+  ext:agendaNietVerplicht true;
+  ext:gecontroleerdeBesluitenlijst <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>;
+  ext:gekoppeldeBesluitenlijst <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>;
+  ext:gekoppeldeHtmlBesluitenlijst <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>;
+  ext:notulenNietVerplicht true;
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/0b3292cd30f4465e8c9590235f758b31-72411>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/1fcc3c835407420da62d571d8dd5fcff-72572>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/229078bce0534d2da750874f8b3b598e-72467>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/26a82d93b9654f9b9619abe74f5f142d-72251>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/2a2767cdb479472eb2763531f5b933d4-72552>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/38d7a4a778c14e65aeb86b803ca3a4db-72564>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/3c250af93ba746fb965334cf13a02e08-72294>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4219c007f3a84ab6994fc6c30f76534c-72544>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/47837b68df864cbd9b4754ba46f986b4-72557>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/4d0df222d65f4f9fbb5643d74e5b60d2-72508>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/57711f239f044810a52ebc0c25a5239b-72496>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/5914e1e412b9484eb5c8f00d313a60ec-72650>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/59bf8fd666724133a68668320f33418d-72561>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/59ee23613c3e4171a4049666bb748653-72648>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/65abc30cdc494e0a92702d2c4846c769-72549>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/76756720a0344e1497bffc604e0e2e82-70975>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/7c49801b39874d3abfb27c5a3a68be68-72511>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/7d89d2acca4c4bc1b5b6ee2b9386d2d3-72238>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/82250cfc263d4eb2bb4602b8fd044673-72575>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/86d3a13dc9b54d899eecd6840a9c3531-72428>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/9beb347954e5406ab1c6fd45afb330b5-71690>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/a153966dedf34a41ba07222a7ae7d444-72504>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/cb518791756c44d7a40a6707201b7408-72540>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/cf32759f912545fa9c600c4acd8b8027-72522>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/d4beab65a2484374952c48e55e20ee10-72798>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/dc73714421084b68ba593b4d915986c3-72531>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/dca2f9572cd44d38b868728afa0cc5aa-72573>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/e2ba7cbb60b24a97b434ca3e8f23733c-72563>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/e2fa8e81a4744bc6885e88a9285cc5df-72502>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/eb0721e388d2499a97b50982deff0ba0-72565>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/f02255459bec4567892ef618aac1d61c-72431>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/f1e6bc3a81bc4aac844c8b2889be9bda-72571>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/f968aef492d04cb1980c2d990a26dcbb-72505>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/agendapunt/fa3d3fcdf7bf476bab689e46a54e91e9-72545>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/0b3292cd30f4465e8c9590235f758b31-72411>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/1fcc3c835407420da62d571d8dd5fcff-72572>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/229078bce0534d2da750874f8b3b598e-72467>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/26a82d93b9654f9b9619abe74f5f142d-72251>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/2a2767cdb479472eb2763531f5b933d4-72552>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/38d7a4a778c14e65aeb86b803ca3a4db-72564>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/3c250af93ba746fb965334cf13a02e08-72294>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/4219c007f3a84ab6994fc6c30f76534c-72544>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/47837b68df864cbd9b4754ba46f986b4-72557>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/4d0df222d65f4f9fbb5643d74e5b60d2-72508>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/57711f239f044810a52ebc0c25a5239b-72496>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/5914e1e412b9484eb5c8f00d313a60ec-72650>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/59bf8fd666724133a68668320f33418d-72561>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/59ee23613c3e4171a4049666bb748653-72648>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/65abc30cdc494e0a92702d2c4846c769-72549>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/76756720a0344e1497bffc604e0e2e82-70975>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/7c49801b39874d3abfb27c5a3a68be68-72511>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/7d89d2acca4c4bc1b5b6ee2b9386d2d3-72238>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/82250cfc263d4eb2bb4602b8fd044673-72575>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/86d3a13dc9b54d899eecd6840a9c3531-72428>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/9beb347954e5406ab1c6fd45afb330b5-71690>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/a153966dedf34a41ba07222a7ae7d444-72504>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/cb518791756c44d7a40a6707201b7408-72540>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/cf32759f912545fa9c600c4acd8b8027-72522>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/d4beab65a2484374952c48e55e20ee10-72798>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/dc73714421084b68ba593b4d915986c3-72531>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/dca2f9572cd44d38b868728afa0cc5aa-72573>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/e2ba7cbb60b24a97b434ca3e8f23733c-72563>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/e2fa8e81a4744bc6885e88a9285cc5df-72502>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/eb0721e388d2499a97b50982deff0ba0-72565>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/f02255459bec4567892ef618aac1d61c-72431>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/f1e6bc3a81bc4aac844c8b2889be9bda-72571>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/f968aef492d04cb1980c2d990a26dcbb-72505>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/behandelingen-van-agendapunten/fa3d3fcdf7bf476bab689e46a54e91e9-72545>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/0b3292cd30f4465e8c9590235f758b31-72411>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/1fcc3c835407420da62d571d8dd5fcff-72572>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/229078bce0534d2da750874f8b3b598e-72467>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/26a82d93b9654f9b9619abe74f5f142d-72251>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/2a2767cdb479472eb2763531f5b933d4-72552>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/38d7a4a778c14e65aeb86b803ca3a4db-72564>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/3c250af93ba746fb965334cf13a02e08-72294>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/4219c007f3a84ab6994fc6c30f76534c-72544>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/47837b68df864cbd9b4754ba46f986b4-72557>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/4d0df222d65f4f9fbb5643d74e5b60d2-72508>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/57711f239f044810a52ebc0c25a5239b-72496>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/5914e1e412b9484eb5c8f00d313a60ec-72650>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/59bf8fd666724133a68668320f33418d-72561>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/59ee23613c3e4171a4049666bb748653-72648>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/65abc30cdc494e0a92702d2c4846c769-72549>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/76756720a0344e1497bffc604e0e2e82-70975>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/7c49801b39874d3abfb27c5a3a68be68-72511>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/7d89d2acca4c4bc1b5b6ee2b9386d2d3-72238>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/82250cfc263d4eb2bb4602b8fd044673-72575>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/86d3a13dc9b54d899eecd6840a9c3531-72428>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/9beb347954e5406ab1c6fd45afb330b5-71690>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/a153966dedf34a41ba07222a7ae7d444-72504>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/cb518791756c44d7a40a6707201b7408-72540>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/cf32759f912545fa9c600c4acd8b8027-72522>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/d4beab65a2484374952c48e55e20ee10-72798>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/dc73714421084b68ba593b4d915986c3-72531>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/dca2f9572cd44d38b868728afa0cc5aa-72573>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/e2ba7cbb60b24a97b434ca3e8f23733c-72563>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/e2fa8e81a4744bc6885e88a9285cc5df-72502>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/eb0721e388d2499a97b50982deff0ba0-72565>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/f02255459bec4567892ef618aac1d61c-72431>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/f1e6bc3a81bc4aac844c8b2889be9bda-72571>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/f968aef492d04cb1980c2d990a26dcbb-72505>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/besluiten/fa3d3fcdf7bf476bab689e46a54e91e9-72545>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/0b3292cd30f4465e8c9590235f758b31-72411>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/1fcc3c835407420da62d571d8dd5fcff-72572>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/229078bce0534d2da750874f8b3b598e-72467>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/26a82d93b9654f9b9619abe74f5f142d-72251>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/2a2767cdb479472eb2763531f5b933d4-72552>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/38d7a4a778c14e65aeb86b803ca3a4db-72564>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/3c250af93ba746fb965334cf13a02e08-72294>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/4219c007f3a84ab6994fc6c30f76534c-72544>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/47837b68df864cbd9b4754ba46f986b4-72557>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/4d0df222d65f4f9fbb5643d74e5b60d2-72508>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/57711f239f044810a52ebc0c25a5239b-72496>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/5914e1e412b9484eb5c8f00d313a60ec-72650>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/59bf8fd666724133a68668320f33418d-72561>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/59ee23613c3e4171a4049666bb748653-72648>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/65abc30cdc494e0a92702d2c4846c769-72549>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/76756720a0344e1497bffc604e0e2e82-70975>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/7c49801b39874d3abfb27c5a3a68be68-72511>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/7d89d2acca4c4bc1b5b6ee2b9386d2d3-72238>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/82250cfc263d4eb2bb4602b8fd044673-72575>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/86d3a13dc9b54d899eecd6840a9c3531-72428>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/9beb347954e5406ab1c6fd45afb330b5-71690>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/a153966dedf34a41ba07222a7ae7d444-72504>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/cb518791756c44d7a40a6707201b7408-72540>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/cf32759f912545fa9c600c4acd8b8027-72522>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/d4beab65a2484374952c48e55e20ee10-72798>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/dc73714421084b68ba593b4d915986c3-72531>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/dca2f9572cd44d38b868728afa0cc5aa-72573>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/e2ba7cbb60b24a97b434ca3e8f23733c-72563>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/e2fa8e81a4744bc6885e88a9285cc5df-72502>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/eb0721e388d2499a97b50982deff0ba0-72565>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/f02255459bec4567892ef618aac1d61c-72431>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/f1e6bc3a81bc4aac844c8b2889be9bda-72571>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/f968aef492d04cb1980c2d990a26dcbb-72505>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.
+
+<https://lblod.zottegem.be/LBLODWeb/id/stemmingen/fa3d3fcdf7bf476bab689e46a54e91e9-72545>
+  prov:wasDerivedFrom <https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/6b8aae2f064a9ec582828ff71d195450cbdf0201e13e6f9da91fd9a8240c8657/GetPublication/?filename=BesluitenLijst_College_van_burgemeester_en_schepenen_05-10-2026.html>.

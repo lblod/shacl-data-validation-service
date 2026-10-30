@@ -9,13 +9,19 @@
   "scripts": {
     "lint:js": "eslint . --cache --ext .ts",
     "lint:js:fix": "eslint . --cache --ext .ts --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "dependencies": {
+    "@comunica/query-sparql-rdfjs-lite": "^5.4.1",
     "@lblod/mu-auth-sudo": "^1.1.0",
     "@rdfjs/data-model": "^2.1.2",
     "@rdfjs/dataset": "^2.0.3",
+    "@rdfjs/formats": "^4.0.1",
+    "@traqula/generator-sparql-1-1": "^1.4.0",
+    "@traqula/parser-sparql-1-1": "^1.4.0",
+    "@traqula/rules-sparql-1-1": "^1.4.0",
     "env-var": "^7.5.0",
+    "lru-cache": "^5.1.1",
     "rdf-ext": "^2.6.0",
     "rdf-utils-dataset": "^2.0.1",
     "rdf-utils-fs": "^3.0.1",
@@ -32,6 +38,7 @@
     "eslint-plugin-prettier": "^5.5.7",
     "globals": "^17.13.0",
     "mu-types": "git+https://github.com/rahien/mu-types.git",
-    "prettier": "^3.9.10"
+    "prettier": "^3.9.10",
+    "vitest": "^3.2.4"
   }
 }

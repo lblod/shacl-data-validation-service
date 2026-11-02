@@ -5,6 +5,7 @@ import formats from "@rdfjs/formats/pretty.js";
 import * as datasetIo from "@rdfjs/io/dataset.js";
 import rdf, { Environment } from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
+import NamedNodeExt from "rdf-ext/lib/NamedNode";
 import { resource } from "rdf-utils-dataset";
 
 // TODO: Copied from rdfjs/io's test support,  it should be possible to simplify
@@ -21,8 +22,11 @@ export async function insertContentInDataset(content, dataset) {
   return dataset;
 }
 
-export async function getResource(uri, dataset) {
-  return resource(dataset, rdf.namedNode(uri));
+export function getResource(
+  uri: NamedNodeExt,
+  dataset: DatasetExt,
+): DatasetExt {
+  return resource(dataset, uri);
 }
 
 // TODO: Can this be cleaner with a traverser?

@@ -13,6 +13,9 @@ const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
 
+// Query engines are expensive to create, an engine is reused for all queries
+const queryEngine = new QueryEngine();
+
 export const VALIDATION_SHAPES = rdf.dataset();
 
 export async function loadValidationShapes() {
@@ -113,7 +116,7 @@ export async function targetedShapesForResource(resource) {
   const targetQuery = generateTargetQuery(VALIDATION_SHAPES);
   if (!targetQuery) return [];
   const bindings = await (
-    await new QueryEngine().queryBindings(targetQuery.query, {
+    await queryEngine.queryBindings(targetQuery.query, {
       sources: [{ match: (...args) => Readable.from(resource.match(...args)) }],
     })
   ).toArray();

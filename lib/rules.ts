@@ -1,7 +1,7 @@
 import rdf from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
 import { resource } from "rdf-utils-dataset";
-import { listFiles } from "../util/config";
+import { listFiles, readFile } from "../util/config";
 import { insertContentInDataset, objectsForPredicate } from "../util/dataset";
 import { isConformResource } from "./engine";
 
@@ -17,7 +17,8 @@ const RULES_FOLDER = "config/rules/";
 export async function loadRules() {
   const ruleFiles = await listFiles(RULES_FOLDER);
   for (const filePath of ruleFiles) {
-    await insertContentInDataset("../" + filePath, RULES);
+    const fileContents = await readFile(filePath);
+    await insertContentInDataset(fileContents, RULES);
   }
 }
 

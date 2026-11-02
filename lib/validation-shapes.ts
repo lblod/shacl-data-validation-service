@@ -29,22 +29,22 @@ export async function loadValidationShapes() {
 }
 
 // The members of an RDF list
-function listMembers(list) {
+function getListMembers(list) {
   const members = [];
   const visited = rdf.termSet();
   const toVisit = [list];
   while (toVisit.length) {
-    const node = toVisit.pop();
-    if (visited.has(node)) continue;
-    visited.add(node);
+    const listNode = toVisit.pop();
+    if (visited.has(listNode)) continue;
+    visited.add(listNode);
     for (const quad of VALIDATION_SHAPES.match(
-      node,
+      listNode,
       rdf.namedNode(RDF + "first"),
     )) {
       members.push(quad.object);
     }
     for (const quad of VALIDATION_SHAPES.match(
-      node,
+      listNode,
       rdf.namedNode(RDF + "rest"),
     )) {
       toVisit.push(quad.object);
@@ -70,7 +70,7 @@ function checkReferencedShapes() {
       null,
       rdf.namedNode(SH + name),
     )) {
-      for (const shape of listMembers(quad.object)) {
+      for (const shape of getListMembers(quad.object)) {
         references.push({ from: quad.subject, shape });
       }
     }

@@ -82,7 +82,7 @@ At the time of writing only queries for `org:Organization` and `person:Person` r
 ### Resource validation
 This services determines against which SHACL node shapes a resource should be validated from their targets.  `generateTargetQuery` in [lib/sparql-generation.ts](lib/sparql-generation.ts) generates a SELECT query for the shapes whose targets select a focus node, which runs on the data of the resource at hand.  The `sh:select` of SPARQL-based targets is parsed with [Traqula](https://github.com/comunica/traqula).
 
-The resource is validated against the selected shapes, with the shapes they refer to, using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand, and resolves SPARQL-based targets.  The validation report is return as is, currently without any further processing.
+The resource is validated against the selected shapes, with the shapes they refer to, using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand, and resolves SPARQL-based targets.  The validation report is returned as is, currently without any further processing.
 
 ## Tests
 The tests check which shapes are selected for a resource, without a triplestore.  Run them with `npm test`.

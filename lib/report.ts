@@ -15,9 +15,10 @@ function timestamp() {
 
 export function writeReportFile(report) {
   const filenamePrefix = KEEP_ALL_REPORTS ? timestamp() + "--" : "";
-  const filePath = REPORTS_DIR + filenamePrefix + "report.json";
+  const filePath = REPORTS_DIR + filenamePrefix + "report.nt";
 
-  const reportString = JSON.stringify(report, null, 2);
-
-  fs.writeFileSync(filePath, reportString);
+  fs.mkdirSync(REPORTS_DIR, { recursive: true });
+  // The report object refers to its RDF factory, which can't be serialized as
+  // JSON. Its dataset is the SHACL validation report.
+  fs.writeFileSync(filePath, report.dataset.toString());
 }

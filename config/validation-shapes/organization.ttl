@@ -47,9 +47,23 @@ ext:organizationShape a sh:NodeShape ;
   #   ]
   .
 
-# Fake validation that an organisation must have an alternative label.
+# Fake validation that an active organisation or an AGB must have an alternative
+# label.
 ext:organizationWithAltNameShape a sh:NodeShape ;
-  sh:targetClass org:Organization ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX org: <http://www.w3.org/ns/org#>
+      PREFIX regorg: <http://www.w3.org/ns/regorg#>
+      SELECT DISTINCT ?this WHERE {
+        ?this a org:Organization .
+        {
+          ?this regorg:orgStatus <http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6> .
+        } UNION {
+          ?this org:classification <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/36a82ba0-7ff1-4697-a9dd-2e94df73b721> .
+        }
+      }"""
+  ] ;
   sh:property [
     sh:path skos:altLabel ;
     sh:datatype xsd:string ;
@@ -59,7 +73,15 @@ ext:organizationWithAltNameShape a sh:NodeShape ;
 # TODO: This does not seem to work correctly
 # Fake validation shape that an AVZ may not be an administrative unit
 ext:organisationNotAdministrativeUnit a sh:NodeShape ;
-  sh:targetClass org:Organization ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX org: <http://www.w3.org/ns/org#>
+      SELECT DISTINCT ?this WHERE {
+        ?this a org:Organization ;
+          org:classification <http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/34b5af85-dc9f-468f-9e03-ef89b174c267> .
+      }"""
+  ] ;
   sh:not [
     a sh:PropertyShape ;
     sh:path rdf:type ;

@@ -1,0 +1,18 @@
+@prefix ex: <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:Report rdfs:subClassOf ex:Document .
+
+ex:document a ex:Document ;
+  ex:title "A document" .
+
+ex:report a ex:Report .
+
+ex:session a ex:Session ;
+  ex:heldBy ex:council ;
+  ex:hasDocument ex:document .
+
+ex:sessionWithoutDocument a ex:Session ;
+  ex:heldBy ex:council .
+
+ex:other a ex:Thing .

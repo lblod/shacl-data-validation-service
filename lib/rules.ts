@@ -1,8 +1,11 @@
 import rdf from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
-import { resource } from "rdf-utils-dataset";
 import { listFiles, readFile } from "../util/config";
-import { insertContentInDataset, objectsForPredicate } from "../util/dataset";
+import {
+  getResource,
+  insertContentInDataset,
+  objectsForPredicate,
+} from "../util/dataset";
 import { isConformResource } from "./engine";
 
 const RULES = rdf.dataset();
@@ -22,10 +25,6 @@ export async function loadRules() {
   }
 }
 
-export function getRuleResource(uri) {
-  return resource(RULES, uri);
-}
-
 function rulesForResourceTypes(types) {
   const result = rdf.termSet();
   RULES.filter(
@@ -43,7 +42,7 @@ export async function rulesForResource(resource: DatasetExt) {
   const rules = rdf.dataset();
 
   for (const rule of rulesForTypes) {
-    const ruleResource = getRuleResource(rule);
+    const ruleResource = getResource(rule, RULES);
 
     // NOTE (22/10/2026): We need to check the input resource against each
     // individual rule.  Therefore, we need to create a new validator each time.

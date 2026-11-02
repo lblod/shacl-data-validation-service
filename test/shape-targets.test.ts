@@ -5,12 +5,16 @@ import { beforeAll, describe, expect, test } from "vitest";
 import { generateTargetQuery } from "../lib/sparql-generation";
 import { validate, validationShapesForResource } from "../lib/validation";
 import { VALIDATION_SHAPES } from "../lib/validation-shapes";
+import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/dataset";
 
-const FIXTURES = "../test/fixtures/shape-targets/";
+const FIXTURES = "test/fixtures/shape-targets/";
 const EX = "http://example.org/";
 
 const ex = (name: string) => EX + name;
+
+const loadFixture = async (name: string, dataset) =>
+  insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
 describe("generateTargetQuery", () => {
   const shapes = rdf.dataset();
@@ -33,8 +37,8 @@ describe("generateTargetQuery", () => {
   }
 
   beforeAll(async () => {
-    await insertContentInDataset(FIXTURES + "target-shapes.ttl", shapes);
-    await insertContentInDataset(FIXTURES + "data.ttl", data);
+    await loadFixture("target-shapes.ttl", shapes);
+    await loadFixture("data.ttl", data);
   });
 
   test.each([
@@ -95,11 +99,8 @@ describe("validation shapes for a resource", () => {
   const resource = (name: string) => data.match(rdf.namedNode(ex(name)));
 
   beforeAll(async () => {
-    await insertContentInDataset(
-      FIXTURES + "validation-shapes.ttl",
-      VALIDATION_SHAPES,
-    );
-    await insertContentInDataset(FIXTURES + "data.ttl", data);
+    await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
+    await loadFixture("data.ttl", data);
   });
 
   test("selects a shape on its sh:targetClass", async () => {

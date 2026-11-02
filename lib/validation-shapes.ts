@@ -2,7 +2,7 @@ import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { insertContentInDataset } from "../util/dataset";
-import { listFiles } from "../util/config";
+import { listFiles, readFile } from "../util/config";
 import { generateTargetQuery } from "./sparql-generation";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
@@ -20,11 +20,10 @@ export const VALIDATION_SHAPES = rdf.dataset();
 
 export async function loadValidationShapes() {
   const shapeFiles = await listFiles(VALIDATION_SHAPES_FOLDER);
-  await Promise.all(
-    shapeFiles.map((filepath) =>
-      insertContentInDataset("../" + filepath, VALIDATION_SHAPES),
-    ),
-  );
+  for (const filePath of shapeFiles) {
+    const fileContents = await readFile(filePath);
+    await insertContentInDataset(fileContents, VALIDATION_SHAPES);
+  }
   checkReferencedShapes();
 }
 

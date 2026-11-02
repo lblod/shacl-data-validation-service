@@ -6,6 +6,11 @@ import { isConformResource } from "./engine";
 
 const RULES = rdf.dataset();
 
+const PREDICATES = {
+  TARGET_CLASS: "http://www.w3.org/ns/shacl#targetClass",
+  TYPE: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+};
+
 export async function loadRules() {
   insertContentInDataset("../config/rules.ttl", RULES);
 }
@@ -18,17 +23,14 @@ function rulesForResourceTypes(types) {
   const result = rdf.termSet();
   RULES.filter(
     (quad) =>
-      quad.predicate.value === "http://www.w3.org/ns/shacl#targetClass" &&
+      quad.predicate.value === PREDICATES.TARGET_CLASS &&
       types.has(quad.object),
   ).forEach((quad) => result.add(quad.subject));
   return result;
 }
 
 export async function rulesForResource(resource: DatasetExt) {
-  const resourceTypes = objectsForPredicate(
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-    resource,
-  );
+  const resourceTypes = objectsForPredicate(PREDICATES.TYPE, resource);
   const rulesForTypes = rulesForResourceTypes(resourceTypes);
 
   const rules = rdf.dataset();

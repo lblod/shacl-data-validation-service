@@ -1,0 +1,735 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix besluit: <http://data.vlaanderen.be/ns/besluit#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix pp: <http://data.lblod.info/shapes/publicatieplicht#> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix eli: <http://data.europa.eu/eli/ontology#> .
+
+# A short description (sh:description) and a more extensive one (rdfs:comment), of the documents and bodies it checks
+# and of its checks. Each check has a name (sh:name), e.g. published, the same for each type of document, and a message
+# for a document that doesn't conform to it (sh:message), and one for a document that does (ext:conformsMessage),
+# which the service gives the results of passed validations (shn:Debug) instead.
+# The shape targets the session, not its documents, so the service retrieves the data of the session and the
+# documents it links (agenda, besluitenlijst and notulen). Its results have the session as focus node and the
+# document as value.
+pp:DocumentGepubliceerd a sh:NodeShape ;
+  sh:name "Publicatieplichtige documenten gepubliceerd"@nl ;
+  sh:description
+    "Checks the documents of a session are published correctly and on time."@en,
+    "Controleert of de documenten van een zitting correct en tijdig gepubliceerd zijn."@nl ;
+  rdfs:comment
+    """Checks the agenda, besluitenlijst and notulen of a session of the city council (gemeenteraad), the college of mayor and aldermen (college van burgemeester en schepenen), the mayor (burgemeester), the council for social welfare (raad voor maatschappelijk welzijn) and the permanent bureau (vast bureau). For each document: whether it's published as HTML with RDFa annotations that contain the session (published), whether the session links it with the URI of that HTML, and not with another notation of it or another document instead, e.g. a PDF (sessionLinksWithExpectedDocumentURI), whether its publication date is known (publicationDateKnown), whether the session links a document of its type (sessionLinksWithADocument), whether the session publishes the besluitenlijst (besluitenlijstFound), and the agenda and the notulen when it has to (agendaFound and notulenFound), and whether it's published on time (publishedOnTime): the besluitenlijst within 10 days after the session, the notulen within 10 days after the next session of the bestuursorgaan, which approves them (art. 285 DLB). The agenda has no last day to be published. Only the city council and the council for social welfare have to publish an agenda and notulen: the college of mayor and aldermen, the mayor and the permanent bureau only a besluitenlijst, but their agenda and notulen are checked too if they publish them."""@en,
+    """Controleert de agenda, besluitenlijst en notulen van een zitting van de gemeenteraad, het college van burgemeester en schepenen, de burgemeester, de raad voor maatschappelijk welzijn en het vast bureau. Voor elk document: of het gepubliceerd is als HTML met RDFa-annotaties die de zitting bevatten (published), of de zitting het koppelt met de URI van die HTML, en niet met een andere schrijfwijze ervan of een ander document in de plaats, bv. een PDF (sessionLinksWithExpectedDocumentURI), of de publicatiedatum gekend is (publicationDateKnown), of de zitting een document van het type koppelt (sessionLinksWithADocument), of de zitting de besluitenlijst publiceert (besluitenlijstFound), en de agenda en de notulen als ze moet (agendaFound en notulenFound), en of het tijdig gepubliceerd is (publishedOnTime): de besluitenlijst binnen 10 dagen na de zitting, de notulen binnen 10 dagen na de volgende zitting van het bestuursorgaan, die ze goedkeurt (art. 285 DLB). De agenda heeft geen uiterste publicatiedatum. Enkel de gemeenteraad en de raad voor maatschappelijk welzijn moeten een agenda en notulen publiceren: het college van burgemeester en schepenen, de burgemeester en het vast bureau enkel een besluitenlijst, maar hun agenda en notulen worden ook gecontroleerd als ze die publiceren."""@nl ;
+  dct:source <https://www.vlaanderen.be/lokaal-bestuur/organisatie-en-werking/publicatieplicht/publicatieplichtige-documenten> ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+      PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+      PREFIX org: <http://www.w3.org/ns/org#>
+      SELECT DISTINCT ?this WHERE {
+        VALUES ?classificatie {
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005> # gemeenteraad
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006> # college van burgemeester en schepenen
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/4955bd72cd0e4eb895fdbfab08da0284> # burgemeester
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007> # raad voor maatschappelijk welzijn
+          <http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000008> # vast bureau
+        }
+        ?this a besluit:Zitting ;
+          besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) ?classificatie .
+      }"""
+  ] ;
+  sh:property
+    pp:DocumentGepubliceerd-agendaBevatLinkedData,
+    pp:DocumentGepubliceerd-besluitenlijstBevatLinkedData,
+    pp:DocumentGepubliceerd-notulenBevatLinkedData,
+    pp:DocumentGepubliceerd-agendaGelijkAanDerivedFrom,
+    pp:DocumentGepubliceerd-besluitenlijstGelijkAanDerivedFrom,
+    pp:DocumentGepubliceerd-notulenGelijkAanDerivedFrom,
+    pp:DocumentGepubliceerd-agendaNietAndersGekoppeld,
+    pp:DocumentGepubliceerd-besluitenlijstNietAndersGekoppeld,
+    pp:DocumentGepubliceerd-notulenNietAndersGekoppeld,
+    pp:DocumentGepubliceerd-agendaPublicatiedatumGekend,
+    pp:DocumentGepubliceerd-besluitenlijstPublicatiedatumGekend,
+    pp:DocumentGepubliceerd-notulenPublicatiedatumGekend,
+    pp:DocumentGepubliceerd-agendaGekoppeld,
+    pp:DocumentGepubliceerd-besluitenlijstGekoppeld,
+    pp:DocumentGepubliceerd-notulenGekoppeld,
+    pp:DocumentGepubliceerd-agendaNietVerplichtGekoppeld,
+    pp:DocumentGepubliceerd-notulenNietVerplichtGekoppeld,
+    pp:DocumentGepubliceerd-agendaHtmlGekoppeld,
+    pp:DocumentGepubliceerd-besluitenlijstHtmlGekoppeld,
+    pp:DocumentGepubliceerd-notulenHtmlGekoppeld,
+    pp:DocumentGepubliceerd-besluitenlijstTijdigGepubliceerd,
+    pp:DocumentGepubliceerd-notulenTijdigGepubliceerd,
+    pp:DocumentGepubliceerd-besluitenlijstTijdigheidGekend,
+    pp:DocumentGepubliceerd-notulenTijdigheidGekend ;
+  sh:rule
+    pp:DocumentGepubliceerd-bronGenormaliseerd,
+    pp:DocumentGepubliceerd-bronUriAfwijkendeNotatie,
+    pp:DocumentGepubliceerd-gekoppeldDocument,
+    pp:DocumentGepubliceerd-agendaVerplichting,
+    pp:DocumentGepubliceerd-notulenVerplichting,
+    pp:DocumentGepubliceerd-andersGekoppeld,
+    pp:DocumentGepubliceerd-gecontroleerdDocument,
+    pp:DocumentGepubliceerd-uiterstePublicatiedatum .
+
+# The harvester pipeline links the data it harvests with the URI of the page it harvested it from
+# (prov:wasDerivedFrom), which doesn't always match the URI the publisher links the document with, e.g. Zottegem
+# links GetPublication/?filename=Agenda.html#Agenda3030 while its agendapunten are derived from
+# GetPublication?filename=Agenda.html. Data derived from a URI that only differs from the linked URI in its notation
+# counts as derived from the linked document: without fragment, http or https, with or without www. before the host,
+# and with or without a '/' before the '?' or at the end of the path. The document itself, which can be derived from
+# its page, doesn't count. The service runs this rule on the store, with $this bound to the session, and adds the
+# triples it constructs to the data graph before validation.
+pp:DocumentGepubliceerd-bronGenormaliseerd a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    CONSTRUCT {
+      ?entity prov:wasDerivedFrom ?document .
+    } WHERE {
+      $this besluit:heeftAgenda|besluit:heeftBesluitenlijst|besluit:heeftNotulen ?document .
+      FILTER(isIRI(?document))
+      # The URI without fragment, scheme, www. and '/' before the '?' or at the end, and its notations
+      BIND(REPLACE(REPLACE(REPLACE(STR(?document), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1")
+        AS ?canonical)
+      VALUES ?scheme { "http://" "https://" }
+      VALUES ?www { "" "www." }
+      VALUES ?slash { "" "/" }
+      BIND(IRI(CONCAT(?scheme, ?www, IF(CONTAINS(?canonical, "?"),
+        REPLACE(?canonical, "[?]", CONCAT(?slash, "?")), CONCAT(?canonical, ?slash)))) AS ?source)
+      ?entity prov:wasDerivedFrom ?source .
+      FILTER(?entity != ?document)
+    }""" .
+
+# The document is published: data is derived from it (prov:wasDerivedFrom). Like the other checks of a document, it
+# applies to the actual document of each type, whether the session links it or not, not to the other documents the
+# session links as that type, e.g. a PDF, see pp:DocumentGepubliceerd-gecontroleerdDocument. A property shape per type
+# of document, so each type has its own validation results.
+pp:DocumentBevatLinkedData a sh:NodeShape ;
+  sh:property [
+    sh:path [ sh:inversePath prov:wasDerivedFrom ] ;
+    sh:minCount 1
+  ] .
+
+pp:DocumentGepubliceerd-agendaBevatLinkedData a sh:PropertyShape ;
+  sh:name "published" ;
+  sh:path ext:gecontroleerdeAgenda ;
+  sh:node pp:DocumentBevatLinkedData ;
+  sh:severity sh:Violation ;
+  sh:message
+    "No Agenda HTML with RDFa annotations found that contains the Zitting."@en,
+    "Geen Agenda in HTML met RDFa-annotaties gevonden die de Zitting bevat."@nl ;
+  ext:conformsMessage
+    "Agenda HTML with RDFa annotations found that contains the Zitting."@en,
+    "Agenda in HTML met RDFa-annotaties gevonden die de Zitting bevat."@nl .
+
+pp:DocumentGepubliceerd-besluitenlijstBevatLinkedData a sh:PropertyShape ;
+  sh:name "published" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:DocumentBevatLinkedData ;
+  sh:severity sh:Violation ;
+  sh:message
+    "No Besluitenlijst HTML with RDFa annotations found that contains the Zitting."@en,
+    "Geen Besluitenlijst in HTML met RDFa-annotaties gevonden die de Zitting bevat."@nl ;
+  ext:conformsMessage
+    "Besluitenlijst HTML with RDFa annotations found that contains the Zitting."@en,
+    "Besluitenlijst in HTML met RDFa-annotaties gevonden die de Zitting bevat."@nl .
+
+pp:DocumentGepubliceerd-notulenBevatLinkedData a sh:PropertyShape ;
+  sh:name "published" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:DocumentBevatLinkedData ;
+  sh:severity sh:Violation ;
+  sh:message
+    "No Notulen HTML with RDFa annotations found that contains the Zitting."@en,
+    "Geen Notulen in HTML met RDFa-annotaties gevonden die de Zitting bevatten."@nl ;
+  ext:conformsMessage
+    "Notulen HTML with RDFa annotations found that contains the Zitting."@en,
+    "Notulen in HTML met RDFa-annotaties gevonden die de Zitting bevatten."@nl .
+
+# Links the document with the URIs data is derived from that differ from the linked URI in their notation
+# (ext:bronUriAfwijkendeNotatie): http or https, with or without www. before the host, or with or without a '/' before
+# the '?' or at the end of the path, see pp:DocumentGepubliceerd-bronGenormaliseerd. A URI that only differs in its
+# fragment isn't a problem: the harvester pipeline can't know the fragment, it isn't part of the HTTP request. Like
+# that rule, the service runs it on the store, so it sees the prov:wasDerivedFrom links before that rule repairs them
+# in the data graph.
+pp:DocumentGepubliceerd-bronUriAfwijkendeNotatie a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    CONSTRUCT {
+      ?document ext:bronUriAfwijkendeNotatie ?source .
+    } WHERE {
+      $this besluit:heeftAgenda|besluit:heeftBesluitenlijst|besluit:heeftNotulen ?document .
+      FILTER(isIRI(?document))
+      # The URI without fragment, scheme, www. and '/' before the '?' or at the end, and its other notations
+      BIND(REPLACE(REPLACE(REPLACE(STR(?document), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1")
+        AS ?canonical)
+      VALUES ?scheme { "http://" "https://" }
+      VALUES ?www { "" "www." }
+      VALUES ?slash { "" "/" }
+      BIND(CONCAT(?scheme, ?www, IF(CONTAINS(?canonical, "?"),
+        REPLACE(?canonical, "[?]", CONCAT(?slash, "?")), CONCAT(?canonical, ?slash))) AS ?notation)
+      FILTER(?notation != REPLACE(STR(?document), "#.*$", ""))
+      BIND(IRI(?notation) AS ?source)
+      FILTER EXISTS {
+        ?entity prov:wasDerivedFrom ?source .
+        FILTER(?entity != ?document)
+      }
+    }""" .
+
+# The document is linked with the URI its data is derived from. If not, the document only counts as published thanks
+# to the normalization of pp:DocumentGepubliceerd-bronGenormaliseerd, which the publisher or the harvester pipeline
+# should fix. A property shape per type of document, so each type has its own validation results.
+pp:DocumentGelijkAanDerivedFrom a sh:NodeShape ;
+  sh:property [
+    sh:path ext:bronUriAfwijkendeNotatie ;
+    sh:maxCount 0
+  ] .
+
+pp:DocumentGepubliceerd-agendaGelijkAanDerivedFrom a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeAgenda ;
+  sh:node pp:DocumentGelijkAanDerivedFrom ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Agenda is linked (besluit:heeftAgenda) with {?value}, which is written differently than the URI of its HTML with RDFa annotations, {?bronUriAfwijkendeNotatie} (http or https, www., or a '/' before the '?' or at the end)."@en,
+    "De Agenda is gekoppeld (besluit:heeftAgenda) met {?value}, die anders geschreven is dan de URI van de HTML met RDFa-annotaties, {?bronUriAfwijkendeNotatie} (http of https, www., of een '/' voor de '?' of op het einde)."@nl ;
+  ext:messagePath ext:bronUriAfwijkendeNotatie ;
+  ext:conformsMessage
+    "The Agenda is linked (besluit:heeftAgenda) with the URI of its HTML with RDFa annotations."@en,
+    "De Agenda is gekoppeld (besluit:heeftAgenda) met de URI van de HTML met RDFa-annotaties."@nl .
+
+pp:DocumentGepubliceerd-besluitenlijstGelijkAanDerivedFrom a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:DocumentGelijkAanDerivedFrom ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with {?value}, which is written differently than the URI of its HTML with RDFa annotations, {?bronUriAfwijkendeNotatie} (http or https, www., or a '/' before the '?' or at the end)."@en,
+    "De Besluitenlijst is gekoppeld (besluit:heeftBesluitenlijst) met {?value}, die anders geschreven is dan de URI van de HTML met RDFa-annotaties, {?bronUriAfwijkendeNotatie} (http of https, www., of een '/' voor de '?' of op het einde)."@nl ;
+  ext:messagePath ext:bronUriAfwijkendeNotatie ;
+  ext:conformsMessage
+    "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with the URI of its HTML with RDFa annotations."@en,
+    "De Besluitenlijst is gekoppeld (besluit:heeftBesluitenlijst) met de URI van de HTML met RDFa-annotaties."@nl .
+
+pp:DocumentGepubliceerd-notulenGelijkAanDerivedFrom a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:DocumentGelijkAanDerivedFrom ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Notulen is linked (besluit:heeftNotulen) with {?value}, which is written differently than the URI of its HTML with RDFa annotations, {?bronUriAfwijkendeNotatie} (http or https, www., or a '/' before the '?' or at the end)."@en,
+    "De Notulen zijn gekoppeld (besluit:heeftNotulen) met {?value}, die anders geschreven is dan de URI van de HTML met RDFa-annotaties, {?bronUriAfwijkendeNotatie} (http of https, www., of een '/' voor de '?' of op het einde)."@nl ;
+  ext:messagePath ext:bronUriAfwijkendeNotatie ;
+  ext:conformsMessage
+    "The Notulen is linked (besluit:heeftNotulen) with the URI of its HTML with RDFa annotations."@en,
+    "De Notulen zijn gekoppeld (besluit:heeftNotulen) met de URI van de HTML met RDFa-annotaties."@nl .
+
+# The session links the actual document of each type, in any notation, not another document instead, e.g. a PDF, see
+# pp:DocumentGepubliceerd-andersGekoppeld. With pp:DocumentGepubliceerd-…GelijkAanDerivedFrom, whether the session
+# links the actual document with its URI (sessionLinksWithExpectedDocumentURI). A property shape per type of document, so each
+# type has its own validation results.
+pp:DocumentNietAndersGekoppeld a sh:NodeShape ;
+  sh:property [
+    sh:path ext:andersGekoppeld ;
+    sh:maxCount 0
+  ] .
+
+pp:DocumentGepubliceerd-agendaNietAndersGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeAgenda ;
+  sh:node pp:DocumentNietAndersGekoppeld ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Agenda HTML with RDFa annotations that contains the Zitting, {?value}, is not linked (besluit:heeftAgenda): the Zitting links {?andersGekoppeld} instead."@en,
+    "De Agenda in HTML met RDFa-annotaties die de Zitting bevat, {?value}, is niet gekoppeld (besluit:heeftAgenda): de Zitting koppelt {?andersGekoppeld}."@nl ;
+  ext:messagePath ext:andersGekoppeld ;
+  ext:conformsMessage
+    "The Zitting doesn't link another document as Agenda (besluit:heeftAgenda) instead of its HTML with RDFa annotations."@en,
+    "De Zitting koppelt geen ander document als Agenda (besluit:heeftAgenda) in plaats van de HTML met RDFa-annotaties."@nl .
+
+pp:DocumentGepubliceerd-besluitenlijstNietAndersGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:DocumentNietAndersGekoppeld ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Besluitenlijst HTML with RDFa annotations that contains the Zitting, {?value}, is not linked (besluit:heeftBesluitenlijst): the Zitting links {?andersGekoppeld} instead."@en,
+    "De Besluitenlijst in HTML met RDFa-annotaties die de Zitting bevat, {?value}, is niet gekoppeld (besluit:heeftBesluitenlijst): de Zitting koppelt {?andersGekoppeld}."@nl ;
+  ext:messagePath ext:andersGekoppeld ;
+  ext:conformsMessage
+    "The Zitting doesn't link another document as Besluitenlijst (besluit:heeftBesluitenlijst) instead of its HTML with RDFa annotations."@en,
+    "De Zitting koppelt geen ander document als Besluitenlijst (besluit:heeftBesluitenlijst) in plaats van de HTML met RDFa-annotaties."@nl .
+
+pp:DocumentGepubliceerd-notulenNietAndersGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithExpectedDocumentURI" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:DocumentNietAndersGekoppeld ;
+  sh:severity sh:Warning ;
+  sh:message
+    "The Notulen HTML with RDFa annotations that contains the Zitting, {?value}, are not linked (besluit:heeftNotulen): the Zitting links {?andersGekoppeld} instead."@en,
+    "De Notulen in HTML met RDFa-annotaties die de Zitting bevatten, {?value}, zijn niet gekoppeld (besluit:heeftNotulen): de Zitting koppelt {?andersGekoppeld}."@nl ;
+  ext:messagePath ext:andersGekoppeld ;
+  ext:conformsMessage
+    "The Zitting doesn't link another document as Notulen (besluit:heeftNotulen) instead of its HTML with RDFa annotations."@en,
+    "De Zitting koppelt geen ander document als Notulen (besluit:heeftNotulen) in plaats van de HTML met RDFa-annotaties."@nl .
+
+# The document mentions its publication date, so its timeliness can be checked. The publication date is taken from
+# the published document itself (eli:date_publication of its foaf:Document). A property shape per type of document, so
+# each type has its own validation results.
+pp:DocumentPublicatiedatumGekend a sh:NodeShape ;
+  sh:property [
+    sh:path eli:date_publication ;
+    sh:minCount 1
+  ] .
+
+pp:DocumentGepubliceerd-agendaPublicatiedatumGekend a sh:PropertyShape ;
+  sh:name "publicationDateKnown" ;
+  sh:path ext:gecontroleerdeAgenda ;
+  sh:node pp:DocumentPublicatiedatumGekend ;
+  sh:severity sh:Warning ;
+  sh:message
+    "No publication date (eli:date_publication) found for the Agenda HTML with RDFa annotations, so its timeliness can't be checked."@en,
+    "Geen publicatiedatum (eli:date_publication) gevonden voor de Agenda in HTML met RDFa-annotaties, de tijdigheid kan niet gecontroleerd worden."@nl ;
+  ext:conformsMessage
+    "Publication date (eli:date_publication) {?date_publication} found for the Agenda HTML with RDFa annotations."@en,
+    "Publicatiedatum (eli:date_publication) {?date_publication} gevonden voor de Agenda in HTML met RDFa-annotaties."@nl ;
+  ext:messagePath eli:date_publication .
+
+pp:DocumentGepubliceerd-besluitenlijstPublicatiedatumGekend a sh:PropertyShape ;
+  sh:name "publicationDateKnown" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:DocumentPublicatiedatumGekend ;
+  sh:severity sh:Warning ;
+  sh:message
+    "No publication date (eli:date_publication) found for the Besluitenlijst HTML with RDFa annotations, so its timeliness can't be checked."@en,
+    "Geen publicatiedatum (eli:date_publication) gevonden voor de Besluitenlijst in HTML met RDFa-annotaties, de tijdigheid kan niet gecontroleerd worden."@nl ;
+  ext:conformsMessage
+    "Publication date (eli:date_publication) {?date_publication} found for the Besluitenlijst HTML with RDFa annotations."@en,
+    "Publicatiedatum (eli:date_publication) {?date_publication} gevonden voor de Besluitenlijst in HTML met RDFa-annotaties."@nl ;
+  ext:messagePath eli:date_publication .
+
+pp:DocumentGepubliceerd-notulenPublicatiedatumGekend a sh:PropertyShape ;
+  sh:name "publicationDateKnown" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:DocumentPublicatiedatumGekend ;
+  sh:severity sh:Warning ;
+  sh:message
+    "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so its timeliness can't be checked."@en,
+    "Geen publicatiedatum (eli:date_publication) gevonden voor de Notulen in HTML met RDFa-annotaties, de tijdigheid kan niet gecontroleerd worden."@nl ;
+  ext:conformsMessage
+    "Publication date (eli:date_publication) {?date_publication} found for the Notulen HTML with RDFa annotations."@en,
+    "Publicatiedatum (eli:date_publication) {?date_publication} gevonden voor de Notulen in HTML met RDFa-annotaties."@nl ;
+  ext:messagePath eli:date_publication .
+
+# The documents the session links with the property of their type (ext:gekoppeldeAgenda, ext:gekoppeldeBesluitenlijst
+# and ext:gekoppeldeNotulen), whatever their URI, e.g. a PDF linked as notulen, but not documents typed as uittreksel
+# (BesluitDocumentType). The service runs this rule on the store, with $this bound to the session.
+pp:DocumentGepubliceerd-gekoppeldDocument a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    PREFIX documenttype: <https://data.vlaanderen.be/id/concept/BesluitDocumentType/>
+    CONSTRUCT {
+      $this ?gekoppelde ?linked .
+    } WHERE {
+      VALUES (?link ?gekoppelde) {
+        (besluit:heeftAgenda ext:gekoppeldeAgenda)
+        (besluit:heeftBesluitenlijst ext:gekoppeldeBesluitenlijst)
+        (besluit:heeftNotulen ext:gekoppeldeNotulen)
+      }
+      $this ?link ?linked .
+      FILTER(isIRI(?linked))
+      FILTER NOT EXISTS {
+        ?linked a documenttype:9d5bfaca-bbf2-49dd-a830-769f91a6377b .
+      }
+    }""" .
+
+# The documents the session links with the property of a type (besluit:heeftAgenda, besluit:heeftBesluitenlijst or
+# besluit:heeftNotulen) instead of the actual document of that type, if it doesn't link the actual document in any
+# notation (ext:andersGekoppeld), e.g. Zottegem links a PDF as notulen instead of its notulen. Not uittreksels, see
+# pp:DocumentGepubliceerd-gekoppeldDocument. The actual document is a page as in
+# pp:DocumentGepubliceerd-gecontroleerdDocument, with the URI of the page. Rules don't see the triples other rules
+# construct, so it repeats how those rules find the documents. The service runs this rule on the store, with $this bound
+# to the session.
+pp:DocumentGepubliceerd-andersGekoppeld a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    PREFIX documenttype: <https://data.vlaanderen.be/id/concept/BesluitDocumentType/>
+    CONSTRUCT {
+      ?page ext:andersGekoppeld ?linked .
+    } WHERE {
+      VALUES (?documentType ?link) {
+        (documenttype:13fefad6-a9d6-4025-83b5-e4cbee3a8965 besluit:heeftAgenda)
+        (documenttype:3fa67785-ffdc-4b30-8880-2b99d97b4dee besluit:heeftBesluitenlijst)
+        (documenttype:8e791b27-7600-4577-b24e-c7c29e0eb773 besluit:heeftNotulen)
+      }
+      $this prov:wasDerivedFrom ?page .
+      BIND(REPLACE(REPLACE(REPLACE(STR(?page), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") AS ?pageUri)
+      ?pageDocument a foaf:Document, ?documentType ;
+        prov:wasDerivedFrom ?page .
+      FILTER(REPLACE(REPLACE(REPLACE(STR(?pageDocument), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") = ?pageUri)
+      FILTER NOT EXISTS {
+        ?uittreksel a documenttype:9d5bfaca-bbf2-49dd-a830-769f91a6377b ;
+          prov:wasDerivedFrom ?page .
+        FILTER(REPLACE(REPLACE(REPLACE(STR(?uittreksel), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") = ?pageUri)
+      }
+      FILTER NOT EXISTS {
+        $this ?link ?pageLink .
+        FILTER(REPLACE(REPLACE(REPLACE(STR(?pageLink), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") = ?pageUri)
+      }
+      $this ?link ?linked .
+      FILTER(isIRI(?linked))
+      FILTER NOT EXISTS {
+        ?linked a documenttype:9d5bfaca-bbf2-49dd-a830-769f91a6377b .
+      }
+    }""" .
+
+# Whether a session has to publish an agenda: the sessions of the city council and the council for social welfare have
+# to (ext:agendaVerplicht), the sessions of the college of mayor and aldermen, the mayor and the permanent bureau don't
+# (ext:agendaNietVerplicht). See pp:DocumentGepubliceerd-agendaGekoppeld and
+# pp:DocumentGepubliceerd-agendaNietVerplichtGekoppeld. The service runs this rule on the store, with $this bound to the
+# session.
+pp:DocumentGepubliceerd-agendaVerplichting a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+    PREFIX org: <http://www.w3.org/ns/org#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    CONSTRUCT {
+      $this ?verplichting true .
+    } WHERE {
+      VALUES (?classificatie ?verplichting) {
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005> ext:agendaVerplicht) # gemeenteraad
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007> ext:agendaVerplicht) # raad voor maatschappelijk welzijn
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006> ext:agendaNietVerplicht) # college van burgemeester en schepenen
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/4955bd72cd0e4eb895fdbfab08da0284> ext:agendaNietVerplicht) # burgemeester
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000008> ext:agendaNietVerplicht) # vast bureau
+      }
+      $this besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) ?classificatie .
+    }""" .
+
+# Whether a session has to publish notulen: the sessions of the city council and the council for social welfare have to
+# (ext:notulenVerplicht), the sessions of the college of mayor and aldermen, the mayor and the permanent bureau don't
+# (ext:notulenNietVerplicht). See pp:DocumentGepubliceerd-notulenGekoppeld and
+# pp:DocumentGepubliceerd-notulenNietVerplichtGekoppeld. The service runs this rule on the store, with $this bound to the
+# session.
+pp:DocumentGepubliceerd-notulenVerplichting a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+    PREFIX org: <http://www.w3.org/ns/org#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    CONSTRUCT {
+      $this ?verplichting true .
+    } WHERE {
+      VALUES (?classificatie ?verplichting) {
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000005> ext:notulenVerplicht) # gemeenteraad
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000007> ext:notulenVerplicht) # raad voor maatschappelijk welzijn
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000006> ext:notulenNietVerplicht) # college van burgemeester en schepenen
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/4955bd72cd0e4eb895fdbfab08da0284> ext:notulenNietVerplicht) # burgemeester
+        (<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab0e9b8a3b2ca7c5e000008> ext:notulenNietVerplicht) # vast bureau
+      }
+      $this besluit:isGehoudenDoor/mandaat:isTijdspecialisatieVan?/(besluit:classificatie|org:classification) ?classificatie .
+    }""" .
+
+# The session links a document of each type with the property of its type (besluit:heeftAgenda, besluit:heeftBesluitenlijst
+# or besluit:heeftNotulen), whatever its URI: only the property is checked, e.g. a PDF linked as notulen conforms.
+# Whether it links the actual document with its URI is sessionLinksWithExpectedDocumentURI. Two property shapes per type of
+# document, so each type has its own validation results: pp:DocumentGepubliceerd-…Gekoppeld checks the session links
+# something as that type (pp:DocumentGepubliceerd-gekoppeldDocument), without value, as a separate check whether the
+# session publishes it when it has to: besluitenlijstFound, every session has to publish a besluitenlijst, and
+# agendaFound and notulenFound, with two property shapes each (see pp:DocumentGepubliceerd-agendaVerplichting and
+# pp:DocumentGepubliceerd-notulenVerplichting): without them, a session of a council violates
+# pp:DocumentGepubliceerd-…Gekoppeld, the other sessions don't conform to
+# pp:DocumentGepubliceerd-…NietVerplichtGekoppeld only as information (sh:Info): they don't have to publish them. Each
+# shape conforms for the sessions of the other one. And
+# pp:DocumentGepubliceerd-…HtmlGekoppeld gives a result for the actual document the session links (see
+# pp:DocumentGepubliceerd-gecontroleerdDocument), with that document as value. A document the session links that isn't
+# the actual document, e.g. a PDF, has no result of its own.
+pp:DocumentGepubliceerd-agendaGekoppeld a sh:PropertyShape ;
+  sh:name "agendaFound" ;
+  sh:path [ sh:alternativePath ( ext:gekoppeldeAgenda ext:agendaNietVerplicht ) ] ;
+  sh:minCount 1 ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link an Agenda (besluit:heeftAgenda), which a session of the city council or the council for social welfare has to publish."@en,
+    "De Zitting koppelt geen Agenda (besluit:heeftAgenda), die een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet publiceren."@nl ;
+  ext:conformsMessage
+    "The Zitting links an Agenda (besluit:heeftAgenda)."@en,
+    "De Zitting koppelt een Agenda (besluit:heeftAgenda)."@nl .
+
+pp:DocumentGepubliceerd-agendaNietVerplichtGekoppeld a sh:PropertyShape ;
+  sh:name "agendaFound" ;
+  sh:path [ sh:alternativePath ( ext:gekoppeldeAgenda ext:agendaVerplicht ) ] ;
+  sh:minCount 1 ;
+  sh:severity sh:Info ;
+  sh:message
+    "The Zitting doesn't link an Agenda (besluit:heeftAgenda), which it doesn't have to: only a session of the city council or the council for social welfare has to publish one."@en,
+    "De Zitting koppelt geen Agenda (besluit:heeftAgenda), wat ze niet moet: enkel een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet er een publiceren."@nl ;
+  ext:conformsMessage
+    "The Zitting links an Agenda (besluit:heeftAgenda)."@en,
+    "De Zitting koppelt een Agenda (besluit:heeftAgenda)."@nl .
+
+pp:DocumentGepubliceerd-notulenGekoppeld a sh:PropertyShape ;
+  sh:name "notulenFound" ;
+  sh:path [ sh:alternativePath ( ext:gekoppeldeNotulen ext:notulenNietVerplicht ) ] ;
+  sh:minCount 1 ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link any Notulen (besluit:heeftNotulen), which a session of the city council or the council for social welfare has to publish."@en,
+    "De Zitting koppelt geen Notulen (besluit:heeftNotulen), die een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet publiceren."@nl ;
+  ext:conformsMessage
+    "The Zitting links Notulen (besluit:heeftNotulen)."@en,
+    "De Zitting koppelt Notulen (besluit:heeftNotulen)."@nl .
+
+pp:DocumentGepubliceerd-notulenNietVerplichtGekoppeld a sh:PropertyShape ;
+  sh:name "notulenFound" ;
+  sh:path [ sh:alternativePath ( ext:gekoppeldeNotulen ext:notulenVerplicht ) ] ;
+  sh:minCount 1 ;
+  sh:severity sh:Info ;
+  sh:message
+    "The Zitting doesn't link any Notulen (besluit:heeftNotulen), which it doesn't have to: only a session of the city council or the council for social welfare has to publish them."@en,
+    "De Zitting koppelt geen Notulen (besluit:heeftNotulen), wat ze niet moet: enkel een zitting van de gemeenteraad of de raad voor maatschappelijk welzijn moet ze publiceren."@nl ;
+  ext:conformsMessage
+    "The Zitting links Notulen (besluit:heeftNotulen)."@en,
+    "De Zitting koppelt Notulen (besluit:heeftNotulen)."@nl .
+
+pp:DocumentGepubliceerd-agendaHtmlGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithADocument" ;
+  sh:path ext:gekoppeldeHtmlAgenda ;
+  sh:nodeKind sh:IRI ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link an Agenda (besluit:heeftAgenda)."@en,
+    "De Zitting koppelt geen Agenda (besluit:heeftAgenda)."@nl ;
+  ext:conformsMessage
+    "The Zitting links an Agenda (besluit:heeftAgenda)."@en,
+    "De Zitting koppelt een Agenda (besluit:heeftAgenda)."@nl .
+
+pp:DocumentGepubliceerd-besluitenlijstGekoppeld a sh:PropertyShape ;
+  sh:name "besluitenlijstFound" ;
+  sh:path ext:gekoppeldeBesluitenlijst ;
+  sh:minCount 1 ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link a Besluitenlijst (besluit:heeftBesluitenlijst), which every session has to publish."@en,
+    "De Zitting koppelt geen Besluitenlijst (besluit:heeftBesluitenlijst), die elke zitting moet publiceren."@nl ;
+  ext:conformsMessage
+    "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."@en,
+    "De Zitting koppelt een Besluitenlijst (besluit:heeftBesluitenlijst)."@nl .
+
+pp:DocumentGepubliceerd-besluitenlijstHtmlGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithADocument" ;
+  sh:path ext:gekoppeldeHtmlBesluitenlijst ;
+  sh:nodeKind sh:IRI ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link a Besluitenlijst (besluit:heeftBesluitenlijst)."@en,
+    "De Zitting koppelt geen Besluitenlijst (besluit:heeftBesluitenlijst)."@nl ;
+  ext:conformsMessage
+    "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."@en,
+    "De Zitting koppelt een Besluitenlijst (besluit:heeftBesluitenlijst)."@nl .
+
+pp:DocumentGepubliceerd-notulenHtmlGekoppeld a sh:PropertyShape ;
+  sh:name "sessionLinksWithADocument" ;
+  sh:path ext:gekoppeldeHtmlNotulen ;
+  sh:nodeKind sh:IRI ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Zitting doesn't link any Notulen (besluit:heeftNotulen)."@en,
+    "De Zitting koppelt geen Notulen (besluit:heeftNotulen)."@nl ;
+  ext:conformsMessage
+    "The Zitting links Notulen (besluit:heeftNotulen)."@en,
+    "De Zitting koppelt Notulen (besluit:heeftNotulen)."@nl .
+
+# The documents of the session the checks apply to (ext:gecontroleerdeAgenda, ext:gecontroleerdeBesluitenlijst and
+# ext:gecontroleerdeNotulen): the actual document of each type, a page the session is derived from
+# (prov:wasDerivedFrom), whose own document, with the URI of the page up to its notation (see
+# pp:DocumentGepubliceerd-bronGenormaliseerd), has the type (rdf:type BesluitDocumentType), with the URI the session
+# links it with (besluit:heeftAgenda, besluit:heeftBesluitenlijst or besluit:heeftNotulen) in any notation, or with the
+# URI of the page if the session doesn't link it. A page whose own document is an uittreksel isn't the actual document.
+# The checks don't apply to the other documents the session links as that type, e.g. Zottegem links a PDF and its
+# uittreksels, from which the session isn't derived, with besluit:heeftNotulen. As the service only retrieves data
+# linked in the store, the rule also adds the data the checks need: the data derived from the page, and the
+# publication date of the document, given for the URI the session links it with or for its own document. The service
+# runs this rule on the store, with $this bound to the session. The actual documents the session links are also
+# ext:gekoppeldeHtmlAgenda, ext:gekoppeldeHtmlBesluitenlijst and ext:gekoppeldeHtmlNotulen.
+pp:DocumentGepubliceerd-gecontroleerdDocument a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX eli: <http://data.europa.eu/eli/ontology#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    PREFIX documenttype: <https://data.vlaanderen.be/id/concept/BesluitDocumentType/>
+    CONSTRUCT {
+      $this ?gecontroleerd ?document ;
+        ?gekoppeldeHtml ?linked .
+      ?entity prov:wasDerivedFrom ?document .
+      ?document eli:date_publication ?date .
+    } WHERE {
+      VALUES (?documentType ?gecontroleerd ?gekoppeldeHtml ?link) {
+        (documenttype:13fefad6-a9d6-4025-83b5-e4cbee3a8965 ext:gecontroleerdeAgenda ext:gekoppeldeHtmlAgenda
+          besluit:heeftAgenda)
+        (documenttype:3fa67785-ffdc-4b30-8880-2b99d97b4dee ext:gecontroleerdeBesluitenlijst ext:gekoppeldeHtmlBesluitenlijst
+          besluit:heeftBesluitenlijst)
+        (documenttype:8e791b27-7600-4577-b24e-c7c29e0eb773 ext:gecontroleerdeNotulen ext:gekoppeldeHtmlNotulen
+          besluit:heeftNotulen)
+      }
+      $this prov:wasDerivedFrom ?page .
+      BIND(REPLACE(REPLACE(REPLACE(STR(?page), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") AS ?pageUri)
+      ?pageDocument a foaf:Document, ?documentType ;
+        prov:wasDerivedFrom ?page .
+      FILTER(REPLACE(REPLACE(REPLACE(STR(?pageDocument), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") = ?pageUri)
+      FILTER NOT EXISTS {
+        ?uittreksel a documenttype:9d5bfaca-bbf2-49dd-a830-769f91a6377b ;
+          prov:wasDerivedFrom ?page .
+        FILTER(REPLACE(REPLACE(REPLACE(STR(?uittreksel), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") = ?pageUri)
+      }
+      OPTIONAL {
+        $this ?link ?linked .
+        BIND(REPLACE(REPLACE(REPLACE(STR(?linked), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1") AS ?pageUri)
+      }
+      BIND(COALESCE(?linked, ?page) AS ?document)
+      OPTIONAL {
+        {
+          ?entity prov:wasDerivedFrom ?page .
+          FILTER(REPLACE(REPLACE(REPLACE(STR(?entity), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1")
+            != REPLACE(REPLACE(REPLACE(STR(?page), "#.*$", ""), "^https?://(www[.])?", ""), "/([?]|$)", "$1"))
+        }
+      }
+      OPTIONAL { ?linked eli:date_publication ?linkedDate }
+      OPTIONAL { ?pageDocument eli:date_publication ?pageDate }
+      BIND(COALESCE(?linkedDate, ?pageDate) AS ?date)
+    }""" .
+
+# The last day a document of the session can be published (art. 285 DLB): the besluitenlijst within 10 days after the
+# session (ext:uitersteDatumBesluitenlijst, with the day of the session, ext:zittingsdatum), the notulen within 10 days
+# after the next session of the bestuursorgaan, which approves them (ext:uitersteDatumNotulen, with the day of the next
+# session, ext:datumVolgendeZitting). Without a next session, the notulen have no last day yet. The day of
+# a session is its day in Belgium: SPARQL can't convert time zones, so 2 hours are added to its start, which gives the
+# next day for a session starting between 23:00 and midnight in winter. Rules don't see the triples other rules
+# construct, so the last days are added to the documents the session links and to the pages it's derived from, which
+# include the actual documents it doesn't link (see pp:DocumentGepubliceerd-gecontroleerdDocument). The service runs
+# this rule on the store, with $this bound to the session.
+pp:DocumentGepubliceerd-uiterstePublicatiedatum a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+    CONSTRUCT {
+      ?document ?uitersteDatum ?deadline ;
+        ?zittingsdatum ?day .
+    } WHERE {
+      {
+        $this besluit:heeftBesluitenlijst|prov:wasDerivedFrom ?document ;
+          besluit:geplandeStart|prov:startedAtTime ?start .
+        BIND(ext:uitersteDatumBesluitenlijst AS ?uitersteDatum)
+        BIND(ext:zittingsdatum AS ?zittingsdatum)
+      }
+      UNION
+      {
+        $this besluit:heeftNotulen|prov:wasDerivedFrom ?document .
+        {
+          SELECT (MIN(?nextStart) AS ?start) WHERE {
+            $this besluit:isGehoudenDoor ?bestuursorgaan ;
+              besluit:geplandeStart|prov:startedAtTime ?sessionStart .
+            ?next besluit:isGehoudenDoor ?bestuursorgaan ;
+              besluit:geplandeStart ?nextStart .
+            FILTER(?next != $this && ?nextStart > ?sessionStart)
+          }
+        }
+        BIND(ext:uitersteDatumNotulen AS ?uitersteDatum)
+        BIND(ext:datumVolgendeZitting AS ?zittingsdatum)
+      }
+      BIND(STRDT(SUBSTR(STR(?start + "PT2H"^^xsd:dayTimeDuration), 1, 10), xsd:date) AS ?day)
+      BIND(STRDT(SUBSTR(STR(?start + "PT2H"^^xsd:dayTimeDuration + "P10D"^^xsd:dayTimeDuration), 1, 10), xsd:date)
+        AS ?deadline)
+    }""" .
+
+# The document is published in time: its publication date isn't later than its last day, see
+# pp:DocumentGepubliceerd-uiterstePublicatiedatum. A document without publication date can't be checked, which
+# pp:DocumentGepubliceerd-…TijdigheidGekend reports as a warning instead.
+pp:BesluitenlijstTijdigGepubliceerd a sh:NodeShape ;
+  sh:property [
+    sh:path eli:date_publication ;
+    sh:lessThanOrEquals ext:uitersteDatumBesluitenlijst
+  ] .
+
+pp:NotulenTijdigGepubliceerd a sh:NodeShape ;
+  sh:property [
+    sh:path eli:date_publication ;
+    sh:lessThanOrEquals ext:uitersteDatumNotulen
+  ] .
+
+pp:DocumentGepubliceerd-besluitenlijstTijdigGepubliceerd a sh:PropertyShape ;
+  sh:name "publishedOnTime" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:BesluitenlijstTijdigGepubliceerd ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Besluitenlijst was published on {?date_publication}, after {?uitersteDatumBesluitenlijst}, 10 days after the Zitting of {?zittingsdatum}."@en,
+    "De Besluitenlijst is gepubliceerd op {?date_publication}, na {?uitersteDatumBesluitenlijst}, 10 dagen na de Zitting van {?zittingsdatum}."@nl ;
+  ext:conformsMessage
+    "The Besluitenlijst wasn't published after {?uitersteDatumBesluitenlijst}, 10 days after the Zitting of {?zittingsdatum}."@en,
+    "De Besluitenlijst is niet gepubliceerd na {?uitersteDatumBesluitenlijst}, 10 dagen na de Zitting van {?zittingsdatum}."@nl ;
+  ext:messagePath eli:date_publication, ext:uitersteDatumBesluitenlijst, ext:zittingsdatum .
+
+pp:DocumentGepubliceerd-notulenTijdigGepubliceerd a sh:PropertyShape ;
+  sh:name "publishedOnTime" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:NotulenTijdigGepubliceerd ;
+  sh:severity sh:Violation ;
+  sh:message
+    "The Notulen were published on {?date_publication}, after {?uitersteDatumNotulen}, 10 days after the next Zitting of {?datumVolgendeZitting}, which approves them."@en,
+    "De Notulen zijn gepubliceerd op {?date_publication}, na {?uitersteDatumNotulen}, 10 dagen na de volgende Zitting van {?datumVolgendeZitting}, die ze goedkeurt."@nl ;
+  ext:conformsMessage
+    "The Notulen weren't published after {?uitersteDatumNotulen}, 10 days after the next Zitting of {?datumVolgendeZitting}, which approves them."@en,
+    "De Notulen zijn niet gepubliceerd na {?uitersteDatumNotulen}, 10 dagen na de volgende Zitting van {?datumVolgendeZitting}, die ze goedkeurt."@nl ;
+  ext:messagePath eli:date_publication, ext:uitersteDatumNotulen, ext:datumVolgendeZitting .
+
+# Whether the document is published in time can only be checked if its publication date is known. Like
+# pp:DocumentPublicatiedatumGekend, but a node shape of its own: the validator validates a node against a node shape
+# only once, and reports a passed validation for the next property shape referring to it.
+pp:DocumentTijdigheidGekend a sh:NodeShape ;
+  sh:property [
+    sh:path eli:date_publication ;
+    sh:minCount 1
+  ] .
+
+pp:DocumentGepubliceerd-besluitenlijstTijdigheidGekend a sh:PropertyShape ;
+  sh:name "publishedOnTime" ;
+  sh:path ext:gecontroleerdeBesluitenlijst ;
+  sh:node pp:DocumentTijdigheidGekend ;
+  sh:severity sh:Warning ;
+  sh:message
+    "No publication date (eli:date_publication) found for the Besluitenlijst HTML with RDFa annotations, so it can't be checked whether it was published by {?uitersteDatumBesluitenlijst}, 10 days after the Zitting of {?zittingsdatum}."@en,
+    "Geen publicatiedatum (eli:date_publication) gevonden voor de Besluitenlijst in HTML met RDFa-annotaties, dus kan niet gecontroleerd worden of ze gepubliceerd is tegen {?uitersteDatumBesluitenlijst}, 10 dagen na de Zitting van {?zittingsdatum}."@nl ;
+  ext:conformsMessage
+    "Publication date (eli:date_publication) {?date_publication} found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time."@en,
+    "Publicatiedatum (eli:date_publication) {?date_publication} gevonden voor de Besluitenlijst in HTML met RDFa-annotaties, dus kan gecontroleerd worden of ze tijdig gepubliceerd is."@nl ;
+  ext:messagePath ext:uitersteDatumBesluitenlijst, eli:date_publication, ext:zittingsdatum .
+
+pp:DocumentGepubliceerd-notulenTijdigheidGekend a sh:PropertyShape ;
+  sh:name "publishedOnTime" ;
+  sh:path ext:gecontroleerdeNotulen ;
+  sh:node pp:DocumentTijdigheidGekend ;
+  sh:severity sh:Warning ;
+  sh:message
+    "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so it can't be checked whether they were published by {?uitersteDatumNotulen}, 10 days after the next Zitting of {?datumVolgendeZitting}, which approves them."@en,
+    "Geen publicatiedatum (eli:date_publication) gevonden voor de Notulen in HTML met RDFa-annotaties, dus kan niet gecontroleerd worden of ze gepubliceerd zijn tegen {?uitersteDatumNotulen}, 10 dagen na de volgende Zitting van {?datumVolgendeZitting}, die ze goedkeurt."@nl ;
+  ext:conformsMessage
+    "Publication date (eli:date_publication) {?date_publication} found for the Notulen HTML with RDFa annotations, so it can be checked whether they were published in time."@en,
+    "Publicatiedatum (eli:date_publication) {?date_publication} gevonden voor de Notulen in HTML met RDFa-annotaties, dus kan gecontroleerd worden of ze tijdig gepubliceerd zijn."@nl ;
+  ext:messagePath ext:uitersteDatumNotulen, eli:date_publication, ext:datumVolgendeZitting .

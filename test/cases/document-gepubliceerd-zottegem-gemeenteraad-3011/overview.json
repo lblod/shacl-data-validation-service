@@ -1,0 +1,664 @@
+{
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/test/validate/https%3A%2F%2Flblod.zottegem.be%2FLBLODWeb%2Fid%2Fzittingen%2F0f4604fca3c84e8bb983b29d8abb1796-3011"
+  },
+  "meta": {
+    "resource": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+    "conforms": false,
+    "checks": [
+      "agendaFound",
+      "besluitenlijstFound",
+      "notulenFound",
+      "publicationDateKnown",
+      "published",
+      "publishedOnTime",
+      "sessionLinksWithADocument",
+      "sessionLinksWithExpectedDocumentURI"
+    ]
+  },
+  "data": [
+    {
+      "type": "overview-rows",
+      "id": "505612cb233e7a23eab5b3cbfeab1223",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "checks": {
+          "agendaFound": {
+            "conforms": true,
+            "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+          },
+          "besluitenlijstFound": {
+            "conforms": true,
+            "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+          },
+          "notulenFound": {
+            "conforms": true,
+            "resultMessage": "The Zitting links Notulen (besluit:heeftNotulen)."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "397fa08875d862f71664d636be09f1c0"
+            },
+            {
+              "type": "validation-results",
+              "id": "ac56f1a551013e42f07337dea673d4bc"
+            },
+            {
+              "type": "validation-results",
+              "id": "e14373bd66e67f3b8624b4520f06b668"
+            },
+            {
+              "type": "validation-results",
+              "id": "ee44b97d7a33737427d3cbc80b258530"
+            },
+            {
+              "type": "validation-results",
+              "id": "f2c26b0b01f0b6100d8280b866cf97a1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "overview-rows",
+      "id": "f2439f099a4d01f2c84f884c41d20f93",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "checks": {
+          "publicationDateKnown": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "No publication date (eli:date_publication) found for the Agenda HTML with RDFa annotations, so its timeliness can't be checked."
+          },
+          "published": {
+            "conforms": true,
+            "resultMessage": "Agenda HTML with RDFa annotations found that contains the Zitting."
+          },
+          "sessionLinksWithADocument": {
+            "conforms": true,
+            "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+          },
+          "sessionLinksWithExpectedDocumentURI": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "The Agenda is linked (besluit:heeftAgenda) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Agenda_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "3faf9581572cbf9746adeea80a9e94d8"
+            },
+            {
+              "type": "validation-results",
+              "id": "969123357f985e72b0fd38a4ce6996f3"
+            },
+            {
+              "type": "validation-results",
+              "id": "b72030c589f32ac9a83b0b49c2c5b610"
+            },
+            {
+              "type": "validation-results",
+              "id": "c3f57a63446435e3ea86307945bf2bc6"
+            },
+            {
+              "type": "validation-results",
+              "id": "e2897433f5f44ecc7b829f014ae5f462"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "overview-rows",
+      "id": "6477c3d6e43b7b5a68ea59dddf834c5a",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "checks": {
+          "publicationDateKnown": {
+            "conforms": true,
+            "resultMessage": "Publication date (eli:date_publication) 2026-09-30 found for the Besluitenlijst HTML with RDFa annotations."
+          },
+          "published": {
+            "conforms": true,
+            "resultMessage": "Besluitenlijst HTML with RDFa annotations found that contains the Zitting."
+          },
+          "publishedOnTime": {
+            "conforms": true,
+            "resultMessage": "Publication date (eli:date_publication) 2026-09-30 found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time. The Besluitenlijst wasn't published after 2026-10-01, 10 days after the Zitting of 2026-09-21."
+          },
+          "sessionLinksWithADocument": {
+            "conforms": true,
+            "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+          },
+          "sessionLinksWithExpectedDocumentURI": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "11a46da35cb89c6102c42d54ce634494"
+            },
+            {
+              "type": "validation-results",
+              "id": "121c80fe95076b7edac2c30e31552783"
+            },
+            {
+              "type": "validation-results",
+              "id": "620646b0ccafcce3c1335ce6bf39ae63"
+            },
+            {
+              "type": "validation-results",
+              "id": "690056fe249d7c332fff5a9a3be15d84"
+            },
+            {
+              "type": "validation-results",
+              "id": "b8e45c0678e6d9927a943de7c46b7acb"
+            },
+            {
+              "type": "validation-results",
+              "id": "bdfc3785dcd3bd981493076046325c71"
+            },
+            {
+              "type": "validation-results",
+              "id": "e4040eca74227918f95e37a86b036742"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "overview-rows",
+      "id": "3f685815f3bbf255d428c881abc59d5d",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "checks": {
+          "publicationDateKnown": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "No publication date (eli:date_publication) found for the Agenda HTML with RDFa annotations, so its timeliness can't be checked."
+          },
+          "published": {
+            "conforms": true,
+            "resultMessage": "Agenda HTML with RDFa annotations found that contains the Zitting."
+          },
+          "sessionLinksWithADocument": {
+            "conforms": true,
+            "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+          },
+          "sessionLinksWithExpectedDocumentURI": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "The Agenda is linked (besluit:heeftAgenda) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "0b60c2dd7834275e14b8ab5521a23fc0"
+            },
+            {
+              "type": "validation-results",
+              "id": "30961693a874afacf3c3604947990a85"
+            },
+            {
+              "type": "validation-results",
+              "id": "9bf3a6e4d7245a6f98624a96a4625f8f"
+            },
+            {
+              "type": "validation-results",
+              "id": "ced93c88164be260c23c34a9e9a11aab"
+            },
+            {
+              "type": "validation-results",
+              "id": "e8ec707a82b3e8a364412578853a6df7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "overview-rows",
+      "id": "8d00eb6d35bb702d68a092c0b93d812d",
+      "attributes": {
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "checks": {
+          "publicationDateKnown": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so its timeliness can't be checked."
+          },
+          "published": {
+            "conforms": true,
+            "resultMessage": "Notulen HTML with RDFa annotations found that contains the Zitting."
+          },
+          "publishedOnTime": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so it can't be checked whether they were published by 2026-10-29, 10 days after the next Zitting of 2026-10-19, which approves them."
+          },
+          "sessionLinksWithExpectedDocumentURI": {
+            "conforms": false,
+            "severity": "http://www.w3.org/ns/shacl#Warning",
+            "resultMessage": "The Notulen HTML with RDFa annotations that contains the Zitting, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html, are not linked (besluit:heeftNotulen): the Zitting links https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Notulen_Gemeenteraad_21-09-2026_Notulen_Vlaanderen.pdf, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71434.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71438.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71440.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71441.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71442.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71443.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71444.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71445.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71446.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71989.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71991.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71992.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71995.html instead."
+          }
+        }
+      },
+      "relationships": {
+        "validationResults": {
+          "data": [
+            {
+              "type": "validation-results",
+              "id": "13131664d22149ba0a8b4b901fa4837c"
+            },
+            {
+              "type": "validation-results",
+              "id": "22415884bbaa120c81588f9abc3005a0"
+            },
+            {
+              "type": "validation-results",
+              "id": "665b6f4669621158674ecf284573e0c7"
+            },
+            {
+              "type": "validation-results",
+              "id": "8284fa5a702c39c333fdc5a738e45a6d"
+            },
+            {
+              "type": "validation-results",
+              "id": "dacd4239c092f2e55d7dcbe73b17ed1a"
+            },
+            {
+              "type": "validation-results",
+              "id": "f8e93c58883a8b067306e882a69a8f10"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "validation-results",
+      "id": "397fa08875d862f71664d636be09f1c0",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/397fa08875d862f71664d636be09f1c0",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaNietVerplichtGekoppeld",
+        "name": "agendaFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "f2c26b0b01f0b6100d8280b866cf97a1",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/f2c26b0b01f0b6100d8280b866cf97a1",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaGekoppeld",
+        "name": "agendaFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "ac56f1a551013e42f07337dea673d4bc",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/ac56f1a551013e42f07337dea673d4bc",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGekoppeld",
+        "name": "besluitenlijstFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "e14373bd66e67f3b8624b4520f06b668",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/e14373bd66e67f3b8624b4520f06b668",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenGekoppeld",
+        "name": "notulenFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links Notulen (besluit:heeftNotulen)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "ee44b97d7a33737427d3cbc80b258530",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/ee44b97d7a33737427d3cbc80b258530",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenNietVerplichtGekoppeld",
+        "name": "notulenFound",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links Notulen (besluit:heeftNotulen)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "b72030c589f32ac9a83b0b49c2c5b610",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/b72030c589f32ac9a83b0b49c2c5b610",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaPublicatiedatumGekend",
+        "name": "publicationDateKnown",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "No publication date (eli:date_publication) found for the Agenda HTML with RDFa annotations, so its timeliness can't be checked."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "3faf9581572cbf9746adeea80a9e94d8",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/3faf9581572cbf9746adeea80a9e94d8",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaBevatLinkedData",
+        "name": "published",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Agenda HTML with RDFa annotations found that contains the Zitting."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "969123357f985e72b0fd38a4ce6996f3",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/969123357f985e72b0fd38a4ce6996f3",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaHtmlGekoppeld",
+        "name": "sessionLinksWithADocument",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "c3f57a63446435e3ea86307945bf2bc6",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/c3f57a63446435e3ea86307945bf2bc6",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaGelijkAanDerivedFrom",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "The Agenda is linked (besluit:heeftAgenda) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Agenda_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "e2897433f5f44ecc7b829f014ae5f462",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/e2897433f5f44ecc7b829f014ae5f462",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Agenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaNietAndersGekoppeld",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting doesn't link another document as Agenda (besluit:heeftAgenda) instead of its HTML with RDFa annotations."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "bdfc3785dcd3bd981493076046325c71",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/bdfc3785dcd3bd981493076046325c71",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstPublicatiedatumGekend",
+        "name": "publicationDateKnown",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Publication date (eli:date_publication) 2026-09-30 found for the Besluitenlijst HTML with RDFa annotations."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "11a46da35cb89c6102c42d54ce634494",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/11a46da35cb89c6102c42d54ce634494",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstBevatLinkedData",
+        "name": "published",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Besluitenlijst HTML with RDFa annotations found that contains the Zitting."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "620646b0ccafcce3c1335ce6bf39ae63",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/620646b0ccafcce3c1335ce6bf39ae63",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigheidGekend",
+        "name": "publishedOnTime",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Publication date (eli:date_publication) 2026-09-30 found for the Besluitenlijst HTML with RDFa annotations, so it can be checked whether it was published in time."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "e4040eca74227918f95e37a86b036742",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/e4040eca74227918f95e37a86b036742",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstTijdigGepubliceerd",
+        "name": "publishedOnTime",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Besluitenlijst wasn't published after 2026-10-01, 10 days after the Zitting of 2026-09-21."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "b8e45c0678e6d9927a943de7c46b7acb",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/b8e45c0678e6d9927a943de7c46b7acb",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstHtmlGekoppeld",
+        "name": "sessionLinksWithADocument",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links a Besluitenlijst (besluit:heeftBesluitenlijst)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "121c80fe95076b7edac2c30e31552783",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/121c80fe95076b7edac2c30e31552783",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstNietAndersGekoppeld",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting doesn't link another document as Besluitenlijst (besluit:heeftBesluitenlijst) instead of its HTML with RDFa annotations."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "690056fe249d7c332fff5a9a3be15d84",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/690056fe249d7c332fff5a9a3be15d84",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-besluitenlijstGelijkAanDerivedFrom",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "The Besluitenlijst is linked (besluit:heeftBesluitenlijst) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=BesluitenLijst_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "ced93c88164be260c23c34a9e9a11aab",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/ced93c88164be260c23c34a9e9a11aab",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaPublicatiedatumGekend",
+        "name": "publicationDateKnown",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "No publication date (eli:date_publication) found for the Agenda HTML with RDFa annotations, so its timeliness can't be checked."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "9bf3a6e4d7245a6f98624a96a4625f8f",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/9bf3a6e4d7245a6f98624a96a4625f8f",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaBevatLinkedData",
+        "name": "published",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Agenda HTML with RDFa annotations found that contains the Zitting."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "0b60c2dd7834275e14b8ab5521a23fc0",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/0b60c2dd7834275e14b8ab5521a23fc0",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaHtmlGekoppeld",
+        "name": "sessionLinksWithADocument",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting links an Agenda (besluit:heeftAgenda)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "30961693a874afacf3c3604947990a85",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/30961693a874afacf3c3604947990a85",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaNietAndersGekoppeld",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Zitting doesn't link another document as Agenda (besluit:heeftAgenda) instead of its HTML with RDFa annotations."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "e8ec707a82b3e8a364412578853a6df7",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/e8ec707a82b3e8a364412578853a6df7",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-agendaGelijkAanDerivedFrom",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "The Agenda is linked (besluit:heeftAgenda) with https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html#Agenda3011, which is written differently than the URI of its HTML with RDFa annotations, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=ToegevoegdeAgenda_Gemeenteraad_21-09-2026.html (http or https, www., or a '/' before the '?' or at the end)."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "665b6f4669621158674ecf284573e0c7",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/665b6f4669621158674ecf284573e0c7",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenPublicatiedatumGekend",
+        "name": "publicationDateKnown",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so its timeliness can't be checked."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "f8e93c58883a8b067306e882a69a8f10",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/f8e93c58883a8b067306e882a69a8f10",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenBevatLinkedData",
+        "name": "published",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "Notulen HTML with RDFa annotations found that contains the Zitting."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "13131664d22149ba0a8b4b901fa4837c",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/13131664d22149ba0a8b4b901fa4837c",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenTijdigGepubliceerd",
+        "name": "publishedOnTime",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Notulen weren't published after 2026-10-29, 10 days after the next Zitting of 2026-10-19, which approves them."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "8284fa5a702c39c333fdc5a738e45a6d",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/8284fa5a702c39c333fdc5a738e45a6d",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenTijdigheidGekend",
+        "name": "publishedOnTime",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "No publication date (eli:date_publication) found for the Notulen HTML with RDFa annotations, so it can't be checked whether they were published by 2026-10-29, 10 days after the next Zitting of 2026-10-19, which approves them."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "22415884bbaa120c81588f9abc3005a0",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/22415884bbaa120c81588f9abc3005a0",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenNietAndersGekoppeld",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "http://www.w3.org/ns/shacl#Warning",
+        "resultMessage": "The Notulen HTML with RDFa annotations that contains the Zitting, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html, are not linked (besluit:heeftNotulen): the Zitting links https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication/?filename=Notulen_Gemeenteraad_21-09-2026_Notulen_Vlaanderen.pdf, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71434.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71438.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71440.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71441.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71442.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71443.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71444.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71445.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71446.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71989.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71991.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71992.html, https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Uittreksels_21-09-2026_71995.html instead."
+      }
+    },
+    {
+      "type": "validation-results",
+      "id": "dacd4239c092f2e55d7dcbe73b17ed1a",
+      "attributes": {
+        "uri": "http://data.lblod.info/id/validation-results/dacd4239c092f2e55d7dcbe73b17ed1a",
+        "focusNode": "https://lblod.zottegem.be/LBLODWeb/id/zittingen/0f4604fca3c84e8bb983b29d8abb1796-3011",
+        "value": "https://lblod.zottegem.be/LBLODWeb/Home/Overzicht/e3d9480acc0cf400e11ab7afe2bcea144038dd2ef71d77247d5159c7ce8efb1a/GetPublication?filename=Notulen_Gemeenteraad_21-09-2026.html",
+        "sourceShape": "http://data.lblod.info/shapes/publicatieplicht#DocumentGepubliceerd-notulenGelijkAanDerivedFrom",
+        "name": "sessionLinksWithExpectedDocumentURI",
+        "severity": "https://schemas.link/shacl-next#Debug",
+        "resultMessage": "The Notulen is linked (besluit:heeftNotulen) with the URI of its HTML with RDFa annotations."
+      }
+    }
+  ]
+}

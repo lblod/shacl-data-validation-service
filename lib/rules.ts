@@ -4,10 +4,10 @@ import { resource } from "rdf-utils-dataset";
 import { insertContentInDataset, objectsForPredicate } from "../util/dataset";
 import { isConformResource } from "./engine";
 
-const RULES = rdf.dataset();
+export const RULES = rdf.dataset();
 
 export async function loadRules() {
-  insertContentInDataset("../config/rules.ttl", RULES);
+  await insertContentInDataset("../config/rules.ttl", RULES);
 }
 
 export function getRuleResource(uri) {

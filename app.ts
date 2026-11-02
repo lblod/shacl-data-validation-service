@@ -45,7 +45,7 @@ app.get("/contexts/validation-report.jsonld", function (_req, res) {
     .send({ "@context": REPORT_CONTEXT });
 });
 
-app.get("/test/validate/:uri", async function (req, res) {
+app.get("/test/validate/:uri", async function (req, res, next) {
   const uri = req.params.uri;
   const resourceToValidate = await getResource(uri);
   if (resourceToValidate) {
@@ -60,15 +60,21 @@ app.get("/test/validate/:uri", async function (req, res) {
       // serialized as JSON. Its dataset is the SHACL validation report, as
       // N-Triples or as JSON-LD, see reportJsonLd. As JSON, the report as a
       // table, as JSON:API, see overviewJsonApi.
-      const table = await overview(report);
-      const jsonApi = () =>
-        res.type(JSON_API).send(
-          overviewJsonApi(table, {
-            resource: uri,
-            conforms: report.conforms,
-            self: req.originalUrl,
-          }),
-        );
+      // res.format doesn't await its handlers, so errors go to next explicitly
+      const jsonApi = async () => {
+        try {
+          const table = await overview(report);
+          res.type(JSON_API).send(
+            overviewJsonApi(table, {
+              resource: uri,
+              conforms: report.conforms,
+              self: req.originalUrl,
+            }),
+          );
+        } catch (err) {
+          next(err);
+        }
+      };
       res.format({
         "application/n-triples": () => res.send(report.dataset.toString()),
         "application/ld+json": () => res.send(reportJsonLd(report)),

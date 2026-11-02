@@ -1,5 +1,5 @@
 import rdf from "rdf-ext";
-import { getResource, insertContentInDataset } from "../util/dataset";
+import { extractResource, insertContentInDataset } from "../util/dataset";
 import { listFiles, readFile } from "../util/config";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
@@ -17,7 +17,7 @@ export async function loadValidationShapes() {
 export function shapeResources(shapeUris) {
   const shapes = rdf.dataset();
   for (const uri of shapeUris) {
-    const shapeResource = getResource(uri, VALIDATION_SHAPES);
+    const shapeResource = extractResource(uri, VALIDATION_SHAPES);
     shapes.addAll(shapeResource);
   }
   return shapes;

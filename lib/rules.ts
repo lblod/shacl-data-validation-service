@@ -2,7 +2,7 @@ import rdf from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
 import { listFiles, readFile } from "../util/config";
 import {
-  getResource,
+  extractResource,
   insertContentInDataset,
   objectsForPredicate,
 } from "../util/dataset";
@@ -42,7 +42,7 @@ export async function rulesForResource(resource: DatasetExt) {
   const rules = rdf.dataset();
 
   for (const rule of rulesForTypes) {
-    const ruleResource = getResource(rule, RULES);
+    const ruleResource = extractResource(rule, RULES);
 
     // NOTE (22/10/2026): We need to check the input resource against each
     // individual rule.  Therefore, we need to create a new validator each time.

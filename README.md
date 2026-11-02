@@ -67,9 +67,11 @@ ext:activeOrganizationShape-v2 a sh:NodeShape ;
 
 ### Environment variables.
 
-|Name            |Description                           |Default value|
-|----------------|--------------------------------------|-------------|
-|KEEP_ALL_REPORTS|Whether to keep all generated reports.|false        |
+|Name              |Description                                                                                                        |Default value|
+|------------------|-------------------------------------------------------------------------------------------------------------------|-------------|
+|ENABLE_TEST_ROUTES|Whether to enable the `/test` routes.  They read resources through sudo, so only enable them during development.  |false        |
+|KEEP_ALL_REPORTS  |Whether to keep generated reports instead of overwriting one report.                                               |false        |
+|MAX_REPORTS       |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                            |100          |
 
 ## Methodology
 ### Resource retrieval
@@ -90,4 +92,4 @@ The tests check which shapes are selected for a resource, without a triplestore.
 Returns `{ "status": "ok" }` if the service is running.
 
 ### GET /test/validate/:uri
-Endpoint meant for testing during service development.  The service will try to retrieve the data for the resource with the given URI and try to validate it according to the service's configuration.
+Endpoint meant for testing during service development, only available with `ENABLE_TEST_ROUTES` set to `true`.  The service will try to retrieve the data for the resource with the given URI and try to validate it according to the service's configuration.

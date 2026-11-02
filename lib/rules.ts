@@ -16,9 +16,9 @@ const RULES_FOLDER = "config/rules/";
 
 export async function loadRules() {
   const ruleFiles = await listFiles(RULES_FOLDER);
-  ruleFiles.forEach((filePath) =>
-    insertContentInDataset("../" + filePath, RULES),
-  );
+  for (const filePath of ruleFiles) {
+    await insertContentInDataset("../" + filePath, RULES);
+  }
 }
 
 export function getRuleResource(uri) {

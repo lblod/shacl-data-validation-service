@@ -8,9 +8,9 @@ export const VALIDATION_SHAPES = rdf.dataset();
 
 export async function loadValidationShapes() {
   const shapeFiles = await listFiles(VALIDATION_SHAPES_FOLDER);
-  shapeFiles.forEach((filepath) =>
-    insertContentInDataset("../" + filepath, VALIDATION_SHAPES),
-  );
+  for (const filePath of shapeFiles) {
+    await insertContentInDataset("../" + filePath, VALIDATION_SHAPES);
+  }
 }
 
 export async function getValidationShape(uri) {

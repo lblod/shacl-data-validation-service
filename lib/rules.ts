@@ -1,6 +1,7 @@
 import rdf from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
 import { resource } from "rdf-utils-dataset";
+import { listFiles } from "../util/config";
 import { insertContentInDataset, objectsForPredicate } from "../util/dataset";
 import { isConformResource } from "./engine";
 
@@ -11,8 +12,13 @@ const PREDICATES = {
   TYPE: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
 };
 
+const RULES_FOLDER = "config/rules/";
+
 export async function loadRules() {
-  insertContentInDataset("../config/rules.ttl", RULES);
+  const ruleFiles = await listFiles(RULES_FOLDER);
+  ruleFiles.forEach((filePath) =>
+    insertContentInDataset("../" + filePath, RULES),
+  );
 }
 
 export function getRuleResource(uri) {

@@ -21,7 +21,7 @@ The code snippets in the following sections assume the following prefixes to be 
 ```
 
 ### Rules
-The rules should be specified in a `RULES.ttl` file located in the `config` folder.  Each rule is a SHACL node shape that describes at least the resource type it applies to and the validation shapes that should be used to validate such resources.  For example, the following snippet specifies that all resources of type `org:Organization` should be validated against the `ext:organizationShape` node shape.  Note, the latter should be configured as described in [validation shapes section](#validation-shapes).
+The rules should be specified in turtle files in the `config/rules` folder.  The service will read and parse each all turtle files in that folder on startup.  Each rule is a SHACL node shape that describes at least the resource type it applies to and the validation shapes that should be used to validate such resources.  For example, the following snippet specifies that all resources of type `org:Organization` should be validated against the `ext:organizationShape` node shape.  Note, the latter should be configured as described in [validation shapes section](#validation-shapes).
 
 ```ttl
 ext:organizationRule a sh:NodeShape ;

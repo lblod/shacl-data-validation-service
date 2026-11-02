@@ -24,7 +24,7 @@ The code snippets in the following sections assume the following prefixes to be 
 ### Validation shapes
 The SHACL node shapes used to actually validate data resources should be specified in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
 
-The targets of a node shape determine the resources it applies to: `sh:targetClass`, `sh:targetNode`, `sh:targetSubjectsOf`, `sh:targetObjectsOf` or a SPARQL-based target.  For example, the following rules applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.
+The targets of a node shape determine the resources it applies to: `sh:targetClass`, `sh:targetNode`, `sh:targetSubjectsOf`, `sh:targetObjectsOf` or a SPARQL-based target.  For example, the following shape applies to all `org:Organization` resources, and reports a violation for each one without the correct value for `regorg:orgStatus`.
 
 ```ttl
 ext:activeOrganizationShape-v1 a sh:NodeShape ;
@@ -48,7 +48,7 @@ ext:hasLabel a sh:PropertyShape ;
 For more information on defining SHACL node shapes see the [SHACL](https://www.w3.org/TR/shacl/) recommendation or the example files in the configuration folder.
 
 #### Validation shapes with a SPARQL-based target
-A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the data of the resource at hand.  For example, the following shape has the same logic as `ext:activeOrganizationShape-v1`:
+A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the data of the resource at hand.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
 
 ```ttl
 ext:activeOrganizationShape-v2 a sh:NodeShape ;

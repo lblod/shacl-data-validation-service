@@ -9,7 +9,7 @@
   "scripts": {
     "lint:js": "eslint . --cache --ext .ts",
     "lint:js:fix": "eslint . --cache --ext .ts --fix",
-    "test": "vitest run"
+    "test": "vitest run --reporter=verbose"
   },
   "dependencies": {
     "@comunica/query-sparql-rdfjs-lite": "^5.4.1",

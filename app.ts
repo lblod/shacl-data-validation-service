@@ -1,13 +1,9 @@
 import { app, errorHandler } from "mu";
-import rdf from "rdf-ext";
 import { validateResource } from "./lib/engine";
 import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
-import {
-  getValidationShape,
-  loadValidationShapes,
-} from "./lib/validation-shapes";
+import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
 import { objectsForPredicate } from "./util/dataset";
 
 (async function startup() {
@@ -45,11 +41,7 @@ app.get("/test/validate/:uri", async function (req, res) {
         // a concern when we flesh out the data retrieval to work based on the
         // shapes.
 
-        const shapes = rdf.dataset();
-        for (const shape of validationShapeUris) {
-          const shapeResource = await getValidationShape(shape.value);
-          shapes.addAll(shapeResource);
-        }
+        const shapes = shapeResources(validationShapeUris);
 
         const report = await validateResource(resourceToValidate, shapes);
         writeReportFile(report);

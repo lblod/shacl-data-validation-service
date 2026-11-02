@@ -14,6 +14,11 @@ export async function loadValidationShapes() {
   }
 }
 
-export async function getValidationShape(uri) {
-  return getResource(uri, VALIDATION_SHAPES);
+export function shapeResources(shapeUris) {
+  const shapes = rdf.dataset();
+  for (const uri of shapeUris) {
+    const shapeResource = getResource(uri, VALIDATION_SHAPES);
+    shapes.addAll(shapeResource);
+  }
+  return shapes;
 }

@@ -137,8 +137,13 @@ function constant(term: Term): { constant: string } {
 function astTerm(term: Term) {
   if (term.termType !== "Literal") return F.termNamed(F.gen(), term.value);
   if (term.language) return F.termLiteral(F.gen(), term.value, term.language);
-  if (term.datatype.value === XSD_STRING) return F.termLiteral(F.gen(), term.value);
-  return F.termLiteral(F.gen(), term.value, F.termNamed(F.gen(), term.datatype.value));
+  if (term.datatype.value === XSD_STRING)
+    return F.termLiteral(F.gen(), term.value);
+  return F.termLiteral(
+    F.gen(),
+    term.value,
+    F.termNamed(F.gen(), term.datatype.value),
+  );
 }
 
 // A term of a Traqula AST, after expanding prefixes and renaming blank nodes
@@ -165,7 +170,7 @@ function patternToSparql(pattern): string {
   return query
     .slice(query.indexOf("{") + 1, query.lastIndexOf("}"))
     .replace(/^\n|\n$/g, "")
-    .replace(/^  /gm, "");
+    .replace(/^ {2}/gm, "");
 }
 const show = (node: Node, name: (variable: string) => string) =>
   "variable" in node ? `?${name(node.variable)}` : node.constant;
@@ -253,7 +258,10 @@ function transform(node, replace: (node) => unknown) {
   const replacement = replace(node);
   if (replacement !== undefined) return replacement;
   return Object.fromEntries(
-    Object.entries(node).map(([key, value]) => [key, transform(value, replace)]),
+    Object.entries(node).map(([key, value]) => [
+      key,
+      transform(value, replace),
+    ]),
   );
 }
 
@@ -327,7 +335,8 @@ class SparqlGenerator {
 
   isTrue(subject, predicate: string) {
     return this.objects(subject, predicate).some(
-      (object) => object.value === "true" && object.datatype?.value === XSD_BOOLEAN,
+      (object) =>
+        object.value === "true" && object.datatype?.value === XSD_BOOLEAN,
     );
   }
 
@@ -403,7 +412,9 @@ class SparqlGenerator {
             .filter((alternative) => alternative.inverse === inverse)
             .map((alternative) => alternative.iri);
           if (iris.length) {
-            branches.push(this.alternativePredicates(iris, inverse, start, end));
+            branches.push(
+              this.alternativePredicates(iris, inverse, start, end),
+            );
           }
         }
         for (const alternative of path.paths) {
@@ -438,7 +449,11 @@ class SparqlGenerator {
     end?: Node,
   ): Branch {
     if (iris.length === 1) {
-      return this.compilePath({ type: "predicate", iri: iris[0], inverse }, start, end)[0];
+      return this.compilePath(
+        { type: "predicate", iri: iris[0], inverse },
+        start,
+        end,
+      )[0];
     }
     const target = end ?? this.variable(iris[0]);
     const property = this.variable("predicate");
@@ -447,7 +462,10 @@ class SparqlGenerator {
       ? triple(target, property, start)
       : triple(start, property, target);
     return {
-      patterns: [(name) => `VALUES ${show(property, name)} { ${values} }`, pattern],
+      patterns: [
+        (name) => `VALUES ${show(property, name)} { ${values} }`,
+        pattern,
+      ],
       templates: [pattern],
       end: target,
     };
@@ -471,7 +489,8 @@ class SparqlGenerator {
     const via = this.variable("via");
     const closure: Branch = {
       patterns: [
-        (name) => `${show(start, name)} ${pathToString(path)}* ${show(via, name)} .`,
+        (name) =>
+          `${show(start, name)} ${pathToString(path)}* ${show(via, name)} .`,
       ],
       templates: [],
       end: via,
@@ -560,7 +579,13 @@ class SparqlGenerator {
   targets(shape): ((focus: Node, focusNodes?: Term[]) => Target)[] {
     const targets = [];
     const classes = this.objects(shape, SH + "targetClass");
-    if (this.shapes.match(shape, rdf.namedNode(RDF + "type"), rdf.namedNode(RDFS + "Class")).size) {
+    if (
+      this.shapes.match(
+        shape,
+        rdf.namedNode(RDF + "type"),
+        rdf.namedNode(RDFS + "Class"),
+      ).size
+    ) {
       classes.push(shape);
     }
     for (const targetClass of classes) {
@@ -790,7 +815,9 @@ class SparqlGenerator {
         if (!construct || this.isTrue(rule, SH + "deactivated")) continue;
         const prefixes = this.prefixes(rule);
         // sh:construct holds a CONSTRUCT query
-        const parsed = parser.parse(construct.value, { prefixes }) as QueryConstruct;
+        const parsed = parser.parse(construct.value, {
+          prefixes,
+        }) as QueryConstruct;
         for (const definition of parsed.context) {
           if (definition.subType === "prefix") {
             prefixes[definition.key] = definition.value.value;
@@ -826,7 +853,13 @@ class SparqlGenerator {
         rdf.namedNode(RDF + "type"),
         rdf.namedNode(SH + type),
       )) {
-        if (this.shapes.match(quad.subject, rdf.namedNode(RDF + "type"), rdf.namedNode(RDFS + "Class")).size) {
+        if (
+          this.shapes.match(
+            quad.subject,
+            rdf.namedNode(RDF + "type"),
+            rdf.namedNode(RDFS + "Class"),
+          ).size
+        ) {
           shapes.add(quad.subject);
         }
       }
@@ -934,7 +967,9 @@ function union(rendered: { patterns: string[] }[], graph?: string) {
   const unions = rendered.map(({ patterns }) => {
     const indentation = graph ? "      " : "    ";
     const body = patterns
-      .map((pattern) => indentation + pattern.replace(/\n/g, `\n${indentation}`))
+      .map(
+        (pattern) => indentation + pattern.replace(/\n/g, `\n${indentation}`),
+      )
       .join("\n");
     return graph
       ? `  {\n    GRAPH <${graph}> {\n${body}\n    }\n  }`
@@ -957,7 +992,9 @@ export function generateConstructQuery(
   if (!branches.length) return undefined;
 
   const rendered = renderDistinct(branches);
-  const templates = [...new Set(rendered.flatMap((branch) => branch.templates))];
+  const templates = [
+    ...new Set(rendered.flatMap((branch) => branch.templates)),
+  ];
   return `CONSTRUCT {
   ${templates.join("\n  ")}
 } WHERE {

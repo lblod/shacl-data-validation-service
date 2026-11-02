@@ -46,7 +46,6 @@ function toDataset(bindings) {
 // of a resource is retrieved, see addSelectedFocusNodesData
 const MAX_FOCUS_NODE_ROUNDS = 5;
 
-
 // The data the shapes need, retrieved with a generated CONSTRUCT query, with
 // the triples the SPARQL rules of the shapes construct (sh:rule), e.g. to
 // repair links to documents with a fragment
@@ -169,11 +168,9 @@ async function shapesTargeting(shapes, uri: string) {
 async function getShapesData(uri: string) {
   const shapes = rdf.dataset([...RULES, ...VALIDATION_SHAPES]);
   const targetingShapes = await shapesTargeting(shapes, uri);
+  const options = { shapes: targetingShapes, focusNodes: [uri] };
   const dataset = targetingShapes.length
-    ? await constructData(shapes, {
-        shapes: targetingShapes,    
-        focusNodes: [uri],
-      })
+    ? await constructData(shapes, options)
     : rdf.dataset();
 
   await addSelectedFocusNodesData(uri, dataset);

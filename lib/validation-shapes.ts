@@ -25,7 +25,10 @@ export async function getValidationShape(uri) {
 // Node shapes with a SPARQL-based target and the SELECT query of their target
 function sparqlTargetedShapes() {
   const shapes = [];
-  for (const quad of VALIDATION_SHAPES.match(null, rdf.namedNode(SH + "target"))) {
+  for (const quad of VALIDATION_SHAPES.match(
+    null,
+    rdf.namedNode(SH + "target"),
+  )) {
     const target = quad.object;
     const isSparqlTarget =
       VALIDATION_SHAPES.match(
@@ -33,7 +36,10 @@ function sparqlTargetedShapes() {
         rdf.namedNode(RDF_TYPE),
         rdf.namedNode(SH + "SPARQLTarget"),
       ).size > 0;
-    const [select] = VALIDATION_SHAPES.match(target, rdf.namedNode(SH + "select"));
+    const [select] = VALIDATION_SHAPES.match(
+      target,
+      rdf.namedNode(SH + "select"),
+    );
     if (isSparqlTarget && select) {
       shapes.push({ shape: quad.subject, query: select.object.value });
     }

@@ -1,4 +1,4 @@
-import formatsPretty from "@rdfjs/formats/pretty.js";
+import { TurtleSerializer } from "@rdfjs/formats";
 import { app, errorHandler } from "mu";
 import rdf from "rdf-ext";
 import { REPORT_CONTEXT, reportJsonLd, writeReportFile } from "./lib/report";
@@ -18,11 +18,8 @@ import { loadValidationShapes } from "./lib/validation-shapes";
   await loadValidationShapes();
 })();
 
-// By default, rdf-ext serializes text/turtle as N-Triples
-rdf.formats.import(formatsPretty);
-
 // Prefixes of the Turtle returned by /test/data/:uri
-const PREFIXES = new Map(
+const PREFIXES = rdf.prefixMap(
   Object.entries({
     besluit: "http://data.vlaanderen.be/ns/besluit#",
     mandaat: "http://data.vlaanderen.be/ns/mandaat#",
@@ -102,13 +99,8 @@ app.get("/test/data/:uri", async function (req, res) {
   const uri = req.params.uri;
   const resource = await getResource(uri);
   if (resource) {
-    // FIXME: the rdf-ext types don't include io
-    const turtle = await (rdf as any).io.dataset.toText(
-      "text/turtle",
+    const turtle = new TurtleSerializer({ prefixes: PREFIXES }).transform(
       resource,
-      {
-        prefixes: PREFIXES,
-      },
     );
     res.type("text/turtle").send(turtle);
   } else {

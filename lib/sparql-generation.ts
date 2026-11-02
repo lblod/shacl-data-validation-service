@@ -2,6 +2,7 @@ import type { Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
 import { AstFactory, type QuerySelect } from "@traqula/rules-sparql-1-1";
+import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 
 /*
@@ -65,24 +66,35 @@ export type SparqlGenerationOptions = {
   graph?: string;
 };
 
-const LITERAL_ESCAPES = {
-  '"': '\\"',
-  "\\": "\\\\",
-  "\n": "\\n",
-  "\r": "\\r",
-  "\t": "\\t",
-  "\b": "\\b",
-  "\f": "\\f",
-};
+// An absolute IRI, without the characters the SPARQL grammar doesn't allow in one
+const VALID_IRI = /^[A-Za-z][A-Za-z0-9+.-]*:[^\s<>"{}|^`\\]*$/;
+const VALID_LANGUAGE = /^[A-Za-z]+(-[A-Za-z0-9]+)*$/;
 
-function literal(value: string, langOrDatatype?: string | { value: string }) {
-  const lexical = `"${value.replace(/["\\\n\r\t\b\f]/g, (c) => LITERAL_ESCAPES[c])}"`;
-  if (typeof langOrDatatype === "string") return `${lexical}@${langOrDatatype}`;
-  if (!langOrDatatype || langOrDatatype.value === XSD_STRING) return lexical;
-  return `${lexical}^^<${langOrDatatype.value}>`;
+function validIri(value: string) {
+  if (!VALID_IRI.test(value)) throw new Error(`Invalid IRI ${value}`);
+  return value;
 }
 
-const iri = (value: string) => ({ constant: `<${value}>` });
+function validLanguage(value: string) {
+  if (!VALID_LANGUAGE.test(value)) {
+    throw new Error(`Invalid language tag ${value}`);
+  }
+  return value;
+}
+
+const iri = (value: string) => ({ constant: sparqlEscapeUri(validIri(value)) });
+
+function literal(value: string, langOrDatatype?: string | { value: string }) {
+  // sparqlEscapeString keeps line breaks, which indenting the query would change
+  const lexical = sparqlEscapeString(value)
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
+  if (typeof langOrDatatype === "string") {
+    return `${lexical}@${validLanguage(langOrDatatype)}`;
+  }
+  if (!langOrDatatype || langOrDatatype.value === XSD_STRING) return lexical;
+  return `${lexical}^^${iri(langOrDatatype.value).constant}`;
+}
 
 // An RDF/JS term, e.g. of the shapes, as a constant
 function constant(term: Term): { constant: string } {
@@ -100,14 +112,18 @@ function constant(term: Term): { constant: string } {
 
 // An RDF/JS term as a term of a Traqula AST
 function astTerm(term: Term) {
-  if (term.termType !== "Literal") return F.termNamed(F.gen(), term.value);
-  if (term.language) return F.termLiteral(F.gen(), term.value, term.language);
+  if (term.termType !== "Literal") {
+    return F.termNamed(F.gen(), validIri(term.value));
+  }
+  if (term.language) {
+    return F.termLiteral(F.gen(), term.value, validLanguage(term.language));
+  }
   if (term.datatype.value === XSD_STRING)
     return F.termLiteral(F.gen(), term.value);
   return F.termLiteral(
     F.gen(),
     term.value,
-    F.termNamed(F.gen(), term.datatype.value),
+    F.termNamed(F.gen(), validIri(term.datatype.value)),
   );
 }
 
@@ -411,6 +427,11 @@ class SparqlGenerator {
   // restricted to the focus nodes
   focusTargets(shapes, options: SparqlGenerationOptions) {
     const focusNodes = options.focusNodes?.map(toTerm);
+    // Blank nodes aren't allowed in VALUES
+    const invalid = focusNodes?.find(
+      (node) => node.termType !== "NamedNode" && node.termType !== "Literal",
+    );
+    if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
     return shapes.flatMap((shape, index) => {
       let targets = this.targets(shape);
       if (!targets.length && focusNodes) {
@@ -484,7 +505,7 @@ function union(rendered: { patterns: string[] }[], graph?: string) {
       )
       .join("\n");
     return graph
-      ? `  {\n    GRAPH <${graph}> {\n${body}\n    }\n  }`
+      ? `  {\n    GRAPH ${iri(graph).constant} {\n${body}\n    }\n  }`
       : `  {\n${body}\n  }`;
   });
   return unions.join("\n  UNION\n");

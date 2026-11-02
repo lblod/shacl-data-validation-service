@@ -22,7 +22,7 @@ export async function insertContentInDataset(content, dataset) {
   return dataset;
 }
 
-export function getResource(
+export function extractResource(
   uri: NamedNodeExt,
   dataset: DatasetExt,
 ): DatasetExt {

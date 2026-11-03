@@ -1,33 +1,35 @@
 import rdf from "rdf-ext";
-import { validateResourceWithSparqlTargets } from "./engine";
+import { validateFocusNode } from "./engine";
+import { getShapeData, resourceExists } from "./resource-retrieval";
 import {
   shapeWithReferencedShapes,
   targetedShapesForResource,
 } from "./validation-shapes";
 
-// The validation shapes whose targets select a focus node in the resource, with
-// their URIs
-export async function validationShapesForResource(resource) {
-  const targetedShapes = await targetedShapesForResource(resource);
-
-  const shapes = rdf.dataset();
-  for (const shape of targetedShapes) {
-    shapes.addAll(shapeWithReferencedShapes(shape));
-  }
-
-  return { uris: targetedShapes.map((shape) => shape.value), shapes };
+// Validates a resource on its data against a validation shape, with the shapes
+// it refers to
+export async function validateShape(data, shape, uri: string) {
+  return validateFocusNode(
+    data,
+    shapeWithReferencedShapes(shape),
+    shape,
+    rdf.namedNode(uri),
+  );
 }
 
 /*
- * Validates a resource against its validation shapes. Returns the URIs of the
- * validation shapes and the SHACL validation report, without a report if no
- * validation shape applies to the resource.
+ * Validates a resource against each validation shape that targets it, on the
+ * data of that shape. Returns a SHACL validation report per shape, nothing if
+ * the resource doesn't exist.
  */
-export async function validate(resource) {
-  const { uris, shapes } = await validationShapesForResource(resource);
-  if (!uris.length) {
-    return { shapeUris: uris };
-  }
-  const report = await validateResourceWithSparqlTargets(resource, shapes);
-  return { shapeUris: uris, report };
+export async function validateResource(uri: string) {
+  if (!(await resourceExists(uri))) return undefined;
+
+  const shapes = await targetedShapesForResource(uri);
+  return Promise.all(
+    shapes.map(async (shape) => ({
+      shape,
+      report: await validateShape(await getShapeData(shape, uri), shape, uri),
+    })),
+  );
 }

@@ -1,10 +1,7 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
-import {
-  generateConstructQuery,
-  generateTargetQuery,
-} from "./sparql-generation";
+import { generateConstructQuery } from "./sparql-generation";
 import { VALIDATION_SHAPES } from "./validation-shapes";
 
 // modified from lib-decision-validation
@@ -39,37 +36,19 @@ function toDataset(bindings) {
   );
 }
 
-export async function getResource(uri) {
+export async function resourceExists(uri: string) {
   const typesData = await query(`SELECT DISTINCT ?type {
     ${sparqlEscapeUri(uri)} a ?type .
   }`);
 
-  if (typesData.results.bindings.length > 0) {
-    return getShapesData(uri);
-  }
+  return typesData.results.bindings.length > 0;
 }
 
-// The shapes whose targets select the resource in the store
-async function getTargetingShapes(uri: string) {
-  const targetQuery = generateTargetQuery(VALIDATION_SHAPES, {
-    focusNodes: [uri],
-  });
-  if (!targetQuery) return [];
-  const result = await query(targetQuery.query);
-  return (result?.results?.bindings ?? []).map(
-    (binding) => targetQuery.shapes[Number(binding.shape.value)],
-  );
-}
-
-// The data of a resource the shapes that apply to it need to validate it,
-// retrieved with a query generated from those shapes, see
-// lib/sparql-generation.ts
-async function getShapesData(uri: string) {
-  const shapes = await getTargetingShapes(uri);
-  if (!shapes.length) return rdf.dataset();
-
+// The data of a resource needed to validate it against a shape, retrieved with
+// a query generated from that shape, see lib/sparql-generation.ts
+export async function getShapeData(shape, uri: string) {
   const constructQuery = generateConstructQuery(VALIDATION_SHAPES, {
-    shapes,
+    shapes: [shape],
     focusNodes: [uri],
   });
   if (!constructQuery) return rdf.dataset();

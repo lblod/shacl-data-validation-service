@@ -70,24 +70,24 @@ ext:activeOrganizationShape-v2 a sh:NodeShape ;
 |Name              |Description                                                                                                        |Default value|
 |------------------|-------------------------------------------------------------------------------------------------------------------|-------------|
 |ENABLE_TEST_ROUTES|Whether to enable the `/test` routes.  They read resources through sudo, so only enable them during development.  |false        |
-|KEEP_ALL_REPORTS  |Whether to keep generated reports instead of overwriting one report.                                               |false        |
-|MAX_REPORTS       |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                            |100          |
+|KEEP_ALL_REPORTS  |Whether to keep generated reports instead of overwriting the report of a shape.                                    |false        |
+|MAX_REPORTS       |The number of reports to keep with `KEEP_ALL_REPORTS`, each shape has its own.  The oldest reports are removed.    |100          |
 
 ## Methodology
 ### Resource retrieval
-The data of a resource is retrieved with queries generated from the validation shapes, see [lib/sparql-generation.ts](lib/sparql-generation.ts).  `generateTargetQuery` determines on the store which shapes have a target that selects the resource.  `generateConstructQuery` then generates a CONSTRUCT query for the data those shapes need: the triples their targets select on, the triples along their property paths, and the data of the shapes these refer to, such as `sh:node` and `sh:or`.  Only this data is retrieved, so a property no active shape mentions is not part of the data that is validated.
+The data of a resource is retrieved with queries generated from the validation shapes, see [lib/sparql-generation.ts](lib/sparql-generation.ts).  `generateTargetQuery` determines on the store which shapes have a target that selects the resource.  For each of those shapes, `generateConstructQuery` then generates a CONSTRUCT query for the data that shape needs: the triples its target selects on, the triples along its property paths, and the data of the shapes it refers to, such as `sh:node` and `sh:or`.  Only this data is retrieved, so a property the shape doesn't mention is not part of the data it is validated on.
 
 The queries run through sudo, bypassing the authorization of mu-authorization, and don't specify a `GRAPH`, so they read the data from all graphs.
 
 SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.  Negated property sets in the `sh:select` of a target are used to select the focus nodes, but their triples are not retrieved.
 
 ### Resource validation
-This services determines against which SHACL node shapes a resource should be validated from their targets.  `generateTargetQuery` in [lib/sparql-generation.ts](lib/sparql-generation.ts) generates a SELECT query for the shapes whose targets select a focus node, which runs on the data of the resource at hand.  The `sh:select` of SPARQL-based targets is parsed with [Traqula](https://github.com/comunica/traqula).
+A resource is validated against each SHACL node shape that targets it, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape again: the data can hold other resources the target selects, for example a value node of the same class, without the data needed to validate them.  The validation report is returned as is, currently without any further processing.
 
-The resource is validated against the selected shapes, with the shapes they refer to, using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand, and resolves SPARQL-based targets.  The validation report is returned as is, currently without any further processing.
+`/test/validate` writes one N-Triples report per shape to `/share`, named after the shape: `report-<local name>-<hash>.nt`.  A report is overwritten the next time the same shape runs, so reports of other shapes and resources stay in the folder.
 
 ## Tests
-The tests check which shapes are selected for a resource and which data the generated queries retrieve, without a triplestore.  Run them with `npm test`.
+The tests check which shapes target a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.
 
 ## API
 ### GET /health

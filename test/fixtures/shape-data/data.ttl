@@ -49,3 +49,11 @@ ex:invalidPerson a ex:ValidatedPerson ;
   ex:employer ex:invalidEmployer .
 
 ex:invalidEmployer a ex:Thing .
+
+# A value node the target of the shape selects as well
+ex:childOrganization a ex:ValidatedOrganization ;
+  ex:name "Child" ;
+  ex:parent ex:parentOrganization .
+
+ex:parentOrganization a ex:ValidatedOrganization ;
+  ex:name "Parent" .

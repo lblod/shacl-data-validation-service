@@ -2,7 +2,7 @@ import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test } from "vitest";
-import { validateResourceWithSparqlTargets } from "../lib/engine";
+import { validateFocusNode } from "../lib/engine";
 import {
   generateConstructQuery,
   generateTargetQuery,
@@ -219,15 +219,23 @@ describe("generateConstructQuery", () => {
   test("gives the same validation result as the full data", async () => {
     const validationShapes = rdf.dataset();
     await loadFixture("validation-shapes.ttl", validationShapes);
+    const focusNodes = [ex("validPerson"), ex("invalidPerson")];
 
     const results = async (dataset) => {
-      const report = await validateResourceWithSparqlTargets(
-        dataset,
-        validationShapes,
+      const reports = await Promise.all(
+        focusNodes.map((focusNode) =>
+          validateFocusNode(
+            dataset,
+            validationShapes,
+            rdf.namedNode(ex("PersonShape")),
+            rdf.namedNode(focusNode),
+          ),
+        ),
       );
       return {
-        conforms: report.conforms,
-        results: report.results
+        conforms: reports.every((report) => report.conforms),
+        results: reports
+          .flatMap((report) => report.results)
           .map((result) =>
             [
               result.focusNode.value,
@@ -242,7 +250,7 @@ describe("generateConstructQuery", () => {
     const retrieved = await retrieve(
       generateConstructQuery(validationShapes, {
         shapes: [ex("PersonShape")],
-        focusNodes: [ex("validPerson"), ex("invalidPerson")],
+        focusNodes,
       }),
     );
     const expected = await results(data);
@@ -253,5 +261,37 @@ describe("generateConstructQuery", () => {
     expect(retrieved.match(null, rdf.namedNode(ex("notRetrieved"))).size).toBe(
       0,
     );
+  });
+
+  test("doesn't validate other resources the target selects in the data", async () => {
+    const validationShapes = rdf.dataset();
+    await loadFixture("validation-shapes.ttl", validationShapes);
+    const shape = rdf.namedNode(ex("OrganizationShape"));
+    const focusNode = rdf.namedNode(ex("childOrganization"));
+
+    const retrieved = await retrieve(
+      generateConstructQuery(validationShapes, {
+        shapes: [shape],
+        focusNodes: [focusNode],
+      }),
+    );
+    // The target selects the parent as well, but its name isn't retrieved
+    expect(
+      retrieved.match(rdf.namedNode(ex("parentOrganization")), null).size,
+    ).toBeGreaterThan(0);
+    expect(
+      retrieved.match(
+        rdf.namedNode(ex("parentOrganization")),
+        rdf.namedNode(ex("name")),
+      ).size,
+    ).toBe(0);
+
+    const report = await validateFocusNode(
+      retrieved,
+      validationShapes,
+      shape,
+      focusNode,
+    );
+    expect(report.conforms).toBe(true);
   });
 });

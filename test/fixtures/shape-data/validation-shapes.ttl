@@ -21,3 +21,14 @@ ex:CompanyShape a sh:NodeShape ;
     sh:path ex:name ;
     sh:minCount 1 ;
   ] .
+
+ex:OrganizationShape a sh:NodeShape ;
+  sh:targetClass ex:ValidatedOrganization ;
+  sh:property [
+    sh:path ex:name ;
+    sh:minCount 1 ;
+  ] ;
+  sh:property [
+    sh:path ex:parent ;
+    sh:class ex:ValidatedOrganization ;
+  ] .

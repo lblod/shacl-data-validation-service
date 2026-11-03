@@ -1,35 +1,10 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
-import rdf from "rdf-ext";
+import { toDataset } from "../util/rdf-ext-helpers";
 
 // NOTE (22/10/2026): This is a highly simplified/hardcoded way to retrieve data
 // during the development of the service.  A more dynamic way to retrieve data
 // will be added later.
-
-// modified from lib-decision-validation
-function toRdfExtTerm(triple) {
-  switch (triple.type) {
-    case "uri":
-      return rdf.namedNode(triple.value);
-    case "literal":
-      return rdf.literal(triple.value);
-    default:
-      return triple;
-  }
-}
-
-// modified from lib-decision-validation
-function toDataset(bindings) {
-  return rdf.dataset(
-    bindings.map((b) =>
-      rdf.quad(
-        toRdfExtTerm(b["s"]),
-        toRdfExtTerm(b["p"]),
-        toRdfExtTerm(b["o"]),
-      ),
-    ),
-  );
-}
 
 export async function getResource(namedNode) {
   const uri = namedNode.value;

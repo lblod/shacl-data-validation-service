@@ -38,3 +38,33 @@ export function objectsForPredicate(predicate: string, dataset: DatasetExt) {
 
   return objects;
 }
+
+// TODO: This should probably be(come) part of some factory to convert SPARQL
+// query results JSON to rdf-ext objects
+export function toRdfExtTerm(term) {
+  switch (term.type) {
+    case "uri":
+      return rdf.namedNode(term.value);
+    case "literal":
+    case "typed-literal": {
+      const datatype = term.datatype && rdf.namedNode(term.datatype);
+      return rdf.literal(term.value, datatype || term["xml:lang"]);
+    }
+    case "bnode":
+      return rdf.blankNode(term.value);
+    default:
+      return term;
+  }
+}
+
+export function toDataset(bindings) {
+  return rdf.dataset(
+    bindings.map((b) =>
+      rdf.quad(
+        toRdfExtTerm(b["s"]),
+        toRdfExtTerm(b["p"]),
+        toRdfExtTerm(b["o"]),
+      ),
+    ),
+  );
+}

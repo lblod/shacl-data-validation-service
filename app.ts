@@ -6,7 +6,7 @@ import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
-import { objectsForPredicate } from "./util/dataset";
+import { objectsForPredicate } from "./util/rdf-ext-helpers";
 import { listUniqueSubjects } from "./util/delta-message";
 
 (async function startup() {

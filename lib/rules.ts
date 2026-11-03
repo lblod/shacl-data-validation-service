@@ -5,7 +5,7 @@ import {
   extractResource,
   insertContentInDataset,
   objectsForPredicate,
-} from "../util/dataset";
+} from "../util/rdf-ext-helpers";
 import { isConformResource } from "./engine";
 
 const RULES = rdf.dataset();

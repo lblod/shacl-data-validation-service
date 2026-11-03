@@ -1,5 +1,8 @@
 import rdf from "rdf-ext";
-import { extractResource, insertContentInDataset } from "../util/dataset";
+import {
+  extractResource,
+  insertContentInDataset,
+} from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";

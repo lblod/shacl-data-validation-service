@@ -1,18 +1,26 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
-
-// NOTE (22/10/2026): This is a highly simplified/hardcoded way to retrieve data
-// during the development of the service.  A more dynamic way to retrieve data
-// will be added later.
+import {
+  generateConstructQuery,
+  generateTargetQuery,
+} from "./sparql-generation";
+import { VALIDATION_SHAPES } from "./validation-shapes";
 
 // modified from lib-decision-validation
 function toRdfExtTerm(triple) {
   switch (triple.type) {
     case "uri":
       return rdf.namedNode(triple.value);
+    case "bnode":
+      return rdf.blankNode(triple.value);
     case "literal":
-      return rdf.literal(triple.value);
+    case "typed-literal":
+      return rdf.literal(
+        triple.value,
+        triple["xml:lang"] ||
+          (triple.datatype ? rdf.namedNode(triple.datatype) : undefined),
+      );
     default:
       return triple;
   }
@@ -37,76 +45,35 @@ export async function getResource(uri) {
   }`);
 
   if (typesData.results.bindings.length > 0) {
-    const types = typesData.results.bindings.map(
-      (binding) => binding.type.value,
-    );
-
-    if (types.includes("http://www.w3.org/ns/org#Organization")) {
-      return getOrganizationData(uri);
-    }
-    if (types.includes("http://www.w3.org/ns/person#Person")) {
-      return getPersonData(uri);
-    }
+    return getShapesData(uri);
   }
 }
 
-// NOTE (21/10/2026): Hardcoded queries to retrieve appropriate data for now.
-// This will be replaced by a more dynamic method in the future.
-async function getOrganizationData(orgUri) {
-  const orgQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX regorg: <http://www.w3.org/ns/regorg#>
-    CONSTRUCT {
-      ?org a org:Organization ;
-           ?predicate ?object .
-    } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
-        VALUES ?org {
-          ${sparqlEscapeUri(orgUri)}
-        }
-        ?org a org:Organization .
-
-        VALUES ?predicate {
-          skos:prefLabel
-          skos:altLabel
-          org:classification
-          regorg:orgStatus
-        }
-        OPTIONAL { ?org ?predicate ?object . }
-      }
-    }`;
-
-  const orgData = await query(orgQuery);
-  const bindings = orgData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
+// The shapes whose targets select the resource in the store
+async function getTargetingShapes(uri: string) {
+  const targetQuery = generateTargetQuery(VALIDATION_SHAPES, {
+    focusNodes: [uri],
+  });
+  if (!targetQuery) return [];
+  const result = await query(targetQuery.query);
+  return (result?.results?.bindings ?? []).map(
+    (binding) => targetQuery.shapes[Number(binding.shape.value)],
+  );
 }
 
-async function getPersonData(personUri) {
-  const personQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX person: <http://www.w3.org/ns/person#>
-    CONSTRUCT {
-      ?person a person:Person ;
-              ?predicate ?object .
-    } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
-        VALUES ?person {
-          ${sparqlEscapeUri(personUri)}
-        }
-        ?person a person:Person .
+// The data of a resource the shapes that apply to it need to validate it,
+// retrieved with a query generated from those shapes, see
+// lib/sparql-generation.ts
+async function getShapesData(uri: string) {
+  const shapes = await getTargetingShapes(uri);
+  if (!shapes.length) return rdf.dataset();
 
-        VALUES ?predicate {
-          foaf:givenName
-          foaf:familyName
-        }
-        OPTIONAL { ?person ?predicate ?object . }
-      }
-    }`;
+  const constructQuery = generateConstructQuery(VALIDATION_SHAPES, {
+    shapes,
+    focusNodes: [uri],
+  });
+  if (!constructQuery) return rdf.dataset();
 
-  const personData = await query(personQuery);
-  const bindings = personData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
+  const result = await query(constructQuery);
+  return toDataset(result?.results?.bindings ?? []);
 }

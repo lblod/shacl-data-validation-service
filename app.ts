@@ -28,7 +28,7 @@ if (ENABLE_TEST_ROUTES) {
         // NOTE (22/10/2026): We may need to retrieve extra resource triples
         // depending on the validation shapes.  This becomes a concern when we
         // flesh out the data retrieval to work based on the shapes.
-        const { report } = await validate(resourceToValidate);
+        const { report } = await validate(resourceToValidate, uri);
         if (report) {
           writeReportFile(report);
 

@@ -48,7 +48,7 @@ ext:hasLabel a sh:PropertyShape ;
 For more information on defining SHACL node shapes see the [SHACL](https://www.w3.org/TR/shacl/) recommendation or the example files in the configuration folder.
 
 #### Validation shapes with a SPARQL-based target
-A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the data of the resource at hand.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
+A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the store.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
 
 ```ttl
 ext:activeOrganizationShape-v2 a sh:NodeShape ;
@@ -80,7 +80,7 @@ Currently, retrieving the appropriate triples for a given resource (type) consis
 At the time of writing only queries for `org:Organization` and `person:Person` resources are provided.  Furthermore, these queries are incomplete with respect to the full range of properties for such resources.
 
 ### Resource validation
-This services determines against which SHACL node shapes a resource should be validated from their targets.  `generateTargetQuery` in [lib/sparql-generation.ts](lib/sparql-generation.ts) generates a SELECT query for the shapes whose targets select a focus node, which runs on the data of the resource at hand.  The `sh:select` of SPARQL-based targets is parsed with [Traqula](https://github.com/comunica/traqula).
+This services determines against which SHACL node shapes a resource should be validated from their targets.  `generateTargetQuery` in [lib/sparql-generation.ts](lib/sparql-generation.ts) generates a SELECT query for the shapes whose targets select a focus node, which runs on the store.  The `sh:select` of SPARQL-based targets is parsed with [Traqula](https://github.com/comunica/traqula).
 
 The resource is validated against the selected shapes, with the shapes they refer to, using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand, and resolves SPARQL-based targets.  The validation report is returned as is, currently without any further processing.
 

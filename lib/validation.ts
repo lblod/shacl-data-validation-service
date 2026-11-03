@@ -5,10 +5,9 @@ import {
   targetedShapesForResource,
 } from "./validation-shapes";
 
-// The validation shapes whose targets select a focus node in the resource, with
-// their URIs
-export async function validationShapesForResource(resource) {
-  const targetedShapes = await targetedShapesForResource(resource);
+// The validation shapes whose targets select the resource, with their URIs
+export async function validationShapesForResource(uri: string) {
+  const targetedShapes = await targetedShapesForResource(uri);
 
   const shapes = rdf.dataset();
   for (const shape of targetedShapes) {
@@ -23,8 +22,8 @@ export async function validationShapesForResource(resource) {
  * validation shapes and the SHACL validation report, without a report if no
  * validation shape applies to the resource.
  */
-export async function validate(resource) {
-  const { uris, shapes } = await validationShapesForResource(resource);
+export async function validate(resource, uri: string) {
+  const { uris, shapes } = await validationShapesForResource(uri);
   if (!uris.length) {
     return { shapeUris: uris };
   }

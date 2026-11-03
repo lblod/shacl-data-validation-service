@@ -1,5 +1,4 @@
-import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
-import { Readable } from "node:stream";
+import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
 import { insertContentInDataset } from "../util/dataset";
 import { listFiles, readFile } from "../util/config";
@@ -12,9 +11,6 @@ const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
-
-// Query engines are expensive to create, an engine is reused for all queries
-const queryEngine = new QueryEngine();
 
 export const VALIDATION_SHAPES = rdf.dataset();
 
@@ -106,20 +102,14 @@ export function shapeWithReferencedShapes(shape) {
   return result;
 }
 
-/*
- * The shapes whose targets select a focus node in the resource. A shape with a
- * sh:targetNode is always selected: like the validator, its target doesn't
- * depend on the data.
- */
-export async function targetedShapesForResource(resource) {
-  const targetQuery = generateTargetQuery(VALIDATION_SHAPES);
+// The shapes whose targets select the resource in the store
+export async function targetedShapesForResource(uri: string) {
+  const targetQuery = generateTargetQuery(VALIDATION_SHAPES, {
+    focusNodes: [uri],
+  });
   if (!targetQuery) return [];
-  const bindings = await (
-    await queryEngine.queryBindings(targetQuery.query, {
-      sources: [{ match: (...args) => Readable.from(resource.match(...args)) }],
-    })
-  ).toArray();
-  return bindings.map(
-    (binding) => targetQuery.shapes[Number(binding.get("shape").value)],
+  const result = await query(targetQuery.query);
+  return (result?.results?.bindings ?? []).map(
+    (binding) => targetQuery.shapes[Number(binding.shape.value)],
   );
 }

@@ -31,7 +31,8 @@ function toDataset(bindings) {
   );
 }
 
-export async function getResource(uri) {
+export async function getResource(namedNode) {
+  const uri = namedNode.value;
   const typesData = await query(`SELECT DISTINCT ?type {
     ${sparqlEscapeUri(uri)} a ?type .
   }`);

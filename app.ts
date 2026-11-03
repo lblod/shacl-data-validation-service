@@ -1,10 +1,13 @@
+import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
+import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateResource } from "./lib/engine";
 import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
 import { objectsForPredicate } from "./util/dataset";
+import { listUniqueSubjects } from "./util/delta-message";
 
 (async function startup() {
   await loadRules();
@@ -15,13 +18,40 @@ app.get("/health", async function (_req, res) {
   res.send({ status: "ok" });
 });
 
-app.get("/test/validate/:uri", async function (req, res) {
-  const uri = req.params.uri;
-  const resourceToValidate = await getResource(uri);
+app.post(
+  "/delta",
+  bodyParser.json({ limit: "50mb" }),
+  async function (req, res) {
+    const changesets = req.body;
+    const subjects = listUniqueSubjects(changesets);
+    // TODO: Should probably use some overall queue of subjects yet to validate.
+    // In busy apps delta messages can arrive rather frequently, possibly
+    // containing overlapping subjects.  Ideally we avoid validating the same
+    // resource multiple times in this scenario.
+
+    for (const subject of subjects) {
+      // NOTE (03/11/2026): Do not await here, we perform the validation in the
+      // background and write results to report.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      handleResource(subject).catch((e: any) => {
+        console.error(
+          `Something went wrong while processing resource ${subject}: ${e}`,
+        );
+      });
+    }
+
+    return res.status(200).send().end();
+  },
+);
+
+async function handleResource(namedNode: NamedNodeExt) {
+  const resourceToValidate = await getResource(namedNode);
+
   if (resourceToValidate) {
     // Get a set<term> containing named nodes for a rule applicable for the
     // given resource type
     const rules = await rulesForResource(resourceToValidate);
+
     // FIXME: language server complains size property does not exist in
     // DatasetExt...
     if (rules.size > 0) {
@@ -44,18 +74,41 @@ app.get("/test/validate/:uri", async function (req, res) {
         const shapes = shapeResources(validationShapeUris);
 
         const report = await validateResource(resourceToValidate, shapes);
-        writeReportFile(report);
 
-        res.send("Resource validated, see report for result.");
+        // TODO: Make logging optional via ENV VAR
+        if (report.conforms) {
+          console.log(
+            `\n>> INFO: Resource ${namedNode} was successfully validated`,
+          );
+        } else {
+          writeReportFile(report);
+          console.log(
+            `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
+          );
+        }
       } else {
-        res.status(400).send("No applicable validation shapes for resource");
+        console.log(
+          `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
+        );
       }
     } else {
-      res.status(400).send("No applicable rules for resource");
+      console.log(`\n>> INFO: No applicable rules for resource ${namedNode}`);
     }
   } else {
-    res.send(`No resource found for ${uri}`);
+    console.log(`\n>> INFO: No resource found for ${namedNode}`);
   }
+}
+
+/*
+ * Internal API, used for testing only.  This may be removed in the future.
+ */
+app.get("/test/validate/:uri", async function (req, res) {
+  const uri = req.params.uri;
+  await handleResource(new NamedNodeExt(uri));
+
+  res
+    .send(`Resource ${uri} validated, see logs and/or report for results`)
+    .end();
 });
 
 app.use(errorHandler);

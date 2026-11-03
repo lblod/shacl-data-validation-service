@@ -6,16 +6,43 @@ import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 
 /*
- * Generates a SPARQL SELECT query for the SHACL shapes whose targets select a
- * resource, so the shapes that are relevant for a resource are determined from
- * their target configuration.
+ * Generates SPARQL queries from SHACL shapes:
+ * - a SELECT query for the shapes whose targets select a resource, so the shapes
+ *   that are relevant for a resource are determined from their target
+ *   configuration
+ * - a CONSTRUCT query retrieving the data needed to validate resources against
+ *   those shapes, inspired by SHACL Play's SHACL2SPARQL
+ *   (https://shacl-play.sparna.fr/play/sparql)
  *
- * Every target of a shape is a branch of a UNION: sh:targetClass, sh:targetNode,
- * sh:targetSubjectsOf, sh:targetObjectsOf and SPARQL-based targets. A branch
+ * Starting from the focus nodes of a shape (its targets), the CONSTRUCT query
+ * follows the sh:path of its property shapes and recurses into the shapes their
+ * value nodes have to conform to (sh:node, sh:qualifiedValueShape, sh:and, sh:or,
+ * sh:xone, sh:not). It retrieves:
+ * - the triples the targets of the shapes are selected on, so the validator
+ *   selects the same focus nodes in the retrieved data
+ * - the triples along the property paths, including sequence, alternative,
+ *   inverse, zero-or-more, one-or-more and zero-or-one paths
+ * - the rdf:type and rdfs:subClassOf* of value nodes with a sh:class constraint
+ * - all triples of focus nodes of a sh:closed shape
+ * - the values of the properties of sh:equals, sh:disjoint, sh:lessThan and
+ *   sh:lessThanOrEqual
+ *
+ * Unlike SHACL Play, sh:hasValue and sh:in don't filter the retrieved values:
+ * the values violating those constraints are exactly the ones the validator
+ * has to see.
+ *
+ * Every target, and every way to reach data, is a branch of a UNION. A branch
  * only consists of plain graph patterns and subqueries, restricted to the focus
- * nodes, and has its own variables.
+ * nodes, which keeps the variables of a branch bound when they are used in a
+ * BIND or FILTER and lets the endpoint evaluate each branch from the focus nodes.
+ * Every branch has its own variables: a CONSTRUCT template is instantiated for
+ * every solution binding its variables, sharing variables would construct
+ * triples of one branch out of the solutions of another (e.g. ?s <p> ?o out of a
+ * solution of ?s (<p>|<q>) ?o matching <q>).
  *
- * Not supported: SPARQL-based targets without a sh:select.
+ * Not supported: SPARQL-based constraints (sh:sparql) and SPARQL-based targets
+ * without a sh:select. Negated property sets in the sh:select of a target are
+ * used to select the focus nodes, but their triples are not retrieved.
  */
 
 const SH = "http://www.w3.org/ns/shacl#";
@@ -31,36 +58,54 @@ const TARGET_PREDICATES = [
   "targetObjectsOf",
   "target",
 ];
+const PAIR_PREDICATES = ["equals", "disjoint", "lessThan", "lessThanOrEqual"];
+const LOGICAL_LIST_PREDICATES = ["and", "or", "xone"];
 
 // Traqula parsers are expensive to create, a parser is reused for all queries
 const parser = new Parser();
 const generator = new Generator();
 const F = new AstFactory();
-
-type PredicatePath = { type: "predicate"; iri: string; inverse: boolean };
+// Traqula only generates whole queries, patterns are generated in this query
+const PATTERN_QUERY = parser.parse("SELECT * WHERE {}") as QuerySelect;
 
 type Path =
-  | PredicatePath
-  | { type: "sequence"; paths: Path[] }
-  | { type: "zeroOrMore"; path: Path };
+  | { type: "predicate"; iri: string; inverse: boolean }
+  | { type: "sequence" | "alternative"; paths: Path[] }
+  | { type: "zeroOrMore" | "oneOrMore" | "zeroOrOne"; path: Path };
 
-// The id of a variable, which gets its name when its branch is rendered
-type Variable = string;
+const CLOSURE_OPERATORS = { zeroOrMore: "*", oneOrMore: "+", zeroOrOne: "?" };
+
+// A variable, by its id, which gets its name when its branch is rendered
+type VariableNode = { variable: string };
+
+// A node of a graph pattern: a variable or a constant in SPARQL syntax
+type QueryNode = VariableNode | { constant: string };
 
 // Part of a query, rendered with the names of the variables of its branch
-type Fragment = (name: (variable: Variable) => string) => string;
+type Fragment = (name: (variable: string) => string) => string;
 
-// The patterns selecting the focus nodes of a target for a focus node variable
-type CreateTarget = (focus: Variable, focusNodes?: Term[]) => Fragment[];
+// Graph patterns, the triples they retrieve (CONSTRUCT template) and the node
+// they end in, e.g. the value nodes of a property path
+type Branch = { patterns: Fragment[]; templates: Fragment[]; end: QueryNode };
+
+// The patterns selecting the focus nodes of a target and the branches
+// retrieving the triples it selects them on
+type Target = { select: Fragment[]; data: Branch[] };
+
+// A target for a focus node variable
+type CreateTarget = (focus: VariableNode, focusNodes?: Term[]) => Target;
 
 export type SparqlGenerationOptions = {
-  // The shapes to check, by default all shapes with a target
+  // The shapes to check or retrieve data for, by default all shapes with a
+  // target
   shapes?: (string | Term)[];
   // Restricts the focus nodes of the shapes to these nodes, e.g. the resource
   // being validated. Shapes without a target apply to these nodes.
   focusNodes?: (string | Term)[];
-  // Graph to select the focus nodes in
+  // Graph to select the focus nodes and retrieve the data in
   graph?: string;
+  // Maximum number of nested shapes to follow from a shape
+  maxDepth?: number;
 };
 
 // An absolute IRI, without the characters the SPARQL grammar doesn't allow in one
@@ -127,23 +172,44 @@ function termToAst(term: Term) {
   );
 }
 
-const variableToString = (
-  variable: Variable,
-  name: (variable: Variable) => string,
-) => `?${name(variable)}`;
+// A term of a Traqula AST, after expanding prefixes and renaming blank nodes
+// to variables
+function astTermToNode(term): QueryNode {
+  switch (term.subType) {
+    case "variable":
+      return { variable: term.value };
+    case "namedNode":
+      return { constant: iriToString(term.value) };
+    case "literal":
+      return { constant: literalToString(term.value, term.langOrIri) };
+    default:
+      throw new Error(`Unsupported term ${term.subType} ${term.value}`);
+  }
+}
+
+// A pattern of a Traqula AST, generated as the body of PATTERN_QUERY
+function patternToString(pattern): string {
+  const query = generator.generate({
+    ...PATTERN_QUERY,
+    where: F.patternGroup([pattern], F.gen()),
+  });
+  return query
+    .slice(query.indexOf("{") + 1, query.lastIndexOf("}"))
+    .replace(/^\n|\n$/g, "")
+    .replace(/^ {2}/gm, "");
+}
+
+const nodeToString = (node: QueryNode, name: (variable: string) => string) =>
+  "variable" in node ? `?${name(node.variable)}` : node.constant;
 const toTerm = (value: string | Term) =>
   typeof value === "string" ? rdf.namedNode(value) : value;
 
-const predicatePath = (value: string): PredicatePath => ({
+const predicatePath = (value: string): Path => ({
   type: "predicate",
   iri: value,
   inverse: false,
 });
-const invertPath = (path: PredicatePath): PredicatePath => ({
-  ...path,
-  inverse: !path.inverse,
-});
-// rdf:type/rdfs:subClassOf*, the path sh:targetClass relies on
+// rdf:type/rdfs:subClassOf*, the path sh:targetClass and sh:class rely on
 const TYPE_PATH: Path = {
   type: "sequence",
   paths: [
@@ -152,25 +218,74 @@ const TYPE_PATH: Path = {
   ],
 };
 
+// Inverse paths are pushed down to their predicates, e.g. ^(p/q) is ^q/^p
+function invertPath(path: Path): Path {
+  switch (path.type) {
+    case "predicate":
+      return { ...path, inverse: !path.inverse };
+    case "sequence":
+      return { type: "sequence", paths: path.paths.map(invertPath).reverse() };
+    case "alternative":
+      return { type: "alternative", paths: path.paths.map(invertPath) };
+    default:
+      return { type: path.type, path: invertPath(path.path) };
+  }
+}
+
 function pathToString(path: Path): string {
   switch (path.type) {
     case "predicate":
       return (path.inverse ? "^" : "") + iriToString(path.iri);
     case "sequence":
       return `(${path.paths.map(pathToString).join("/")})`;
-    case "zeroOrMore":
-      return `(${pathToString(path.path)})*`;
+    case "alternative":
+      return `(${path.paths.map(pathToString).join("|")})`;
+    default:
+      return `(${pathToString(path.path)})${CLOSURE_OPERATORS[path.type]}`;
   }
 }
 
+function triplePattern(
+  subject: QueryNode,
+  predicate: QueryNode,
+  object: QueryNode,
+): Fragment {
+  return (name) =>
+    `${nodeToString(subject, name)} ${nodeToString(predicate, name)} ${nodeToString(object, name)} .`;
+}
+
+function joinBranches(first: Branch, second: Branch): Branch {
+  return {
+    patterns: [...first.patterns, ...second.patterns],
+    templates: [...first.templates, ...second.templates],
+    end: second.end,
+  };
+}
+
+// Every branch followed by every branch next creates from it
+function branchProduct(branches: Branch[], next: (branch: Branch) => Branch[]) {
+  return branches.flatMap((branch) =>
+    next(branch).map((nextBranch) => joinBranches(branch, nextBranch)),
+  );
+}
+
+const emptyBranch = (end: QueryNode): Branch => ({
+  patterns: [],
+  templates: [],
+  end,
+});
+
+// The end of the patterns of a SPARQL-based target: nothing continues from it
+const NO_END: QueryNode = { constant: "" };
+
 // VALUES restricting a focus node variable to the given focus nodes, if any
 function focusNodeRestriction(
-  focus: Variable,
+  focus: VariableNode,
   focusNodes?: Term[],
 ): Fragment[] {
   if (!focusNodes) return [];
   const values = focusNodes.map(termToString).join(" ");
-  return [(name) => `VALUES ${variableToString(focus, name)} { ${values} }`];
+  return [(name) => `VALUES ${nodeToString(focus, name)} { ${values} }`];
 }
 
 // Copies a Traqula AST, replacing the nodes replace returns a node for
@@ -237,16 +352,18 @@ function expandPrefixes(ast, prefixes: Record<string, string>) {
 
 class SparqlGenerator {
   shapes;
+  maxDepth: number;
   variableCount = 0;
 
-  constructor(shapes) {
+  constructor(shapes, maxDepth = 10) {
     this.shapes = shapes;
+    this.maxDepth = maxDepth;
   }
 
-  createVariable(hint: string): Variable {
+  createVariable(hint: string): VariableNode {
     const name =
       hint.replace(/^.*[#/:]/, "").replace(/[^A-Za-z0-9_]/g, "_") || "v";
-    return `${name}_${++this.variableCount}`;
+    return { variable: `${name}_${++this.variableCount}` };
   }
 
   getObjects(subject, predicate: string) {
@@ -259,6 +376,275 @@ class SparqlGenerator {
     return this.getObjects(subject, predicate).some(
       (object) =>
         object.value === "true" && object.datatype?.value === XSD_BOOLEAN,
+    );
+  }
+
+  getListItems(list) {
+    const items = [];
+    let listNode = list;
+    while (listNode && listNode.value !== RDF + "nil") {
+      const [first] = this.getObjects(listNode, RDF + "first");
+      if (!first) throw new Error(`${listNode.value} is not an RDF list`);
+      items.push(first);
+      [listNode] = this.getObjects(listNode, RDF + "rest");
+    }
+    return items;
+  }
+
+  // The path of a sh:path
+  parseShaclPath(shaclPath): Path {
+    if (shaclPath.termType === "NamedNode" && shaclPath.value !== RDF + "nil") {
+      return predicatePath(shaclPath.value);
+    }
+    if (this.getObjects(shaclPath, RDF + "first").length) {
+      return {
+        type: "sequence",
+        paths: this.getListItems(shaclPath).map((item) =>
+          this.parseShaclPath(item),
+        ),
+      };
+    }
+    const [inverse] = this.getObjects(shaclPath, SH + "inversePath");
+    if (inverse) return invertPath(this.parseShaclPath(inverse));
+    const [alternatives] = this.getObjects(shaclPath, SH + "alternativePath");
+    if (alternatives) {
+      return {
+        type: "alternative",
+        paths: this.getListItems(alternatives).map((item) =>
+          this.parseShaclPath(item),
+        ),
+      };
+    }
+    for (const type of Object.keys(CLOSURE_OPERATORS)) {
+      const [path] = this.getObjects(shaclPath, `${SH}${type}Path`);
+      if (path) {
+        return { type, path: this.parseShaclPath(path) } as Path;
+      }
+    }
+    throw new Error(`Unsupported SHACL path ${shaclPath.value}`);
+  }
+
+  /*
+   * The branches following a path from start. Each branch ends in a fresh
+   * variable for the nodes the path reaches, or in end when given.
+   */
+  getPathBranches(path: Path, start: QueryNode, end?: QueryNode): Branch[] {
+    switch (path.type) {
+      case "predicate": {
+        const target = end ?? this.createVariable(path.iri);
+        const predicate = { constant: iriToString(path.iri) };
+        const pattern = path.inverse
+          ? triplePattern(target, predicate, start)
+          : triplePattern(start, predicate, target);
+        return [{ patterns: [pattern], templates: [pattern], end: target }];
+      }
+      case "sequence":
+        return path.paths.reduce(
+          (branches, step, index) =>
+            branchProduct(branches, (branch) =>
+              this.getPathBranches(
+                step,
+                branch.end,
+                index === path.paths.length - 1 ? end : undefined,
+              ),
+            ),
+          [emptyBranch(start)],
+        );
+      case "alternative":
+        return this.getAlternativeBranches(path.paths, start, end);
+      case "zeroOrOne":
+        return [
+          this.getZeroLengthBranch(start, end),
+          ...this.getPathBranches(path.path, start, end),
+        ];
+      case "zeroOrMore":
+        return [
+          this.getZeroLengthBranch(start, end),
+          ...this.getOneOrMoreBranches(path.path, start, end),
+        ];
+      case "oneOrMore":
+        return this.getOneOrMoreBranches(path.path, start, end);
+    }
+  }
+
+  // Predicates share a branch per direction, other alternatives have their own
+  getAlternativeBranches(paths: Path[], start: QueryNode, end?: QueryNode) {
+    const branches = [];
+    for (const inverse of [false, true]) {
+      const iris = paths.flatMap((path) =>
+        path.type === "predicate" && path.inverse === inverse ? [path.iri] : [],
+      );
+      if (iris.length) {
+        branches.push(
+          this.getAlternativePredicatesBranch(iris, inverse, start, end),
+        );
+      }
+    }
+    for (const path of paths) {
+      if (path.type !== "predicate") {
+        branches.push(...this.getPathBranches(path, start, end));
+      }
+    }
+    return branches;
+  }
+
+  // Alternative predicates in a single branch, e.g. p|q as ?s ?predicate ?o
+  // with VALUES ?predicate { p q }: the template only constructs the triple
+  // matched, with the predicate it is matched with
+  getAlternativePredicatesBranch(
+    iris: string[],
+    inverse: boolean,
+    start: QueryNode,
+    end?: QueryNode,
+  ): Branch {
+    if (iris.length === 1) {
+      return this.getPathBranches(
+        { type: "predicate", iri: iris[0], inverse },
+        start,
+        end,
+      )[0];
+    }
+    const target = end ?? this.createVariable(iris[0]);
+    const property = this.createVariable("predicate");
+    const values = iris.map(iriToString).join(" ");
+    const pattern = inverse
+      ? triplePattern(target, property, start)
+      : triplePattern(start, property, target);
+    return {
+      patterns: [
+        (name) => `VALUES ${nodeToString(property, name)} { ${values} }`,
+        pattern,
+      ],
+      templates: [pattern],
+      end: target,
+    };
+  }
+
+  // A zero length path ends in the start node itself, without patterns
+  getZeroLengthBranch(start: QueryNode, end?: QueryNode): Branch {
+    if (!end) return emptyBranch(start);
+    return {
+      patterns: [
+        (name) =>
+          `FILTER(sameTerm(${nodeToString(start, name)}, ${nodeToString(end, name)}))`,
+      ],
+      templates: [],
+      end,
+    };
+  }
+
+  /*
+   * A step of path+ from every node path* reaches, which retrieves every triple
+   * along the way. With an end, only the steps on a route to the end are
+   * followed: every step has to be retrieved, not only the last one.
+   */
+  getOneOrMoreBranches(
+    path: Path,
+    start: QueryNode,
+    end?: QueryNode,
+  ): Branch[] {
+    const via = this.createVariable("via");
+    const closure: Branch = {
+      patterns: [
+        (name) =>
+          `${nodeToString(start, name)} ${pathToString(path)}* ${nodeToString(via, name)} .`,
+      ],
+      templates: [],
+      end: via,
+    };
+    if (!end) {
+      return branchProduct([closure], () => this.getPathBranches(path, via));
+    }
+    const next = this.createVariable("next");
+    const toEnd: Branch = {
+      patterns: [
+        (name) =>
+          `${nodeToString(next, name)} ${pathToString(path)}* ${nodeToString(end, name)} .`,
+      ],
+      templates: [],
+      end,
+    };
+    return branchProduct(
+      branchProduct([closure], () => this.getPathBranches(path, via, next)),
+      () => [toEnd],
+    );
+  }
+
+  /*
+   * The branches retrieving the data to validate the focus nodes against a
+   * shape. visited holds the shapes being followed, to stop at cycles.
+   */
+  getShapeBranches(shape, focus: QueryNode, visited: string[]): Branch[] {
+    const key = `${shape.termType}:${shape.value}`;
+    if (visited.includes(key) || this.hasTrueValue(shape, SH + "deactivated")) {
+      return [];
+    }
+    if (visited.length >= this.maxDepth) {
+      console.warn(
+        `Not retrieving the data of ${shape.value}: it is nested deeper than ${this.maxDepth} shapes`,
+      );
+      return [];
+    }
+    const followed = [...visited, key];
+
+    const [path] = this.getObjects(shape, SH + "path");
+    if (!path) {
+      return [
+        ...this.getValueNodeBranches(shape, focus, followed),
+        ...this.getPairBranches(shape, focus),
+        ...this.getObjects(shape, SH + "property").flatMap((property) =>
+          this.getShapeBranches(property, focus, followed),
+        ),
+      ];
+    }
+    return [
+      ...this.getPathBranches(this.parseShaclPath(path), focus).flatMap(
+        (branch) => [
+          branch,
+          ...branchProduct([branch], () =>
+            this.getValueNodeBranches(shape, branch.end, followed),
+          ),
+        ],
+      ),
+      ...this.getPairBranches(shape, focus),
+    ];
+  }
+
+  // The data the constraints on the value nodes of a shape need
+  getValueNodeBranches(shape, value: QueryNode, followed: string[]): Branch[] {
+    const branches = [];
+    if (this.getObjects(shape, SH + "class").length) {
+      branches.push(...this.getPathBranches(TYPE_PATH, value));
+    }
+    if (this.hasTrueValue(shape, SH + "closed")) {
+      const property = this.createVariable("property");
+      const object = this.createVariable("object");
+      const pattern = triplePattern(value, property, object);
+      branches.push({ patterns: [pattern], templates: [pattern], end: object });
+    }
+    const nestedShapes = [
+      ...this.getObjects(shape, SH + "node"),
+      ...this.getObjects(shape, SH + "not"),
+      ...this.getObjects(shape, SH + "qualifiedValueShape"),
+      ...LOGICAL_LIST_PREDICATES.flatMap((logical) =>
+        this.getObjects(shape, SH + logical).flatMap((list) =>
+          this.getListItems(list),
+        ),
+      ),
+    ];
+    for (const nestedShape of nestedShapes) {
+      branches.push(...this.getShapeBranches(nestedShape, value, followed));
+    }
+    return branches;
+  }
+
+  // Property pair constraints compare the value nodes with the values of a
+  // property of the focus node
+  getPairBranches(shape, focus: QueryNode): Branch[] {
+    return PAIR_PREDICATES.flatMap((pair) =>
+      this.getObjects(shape, SH + pair).flatMap((property) =>
+        this.getPathBranches(predicatePath(property.value), focus),
+      ),
     );
   }
 
@@ -286,10 +672,15 @@ class SparqlGenerator {
   getClassTargets(shape): CreateTarget[] {
     const classes = this.getObjects(shape, SH + "targetClass");
     if (this.isClass(shape)) classes.push(shape);
-    return classes.map((targetClass) => (focus) => [
-      (name) =>
-        `${variableToString(focus, name)} ${pathToString(TYPE_PATH)} ${termToString(targetClass)} .`,
-    ]);
+    return classes.map((targetClass) => (focus) => ({
+      select: [
+        (name) =>
+          `${nodeToString(focus, name)} ${pathToString(TYPE_PATH)} ${termToString(targetClass)} .`,
+      ],
+      data: this.getPathBranches(TYPE_PATH, focus, {
+        constant: termToString(targetClass),
+      }),
+    }));
   }
 
   // sh:targetNode
@@ -298,9 +689,10 @@ class SparqlGenerator {
     if (!nodes.length) return [];
     const values = nodes.map(termToString).join(" ");
     return [
-      (focus) => [
-        (name) => `VALUES ${variableToString(focus, name)} { ${values} }`,
-      ],
+      (focus) => ({
+        select: [(name) => `VALUES ${nodeToString(focus, name)} { ${values} }`],
+        data: [],
+      }),
     ];
   }
 
@@ -316,15 +708,18 @@ class SparqlGenerator {
     const objectsOf = this.getObjects(shape, SH + "targetObjectsOf").map(
       (property) => invertPath(predicatePath(property.value)),
     );
-    return [...subjectsOf, ...objectsOf].map((path) => (focus, focusNodes) => [
-      (name) => {
-        const values = focusNodeRestriction(focus, focusNodes).map((pattern) =>
-          pattern(name),
-        );
-        const variable = variableToString(focus, name);
-        return `{ SELECT DISTINCT ${variable} WHERE { ${[...values, ""].join(" ")}${variable} ${pathToString(path)} [] . } }`;
-      },
-    ]);
+    return [...subjectsOf, ...objectsOf].map((path) => (focus, focusNodes) => ({
+      select: [
+        (name) => {
+          const values = focusNodeRestriction(focus, focusNodes).map(
+            (pattern) => pattern(name),
+          );
+          const variable = nodeToString(focus, name);
+          return `{ SELECT DISTINCT ${variable} WHERE { ${[...values, ""].join(" ")}${variable} ${pathToString(path)} [] . } }`;
+        },
+      ],
+      data: this.getPathBranches(path, focus),
+    }));
   }
 
   // SPARQL-based targets with a sh:select
@@ -338,14 +733,17 @@ class SparqlGenerator {
     });
   }
 
-  // A SPARQL-based target selects its focus nodes with a subquery, restricted
-  // to the given focus nodes as well
+  /*
+   * A SPARQL-based target selects its focus nodes with a subquery, restricted
+   * to the given focus nodes as well. The triples it selects them on are
+   * retrieved by flattening its graph patterns into branches.
+   */
   getSparqlTarget(
     target,
     select: string,
-    focus: Variable,
+    focus: VariableNode,
     focusNodes?: Term[],
-  ): Fragment[] {
+  ): Target {
     const prefixes = this.getPrefixes(target);
     // sh:select holds a SELECT query
     const parsed = parser.parse(select, { prefixes }) as QuerySelect;
@@ -354,32 +752,33 @@ class SparqlGenerator {
         prefixes[declaration.key] = declaration.value.value;
       }
     }
-    const ids = new Map<string, Variable>();
+    const ids = new Map<string, string>();
     const query = renameVariables(
       expandPrefixes({ ...parsed, context: [] }, prefixes),
       (variable) => {
-        if (variable === "this") return focus;
+        if (variable === "this") return focus.variable;
         if (!ids.has(variable)) {
-          ids.set(variable, this.createVariable(variable));
+          ids.set(variable, this.createVariable(variable).variable);
         }
         return ids.get(variable);
       },
     );
+    const where = query.where.patterns;
     if (focusNodes) {
       const values = F.patternValues(
-        [F.termVariable(focus, F.gen())],
-        focusNodes.map((term) => ({ [focus]: termToAst(term) })),
+        [F.termVariable(focus.variable, F.gen())],
+        focusNodes.map((term) => ({ [focus.variable]: termToAst(term) })),
         F.gen(),
       );
-      query.where = F.patternGroup(
-        [values, ...query.where.patterns],
-        query.where.loc,
-      );
+      query.where = F.patternGroup([values, ...where], query.where.loc);
     }
-    return [
-      (name) =>
-        `{\n  ${generator.generate(renameVariables(query, name)).replace(/\n/g, "\n  ")}\n}`,
-    ];
+    return {
+      select: [
+        (name) =>
+          `{\n  ${generator.generate(renameVariables(query, name)).replace(/\n/g, "\n  ")}\n}`,
+      ],
+      data: this.flattenPatterns(where),
+    };
   }
 
   // The prefixes declared for a SPARQL-based target (sh:prefixes/sh:declare)
@@ -393,6 +792,114 @@ class SparqlGenerator {
       }
     }
     return prefixes;
+  }
+
+  flattenPatterns(patterns): Branch[] {
+    return patterns.reduce(
+      (branches, pattern) =>
+        branchProduct(branches, () => this.flattenPattern(pattern)),
+      [emptyBranch(NO_END)],
+    );
+  }
+
+  // OPTIONAL becomes a branch without and a branch with its patterns, UNION a
+  // branch per alternative. Other patterns, e.g. FILTER, BIND, VALUES and
+  // subqueries, are kept as is without retrieving their triples.
+  flattenPattern(pattern): Branch[] {
+    if (pattern.type === "pattern") {
+      switch (pattern.subType) {
+        case "bgp":
+          return this.flattenTriples(pattern.triples);
+        case "group":
+          return this.flattenPatterns(pattern.patterns);
+        case "union":
+          return pattern.patterns.flatMap((alternative) =>
+            this.flattenPattern(alternative),
+          );
+        case "optional":
+          return [
+            emptyBranch(NO_END),
+            ...this.flattenPatterns(pattern.patterns),
+          ];
+      }
+    }
+    return [this.getRawBranch(pattern)];
+  }
+
+  // The triples of blank node property lists and collections, [ … ] and
+  // ( … ), are triples of their own, with the blank node as subject or object
+  flattenTriples(items): Branch[] {
+    const triples = [];
+    const identifierOf = (item) => {
+      if (item.type !== "tripleCollection") return item;
+      item.triples.forEach(addTriple);
+      return item.identifier;
+    };
+    const addTriple = (item) => {
+      if (item.type === "tripleCollection") {
+        identifierOf(item);
+      } else {
+        triples.push({
+          ...item,
+          subject: identifierOf(item.subject),
+          object: identifierOf(item.object),
+        });
+      }
+    };
+    items.forEach(addTriple);
+    return triples.reduce(
+      (branches, astTriple) =>
+        branchProduct(branches, () => this.flattenTriple(astTriple)),
+      [emptyBranch(NO_END)],
+    );
+  }
+
+  flattenTriple(astTriple): Branch[] {
+    const subject = astTermToNode(astTriple.subject);
+    const object = astTermToNode(astTriple.object);
+    if (astTriple.predicate.type === "term") {
+      const pattern = triplePattern(
+        subject,
+        astTermToNode(astTriple.predicate),
+        object,
+      );
+      return [{ patterns: [pattern], templates: [pattern], end: object }];
+    }
+    const path = this.astPathToPath(astTriple.predicate);
+    if (!path) return [this.getRawBranch(F.patternBgp([astTriple], F.gen()))];
+    return this.getPathBranches(path, subject, object);
+  }
+
+  // A pattern kept as is, which doesn't retrieve any triples
+  getRawBranch(pattern): Branch {
+    return {
+      patterns: [(name) => patternToString(renameVariables(pattern, name))],
+      templates: [],
+      end: NO_END,
+    };
+  }
+
+  // A property path of a Traqula AST, undefined for a negated property set
+  astPathToPath(astPath): Path | undefined {
+    if (astPath.type === "term") return predicatePath(astPath.value);
+    const items = astPath.items.map((item) => this.astPathToPath(item));
+    if (items.includes(undefined)) return undefined;
+    switch (astPath.subType) {
+      case "/":
+        return { type: "sequence", paths: items };
+      case "|":
+        return { type: "alternative", paths: items };
+      case "^":
+        return invertPath(items[0]);
+      case "*":
+        return { type: "zeroOrMore", path: items[0] };
+      case "+":
+        return { type: "oneOrMore", path: items[0] };
+      case "?":
+        return { type: "zeroOrOne", path: items[0] };
+      default:
+        return undefined;
+    }
   }
 
   // Shapes with a target, as the validator would select them
@@ -434,51 +941,83 @@ class SparqlGenerator {
     return shapes.flatMap((shape, index) => {
       let targets = this.getTargets(shape);
       if (!targets.length && focusNodes) {
-        targets = [() => []];
+        targets = [() => ({ select: [], data: [] })];
       }
       return targets.map((createTarget) => {
         const focus = this.createVariable("this");
-        const restriction = focusNodeRestriction(focus, focusNodes);
-        const select = createTarget(focus, focusNodes);
-        return { index, restriction, select };
+        const restricted: Branch = {
+          ...emptyBranch(focus),
+          patterns: focusNodeRestriction(focus, focusNodes),
+        };
+        const target = createTarget(focus, focusNodes);
+        return { shape, index, focus, restricted, target };
       });
     });
+  }
+
+  // The branches retrieving the triples the targets select their focus nodes
+  // on and the data to validate those focus nodes
+  getDataBranches(options: SparqlGenerationOptions): Branch[] {
+    const shapes = this.getSelectedShapes(options);
+    const branches = [];
+    for (const { shape, focus, restricted, target } of this.getFocusTargets(
+      shapes,
+      options,
+    )) {
+      for (const branch of target.data) {
+        branches.push(joinBranches(restricted, branch));
+      }
+      const selection = {
+        ...restricted,
+        patterns: [...restricted.patterns, ...target.select],
+      };
+      for (const branch of this.getShapeBranches(shape, focus, [])) {
+        branches.push(joinBranches(selection, branch));
+      }
+    }
+    return branches.filter((branch) => branch.templates.length);
   }
 
   // A branch per target, binding the index of its shape to ?shape when it
   // selects a focus node. Shapes can be blank nodes, which can't be bound.
   getTargetBranches(options: SparqlGenerationOptions) {
     const shapes = this.getSelectedShapes(options);
-    const branches: Fragment[][] = this.getFocusTargets(shapes, options).map(
-      ({ index, restriction, select }) => [
-        ...restriction,
-        ...select,
-        () => `BIND(${index} AS ?shape)`,
-      ],
+    const branches: Branch[] = this.getFocusTargets(shapes, options).map(
+      ({ index, restricted, target }) => ({
+        ...restricted,
+        patterns: [
+          ...restricted.patterns,
+          ...target.select,
+          () => `BIND(${index} AS ?shape)`,
+        ],
+      }),
     );
     return { shapes, branches };
   }
 }
 
 // Each branch gets its own variables, numbered in order of appearance
-function renderBranch(branch: Fragment[], next: () => number) {
-  const names = new Map<Variable, string>();
-  const name = (variable: Variable) => {
+function renderBranch(branch: Branch, next: () => number) {
+  const names = new Map<string, string>();
+  const name = (variable: string) => {
     if (!names.has(variable)) {
       names.set(variable, `${variable.replace(/_\d+$/, "")}_${next()}`);
     }
     return names.get(variable);
   };
-  return branch.map((pattern) => pattern(name));
+  const patterns = branch.patterns.map((pattern) => pattern(name));
+  const templates = branch.templates.map((template) => template(name));
+  return { patterns, templates };
 }
 
-// Branches only differing in their variables select the same, e.g. two
-// identical targets of a shape
-function renderDistinctBranches(branches: Fragment[][]) {
-  const distinctBranches = new Map<string, Fragment[]>();
+// Branches only differing in their variables select or retrieve the same, e.g.
+// the types of the value nodes of sh:or ( [ sh:class A ] [ sh:class B ] )
+function renderDistinctBranches(branches: Branch[]) {
+  const distinctBranches = new Map<string, Branch>();
   for (const branch of branches) {
     let local = 0;
-    const key = renderBranch(branch, () => ++local).join("\n");
+    const { patterns } = renderBranch(branch, () => ++local);
+    const key = patterns.join("\n");
     if (!distinctBranches.has(key)) distinctBranches.set(key, branch);
   }
   let count = 0;
@@ -488,8 +1027,8 @@ function renderDistinctBranches(branches: Fragment[][]) {
 }
 
 // The UNION of the patterns of the rendered branches
-function renderUnion(rendered: string[][], graph?: string) {
-  const unions = rendered.map((patterns) => {
+function renderUnion(rendered: { patterns: string[] }[], graph?: string) {
+  const unions = rendered.map(({ patterns }) => {
     const indentation = graph ? "      " : "    ";
     const body = patterns
       .map(
@@ -504,6 +1043,30 @@ function renderUnion(rendered: string[][], graph?: string) {
 }
 
 /*
+ * Generates a CONSTRUCT query retrieving the data to validate the focus nodes
+ * of the given shapes, see the top of this file. Returns undefined when the
+ * shapes don't need any data.
+ */
+export function generateConstructQuery(
+  shapes,
+  options: SparqlGenerationOptions = {},
+) {
+  const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
+  const branches = sparqlGenerator.getDataBranches(options);
+  if (!branches.length) return undefined;
+
+  const rendered = renderDistinctBranches(branches);
+  const templates = [
+    ...new Set(rendered.flatMap((branch) => branch.templates)),
+  ];
+  return `CONSTRUCT {
+  ${templates.join("\n  ")}
+} WHERE {
+${renderUnion(rendered, options.graph)}
+}`;
+}
+
+/*
  * Generates a SELECT query for the shapes whose targets select one of the
  * focus nodes, e.g. to only retrieve data for the shapes that apply to a
  * resource. Each solution binds ?shape to the index of a shape in the
@@ -513,7 +1076,7 @@ export function generateTargetQuery(
   shapes,
   options: SparqlGenerationOptions = {},
 ) {
-  const sparqlGenerator = new SparqlGenerator(shapes);
+  const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
   const { shapes: selectedShapes, branches } =
     sparqlGenerator.getTargetBranches(options);
   if (!branches.length) return undefined;

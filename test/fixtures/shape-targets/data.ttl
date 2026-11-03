@@ -16,3 +16,6 @@ ex:sessionWithoutDocument a ex:Session ;
   ex:heldBy ex:council .
 
 ex:other a ex:Thing .
+
+ex:audited a ex:Audited ;
+  ex:title "An audited document" .

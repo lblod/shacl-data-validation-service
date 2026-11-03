@@ -67,6 +67,7 @@
 
 ent:EredienstBestuurseenheid
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "eredienstbestuurseenheid" ;
   sh:targetClass ere:EredienstBestuurseenheid ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -101,6 +102,7 @@ ent:EredienstBestuurseenheid
 
 ent:BestuurVanDeEredienst
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuur van de eredienst" ;
   sh:targetClass ere:BestuurVanDeEredienst ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -129,6 +131,7 @@ ent:BestuurVanDeEredienst
 
 ent:CentraalBestuurVanDeEredienst
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "centraal bestuur van de eredienst" ;
   sh:targetClass ere:CentraalBestuurVanDeEredienst ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -150,6 +153,7 @@ ent:CentraalBestuurVanDeEredienst
 
 ent:RepresentatiefOrgaan
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "representatief orgaan" ;
   sh:targetClass ere:RepresentatiefOrgaan ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -164,6 +168,7 @@ ent:RepresentatiefOrgaan
 
 ent:RepresentatiefOrgaanClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "representatief orgaan classificatie" ;
   sh:targetClass ext:RepresentatiefOrgaanClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -173,6 +178,7 @@ ent:RepresentatiefOrgaanClassificatie
 
 ent:TypeEredienst
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "type eredienst" ;
   sh:targetClass code:TypeEredienst ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -180,6 +186,7 @@ ent:TypeEredienst
 
 ent:BestuurseenheidClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort bestuur" ;
   sh:targetClass code:BestuurseenheidClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -187,6 +194,7 @@ ent:BestuurseenheidClassificatie
 
 ent:OrganisatieStatus
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "organisatiestatus" ;
   sh:targetClass code:OrganisatieStatusCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -194,6 +202,7 @@ ent:OrganisatieStatus
 
 ent:Werkingsgebied
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "werkingsgebied" ;
   sh:targetClass prov:Location ;
   sh:property [ sh:path rdfs:label ; sh:name "naam" ;
@@ -203,6 +212,7 @@ ent:Werkingsgebied
 
 ent:Bestuursorgaan
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursorgaan" ;
   sh:targetClass besluit:Bestuursorgaan ;
   sh:property [ sh:path mandaat:bindingStart ; sh:name "binding start" ;
@@ -222,6 +232,7 @@ ent:Bestuursorgaan
 
 ent:BestuursorgaanClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort bestuursorgaan" ;
   sh:targetClass code:BestuursorgaanClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -229,6 +240,7 @@ ent:BestuursorgaanClassificatie
 
 ent:Mandaat
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "mandaat" ;
   sh:targetClass mandaat:Mandaat ;
   sh:property [ sh:path mandaat:aantalHouders ; sh:name "aantal houders" ;
@@ -242,6 +254,7 @@ ent:Mandaat
 
 ent:BestuursfunctieCode
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursfunctie" ;
   sh:targetClass code:BestuursfunctieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -249,6 +262,7 @@ ent:BestuursfunctieCode
 
 ent:EredienstMandataris
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "eredienstmandataris" ;
   sh:targetClass ere:EredienstMandataris ;
   sh:property [ sh:path mandaat:start ; sh:name "start" ;
@@ -273,6 +287,7 @@ ent:EredienstMandataris
 
 ent:MandatarisStatus
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "status" ;
   sh:targetClass code:MandatarisStatusCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -280,6 +295,7 @@ ent:MandatarisStatus
 
 ent:HelftVerkiezing
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "helft verkiezing" ;
   sh:targetClass code:HelftVerkiezing ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -287,6 +303,7 @@ ent:HelftVerkiezing
 
 ent:Persoon
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "persoon" ;
   sh:targetClass person:Person ;
   sh:property [ sh:path foaf:givenName ; sh:name "voornaam" ;
@@ -298,6 +315,7 @@ ent:Persoon
 
 ent:PositieBedienaar
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "positie" ;
   sh:targetClass ere:PositieBedienaar ;
   sh:property [ sh:path ere:functie ; sh:name "functie" ;
@@ -314,6 +332,7 @@ ent:PositieBedienaar
 
 ent:EredienstBeroep
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "beroep" ;
   sh:targetClass code:EredienstBeroepen ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -324,6 +343,7 @@ ent:EredienstBeroep
 
 ent:Bedienaar
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bedienaar" ;
   sh:targetClass ere:RolBedienaar ;
   sh:property [ sh:path ch:startdatum ; sh:name "startdatum" ;
@@ -341,6 +361,7 @@ ent:Bedienaar
 
 ent:BedienaarFinancieringCode
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "financiering" ;
   sh:targetClass code:BedienaarFinancieringCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -348,6 +369,7 @@ ent:BedienaarFinancieringCode
 
 ent:VoorwaardenBedienaar
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "voorwaarde" ;
   sh:targetClass ere:VoorwaardenBedienaar ;
   sh:property [ sh:path ere:voldaan ; sh:name "voldaan" ;
@@ -359,6 +381,7 @@ ent:VoorwaardenBedienaar
 
 ent:VoorwaardenBedienaarCriterium
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "criterium" ;
   sh:targetClass code:VoorwaardenBedienaarCriterium ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -366,6 +389,7 @@ ent:VoorwaardenBedienaarCriterium
 
 ent:BedienaarCriteriumBewijsstuk
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bewijsstuktype" ;
   sh:targetClass code:BedienaarCriteriumBewijsstuk ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -373,6 +397,7 @@ ent:BedienaarCriteriumBewijsstuk
 
 ent:BetrokkenLokaleBesturen
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "betrokken lokale besturen" ;
   sh:targetClass ere:BetrokkenLokaleBesturen ;
   sh:property [ sh:path ere:financieringspercentage ; sh:name "financieringspercentage" ;
@@ -388,6 +413,7 @@ ent:BetrokkenLokaleBesturen
 
 ent:TypeBetrokkenheid
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "type betrokkenheid" ;
   sh:targetClass code:TypeBetrokkenheid ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -395,6 +421,7 @@ ent:TypeBetrokkenheid
 
 ent:Bestuurseenheid
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuurseenheid" ;
   sh:targetClass besluit:Bestuurseenheid ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -404,6 +431,7 @@ ent:Bestuurseenheid
 
 ent:ContactPunt
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "contactpunt" ;
   sh:targetClass schema:ContactPoint ;
   sh:property [ sh:path schema:email ; sh:name "email" ;
@@ -417,6 +445,7 @@ ent:ContactPunt
 
 ent:Adres
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "adres" ;
   sh:targetClass locn:Address ;
   sh:property [ sh:path locn:thoroughfare ; sh:name "straat" ;

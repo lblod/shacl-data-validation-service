@@ -2,13 +2,16 @@ import * as fs from "node:fs/promises";
 
 export async function listFiles(dir) {
   try {
-    const filenames = await fs.readdir(dir);
+    // Only files: subdirectories, e.g. disabled/, aren't listed
+    const entries = await fs.readdir(dir, { withFileTypes: true });
 
     if (!dir.endsWith("/")) {
       dir += "/";
     }
 
-    return filenames.map((file) => dir + file);
+    return entries
+      .filter((entry) => entry.isFile())
+      .map((entry) => dir + entry.name);
   } catch (err) {
     console.error(
       `\n>> ERROR: failed to read files from ${dir}\n>> Full error: "${err}"`,

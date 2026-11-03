@@ -1,13 +1,17 @@
+import envvar from "env-var";
 import { app, errorHandler } from "mu";
-import { validateResource } from "./lib/engine";
 import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
-import { loadRules, rulesForResource } from "./lib/rules";
-import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
-import { objectsForPredicate } from "./util/dataset";
+import { validate } from "./lib/validation";
+import { loadValidationShapes } from "./lib/validation-shapes";
+
+// The test routes read any resource through sudo, so they are opt-in
+const ENABLE_TEST_ROUTES = envvar
+  .get("ENABLE_TEST_ROUTES")
+  .default("false")
+  .asBool();
 
 (async function startup() {
-  await loadRules();
   await loadValidationShapes();
 })();
 
@@ -15,47 +19,34 @@ app.get("/health", async function (_req, res) {
   res.send({ status: "ok" });
 });
 
-app.get("/test/validate/:uri", async function (req, res) {
-  const uri = req.params.uri;
-  const resourceToValidate = await getResource(uri);
-  if (resourceToValidate) {
-    // Get a set<term> containing named nodes for a rule applicable for the
-    // given resource type
-    const rules = await rulesForResource(resourceToValidate);
-    // FIXME: language server complains size property does not exist in
-    // DatasetExt...
-    if (rules.size > 0) {
-      // NOTE (22/10/2026): We lose the connection between validation shape and
-      // rule here, that might be an issue when interpreting the report.  It is
-      // probably nice if we can convert the engine's report to something more
-      // readable that says which rule was violated and why.
-      const validationShapeUris = objectsForPredicate(
-        "http://mu.semte.ch/vocabularies/ext/validationShape",
-        rules,
-      );
-
-      if (validationShapeUris.size > 0) {
+if (ENABLE_TEST_ROUTES) {
+  app.get("/test/validate/:uri", async function (req, res, next) {
+    try {
+      const uri = req.params.uri;
+      const resourceToValidate = await getResource(uri);
+      if (resourceToValidate) {
         // NOTE (22/10/2026): We may need to retrieve extra resource triples
-        // depending on the validation shapes.  It is likely, the validation
-        // shapes require more input than the shapes in the rules. This becomes
-        // a concern when we flesh out the data retrieval to work based on the
-        // shapes.
+        // depending on the validation shapes.  This becomes a concern when we
+        // flesh out the data retrieval to work based on the shapes.
+        const { report } = await validate(resourceToValidate, uri);
+        if (report) {
+          writeReportFile(report);
 
-        const shapes = shapeResources(validationShapeUris);
-
-        const report = await validateResource(resourceToValidate, shapes);
-        writeReportFile(report);
-
-        res.send("Resource validated, see report for result.");
+          res.send("Resource validated, see report for result.");
+        } else {
+          res.status(400).send("No applicable validation shapes for resource");
+        }
       } else {
-        res.status(400).send("No applicable validation shapes for resource");
+        // The URI comes from the request, so it can't be sent as HTML
+        res.type("text/plain").send(`No resource found for ${uri}`);
       }
-    } else {
-      res.status(400).send("No applicable rules for resource");
+    } catch (err) {
+      // Express doesn't catch rejections, which would stop the service
+      console.error(err);
+      err.status = 500;
+      next(err);
     }
-  } else {
-    res.send(`No resource found for ${uri}`);
-  }
-});
+  });
+}
 
 app.use(errorHandler);

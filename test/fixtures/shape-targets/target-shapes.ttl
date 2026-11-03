@@ -1,0 +1,42 @@
+@prefix ex: <http://example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:ClassShape a sh:NodeShape ;
+  sh:targetClass ex:Document .
+
+ex:NodeTargetShape a sh:NodeShape ;
+  sh:targetNode ex:session .
+
+ex:SubjectsOfShape a sh:NodeShape ;
+  sh:targetSubjectsOf ex:title .
+
+ex:ObjectsOfShape a sh:NodeShape ;
+  sh:targetObjectsOf ex:hasDocument .
+
+ex:SparqlShape a sh:NodeShape ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX ex: <http://example.org/>
+      SELECT ?this WHERE { ?this ex:heldBy ex:council . }"""
+  ] .
+
+ex:DeclaredPrefixesShape a sh:NodeShape ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:prefixes ex:prefixes ;
+    sh:select "SELECT ?this WHERE { ?this ex:heldBy ex:council . }"
+  ] .
+
+ex:prefixes sh:declare [
+  sh:prefix "ex" ;
+  sh:namespace "http://example.org/"^^xsd:anyURI
+] .
+
+ex:OtherClassShape a sh:NodeShape ;
+  sh:targetClass ex:Person .
+
+ex:DeactivatedShape a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  sh:deactivated true .

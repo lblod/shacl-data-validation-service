@@ -8,6 +8,7 @@ import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
 import { objectsForPredicate } from "./util/rdf-ext-helpers";
 import { listUniqueSubjects } from "./util/delta-message";
+import * as env from "./env";
 
 (async function startup() {
   await loadRules();
@@ -75,27 +76,36 @@ async function handleResource(namedNode: NamedNodeExt) {
 
         const report = await validateResource(resourceToValidate, shapes);
 
-        // TODO: Make logging optional via ENV VAR
         if (report.conforms) {
-          console.log(
-            `\n>> INFO: Resource ${namedNode} was successfully validated`,
-          );
+          if (env.LOGLEVEL === "info") {
+            console.log(
+              `\n>> INFO: Resource ${namedNode} was successfully validated`,
+            );
+          }
         } else {
           writeReportFile(report);
-          console.log(
-            `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
-          );
+          if (env.LOGLEVEL === "info") {
+            console.log(
+              `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
+            );
+          }
         }
       } else {
-        console.log(
-          `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
-        );
+        if (env.LOGLEVEL === "info") {
+          console.log(
+            `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
+          );
+        }
       }
     } else {
-      console.log(`\n>> INFO: No applicable rules for resource ${namedNode}`);
+      if (env.LOGLEVEL === "info") {
+        console.log(`\n>> INFO: No applicable rules for resource ${namedNode}`);
+      }
     }
   } else {
-    console.log(`\n>> INFO: No resource found for ${namedNode}`);
+    if (env.LOGLEVEL === "info") {
+      console.log(`\n>> INFO: No resource found for ${namedNode}`);
+    }
   }
 }
 

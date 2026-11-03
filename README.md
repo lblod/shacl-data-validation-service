@@ -48,9 +48,10 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 ### Environment variables.
 
-|Name            |Description                           |Default value|
-|----------------|--------------------------------------|-------------|
-|KEEP_ALL_REPORTS|Whether to keep all generated reports.|false        |
+|Name            |Description                                        |Default value|
+|----------------|---------------------------------------------------|-------------|
+|KEEP_ALL_REPORTS|Whether to keep all generated reports              |false        |
+|LOGLEVEL        |Level of logging to the console: "silent" or "info"|silent       |
 
 ## Methodology
 ### Resource retrieval

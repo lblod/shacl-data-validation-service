@@ -9,11 +9,14 @@ import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
 import { objectsForPredicate } from "./util/rdf-ext-helpers";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
+import { SubjectQueue } from "./queue";
 
 (async function startup() {
   await loadRules();
   await loadValidationShapes();
 })();
+
+const subjectQueue = new SubjectQueue(handleResource);
 
 app.get("/health", async function (_req, res) {
   res.send({ status: "ok" });
@@ -25,20 +28,9 @@ app.post(
   async function (req, res) {
     const changesets = req.body;
     const subjects = listUniqueSubjects(changesets);
-    // TODO: Should probably use some overall queue of subjects yet to validate.
-    // In busy apps delta messages can arrive rather frequently, possibly
-    // containing overlapping subjects.  Ideally we avoid validating the same
-    // resource multiple times in this scenario.
 
     for (const subject of subjects) {
-      // NOTE (03/11/2026): Do not await here, we perform the validation in the
-      // background and write results to report.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handleResource(subject).catch((e: any) => {
-        console.error(
-          `Something went wrong while processing resource ${subject}: ${e}`,
-        );
-      });
+      subjectQueue.enqueue(subject);
     }
 
     return res.status(200).send().end();

@@ -48,7 +48,7 @@ ext:hasLabel a sh:PropertyShape ;
 For more information on defining SHACL node shapes see the [SHACL](https://www.w3.org/TR/shacl/) recommendation or the example files in the configuration folder.
 
 #### Validation shapes with a SPARQL-based target
-A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the data of the resource at hand.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
+A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the store.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
 
 ```ttl
 ext:activeOrganizationShape-v2 a sh:NodeShape ;

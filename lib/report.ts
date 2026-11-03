@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fs from "node:fs/promises";
 import envvar from "env-var";
 
 // TODO: Check if exists, create if necessary
@@ -13,11 +13,11 @@ function timestamp() {
   return new Date().toJSON().replace(/-|T|:|\.|Z/gi, "");
 }
 
-export function writeReportFile(report) {
+export async function writeReportFile(report) {
   const filenamePrefix = KEEP_ALL_REPORTS ? timestamp() + "--" : "";
   const filePath = REPORTS_DIR + filenamePrefix + "report.json";
 
   const reportString = JSON.stringify(report, null, 2);
 
-  fs.writeFileSync(filePath, reportString);
+  await fs.writeFile(filePath, reportString);
 }

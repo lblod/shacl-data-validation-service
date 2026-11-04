@@ -102,15 +102,17 @@ async function handleResource(namedNode: NamedNodeExt) {
 }
 
 /*
- * Internal API, used for testing only.  This may be removed in the future.
+ * Internal API, used for testing and debugging only.
  */
-app.get("/test/validate/:uri", async function (req, res) {
-  const uri = req.params.uri;
-  await handleResource(new NamedNodeExt(uri));
+if (env.ENABLE_TEST_API) {
+  app.get("/test/validate/:uri", async function (req, res) {
+    const uri = req.params.uri;
+    await handleResource(new NamedNodeExt(uri));
 
-  res
-    .send(`Resource ${uri} validated, see logs and/or report for results`)
-    .end();
-});
+    res
+      .send(`Resource ${uri} validated, see logs and/or report for results`)
+      .end();
+  });
+}
 
 app.use(errorHandler);

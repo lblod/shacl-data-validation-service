@@ -48,11 +48,12 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 ### Environment variables.
 
-|Name               |Description                                                    |Default value|
-|-------------------|---------------------------------------------------------------|-------------|
-|KEEP_ALL_REPORTS   |Whether to keep all generated reports                          |false        |
-|LOGLEVEL           |Level of logging to the console: "silent" or "info"            |silent       |
-|QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.|100          |
+|Name               |Description                                                                                                |Default value|
+|-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
+|KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                      |false        |
+|LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
+|QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
+|ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
 
 ## Methodology
 ### Resource retrieval
@@ -68,6 +69,9 @@ Second, the validation shapes linked by the applicable rules are collected.  The
 ## API
 ### GET /health
 Returns `{ "status": "ok" }` if the service is running.
+
+#### Test API
+The following endpoints are only available when `ENABLE_TEST_API` is set to true.
 
 ### GET /test/validate/:uri
 Endpoint meant for testing during service development.  The service will try to retrieve the data for the resource with the given URI and try to validate it according to the service's configuration.

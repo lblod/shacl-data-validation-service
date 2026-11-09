@@ -1,7 +1,7 @@
 import type { Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
-import { AstFactory, type QuerySelect } from "@traqula/rules-sparql-1-1";
+import { AstFactory, lex, type QuerySelect } from "@traqula/rules-sparql-1-1";
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 
@@ -63,12 +63,12 @@ export type SparqlGenerationOptions = {
   graph?: string;
 };
 
-// An absolute IRI, without the characters the SPARQL grammar doesn't allow in one
-const VALID_IRI = /^[A-Za-z][A-Za-z0-9+.-]*:[^\s<>"{}|^`\\]*$/;
+// An IRI as SPARQL's IRIREF allows it, using Traqula's lexer pattern
+const IRIREF = new RegExp(`^${lex.patterns.iriRefPattern.source}$`);
 const VALID_LANGUAGE = /^[A-Za-z]+(-[A-Za-z0-9]+)*$/;
 
 function validIri(value: string) {
-  if (!VALID_IRI.test(value)) throw new Error(`Invalid IRI ${value}`);
+  if (!IRIREF.test(`<${value}>`)) throw new Error(`Invalid IRI ${value}`);
   return value;
 }
 

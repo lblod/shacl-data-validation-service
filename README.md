@@ -24,21 +24,17 @@ The code snippets in the following sections assume the following prefixes to be 
 ### Validation shapes
 The SHACL node shapes used to actually validate data resources should be specified in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
 
-The targets of a node shape determine the resources it applies to: `sh:targetClass`, `sh:targetNode`, `sh:targetSubjectsOf`, `sh:targetObjectsOf` or a SPARQL-based target.  For example, the following shape applies to all `org:Organization` resources, and reports a violation for each one without the correct value for `regorg:orgStatus`.
+The targets of a node shape determine the resources it applies to: `sh:targetClass`, `sh:targetNode`, `sh:targetSubjectsOf`, `sh:targetObjectsOf` or a SPARQL-based target.  For example, the following shape targets all resources of type `org:Organization`:
 
 ```ttl
-ext:activeOrganizationShape-v1 a sh:NodeShape ;
-  sh:targetClass org:Organization ;
-  sh:property [
-    sh:path regorg:orgStatus ;
-    sh:hasValue <http://lblod.data.gift/concepts/63cc561de9188d64ba5840a42ae8f0d6> ;
-    ] .
+ext:allOrganizationsShape a sh:NodeShape ;
+  sh:targetClass org:Organization .
 ```
 
-Node shapes can share a property shape by referring to it. Reuse of SHACL moves to the property shapes: a property shape with a URI and without a target is never selected on its own, and is validated for each node shape that refers to it with `sh:property`.  The checks can therefore be defined once, while each node shape decides to which resources they apply.
+Node shapes can share a property shape by referring to it. Reuse of SHACL moves to the property shapes: a property shape with a URI and without a target is never selected on its own, and is validated for each node shape that refers to it with `sh:property`.  The checks can therefore be defined once, while each node shape decides to which resources they apply. For example, organizations are expected to have at least one prefLabel:
 
 ```ttl
-ext:organizationShape sh:property ext:hasLabel .
+ext:allOrganizationsShape sh:property ext:hasLabel .
 
 ext:hasLabel a sh:PropertyShape ;
   sh:path skos:prefLabel ;
@@ -48,10 +44,10 @@ ext:hasLabel a sh:PropertyShape ;
 For more information on defining SHACL node shapes see the [SHACL](https://www.w3.org/TR/shacl/) recommendation or the example files in the configuration folder.
 
 #### Validation shapes with a SPARQL-based target
-A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the store.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:activeOrganizationShape-v1`, it does not report a violation for other organizations, because it does not apply to them.
+A [SPARQL-based target](https://www.w3.org/TR/shacl-af/#SPARQLTarget) can further refine to which instances of a resource type a validation shape applies.  The target's query selects the resources in the store.  For example, the following shape applies only to `org:Organization` resources that have the correct value for `regorg:orgStatus`.  Unlike `ext:allOrganizationsShape`, which applies to every organization, it does not report a violation for other organizations, because it does not apply to them.
 
 ```ttl
-ext:activeOrganizationShape-v2 a sh:NodeShape ;
+ext:activeOrganizationsShape a sh:NodeShape ;
   sh:target [
     a sh:SPARQLTarget ;
     sh:select """

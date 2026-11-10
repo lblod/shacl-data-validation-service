@@ -4,7 +4,10 @@ import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { generateTargetQuery } from "../lib/sparql-generation";
 import { validate, validationShapesForResource } from "../lib/validation";
-import { VALIDATION_SHAPES } from "../lib/validation-shapes";
+import {
+  targetedShapesForResource,
+  VALIDATION_SHAPES,
+} from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 
@@ -132,6 +135,14 @@ describe("validation shapes for a resource", () => {
     return validationShapesForResource(ex(name));
   }
 
+  // The URIs of the shapes whose targets select the resource
+  async function selectedShapes(name: string) {
+    store.data = resource(name);
+    return (await targetedShapesForResource(ex(name))).map(
+      (shape) => shape.value,
+    );
+  }
+
   function validateNamed(name: string) {
     store.data = resource(name);
     return validate(resource(name), ex(name));
@@ -143,13 +154,11 @@ describe("validation shapes for a resource", () => {
   });
 
   test("selects a shape on its sh:targetClass", async () => {
-    const { uris } = await shapesFor("document");
-    expect(uris).toEqual([ex("DocumentShape")]);
+    expect(await selectedShapes("document")).toEqual([ex("DocumentShape")]);
   });
 
   test("selects a shape on its SPARQL-based target", async () => {
-    const { uris } = await shapesFor("session");
-    expect(uris).toEqual([ex("SessionShape")]);
+    expect(await selectedShapes("session")).toEqual([ex("SessionShape")]);
   });
 
   test("selects nothing for a resource no target selects", async () => {
@@ -158,7 +167,7 @@ describe("validation shapes for a resource", () => {
 
   test("includes a property shape node shapes share", async () => {
     for (const name of ["document", "report"]) {
-      const { shapes } = await shapesFor(name);
+      const shapes = await shapesFor(name);
       expect(shapes.match(rdf.namedNode(ex("hasTitle"))).size).toBeGreaterThan(
         0,
       );
@@ -166,22 +175,15 @@ describe("validation shapes for a resource", () => {
   });
 
   test("validates against the shared property shape", async () => {
-    const passing = await validateNamed("document");
-    expect(passing.report.conforms).toBe(true);
-
-    const failing = await validateNamed("report");
-    expect(failing.shapeUris).toEqual([ex("ReportShape")]);
-    expect(failing.report.conforms).toBe(false);
+    expect((await validateNamed("document")).conforms).toBe(true);
+    expect((await validateNamed("report")).conforms).toBe(false);
   });
 
   test("validates against a shape selected on its SPARQL-based target", async () => {
-    const passing = await validateNamed("session");
-    expect(passing.shapeUris).toEqual([ex("SessionShape")]);
-    expect(passing.report.conforms).toBe(true);
-
-    const failing = await validateNamed("sessionWithoutDocument");
-    expect(failing.shapeUris).toEqual([ex("SessionShape")]);
-    expect(failing.report.conforms).toBe(false);
+    expect((await validateNamed("session")).conforms).toBe(true);
+    expect((await validateNamed("sessionWithoutDocument")).conforms).toBe(
+      false,
+    );
   });
 
   test("gives no report when no shape applies", async () => {

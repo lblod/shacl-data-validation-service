@@ -31,7 +31,7 @@ ext:allOrganizationsShape a sh:NodeShape ;
   sh:targetClass org:Organization .
 ```
 
-Node shapes can share a property shape by referring to it. Reuse of SHACL moves to the property shapes: a property shape with a URI and without a target is never selected on its own, and is validated for each node shape that refers to it with `sh:property`.  The checks can therefore be defined once, while each node shape decides to which resources they apply. For example, organizations are expected to have at least one prefLabel:
+Node shapes *can* share a property shape by referring to its URI. A property shape is validated for each node shape that refers to it with `sh:property`.  The property checks can therefore be defined once, while each node shape decides to which resources they apply. For example, organizations are expected to have at least one prefLabel:
 
 ```ttl
 ext:allOrganizationsShape sh:property ext:hasLabel .

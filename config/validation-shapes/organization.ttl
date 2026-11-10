@@ -6,6 +6,9 @@
 @prefix regorg: <http://www.w3.org/ns/regorg#> .
 @prefix besluit: <http://data.vlaanderen.be/ns/besluit#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ere: <http://data.lblod.info/vocabularies/erediensten/> .
+@prefix code: <http://lblod.data.gift/vocabularies/organisatie/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 ext:prefixes sh:declare [
     a sh:PrefixDeclaration ;
@@ -64,4 +67,44 @@ ext:organisationNotAdministrativeUnit a sh:NodeShape ;
     a sh:PropertyShape ;
     sh:path rdf:type ;
     sh:class besluit:Bestuurseenheid ;
+    ] .
+
+ext:worshipOrganisationHasMinisterPosition a sh:NodeShape ;
+  sh:targetClass ere:BestuurVanDeEredienst ;
+  sh:property [
+    sh:path ere:wordtBediendDoor ;
+    sh:node ext:PositieBedienaar ;
+    sh:minCount 1 ;
+    ] .
+
+ext:PositieBedienaar a sh:NodeShape ;
+  sh:targetClass ere:PositieBedienaar ;
+  sh:property [
+    sh:path ere:functie ;
+    sh:name "functie" ;
+    sh:description "Het beroep van de bedienaar, bv. pastoor, imam" ;
+    sh:node ext:EredienstBeroep
+    ] .
+ext:EredienstBeroep a sh:NodeShape ;
+  rdfs:label "beroep" ;
+  sh:targetClass code:EredienstBeroepen ;
+  sh:property [
+    sh:path skos:prefLabel ;
+    sh:name "naam" ;
+    sh:datatype xsd:string
+    ] ;
+  sh:property [
+    sh:path ere:vanToepassingBijStatus ;
+    sh:name "van toepassing bij status" ;
+    sh:description "De organisatiestatussen waarbij dit beroep voorkomt" ;
+    sh:node ext:OrganisatieStatus
+    ] .
+
+ext:OrganisatieStatus a sh:NodeShape ;
+  rdfs:label "organisatiestatus" ;
+  sh:targetClass code:OrganisatieStatusCode ;
+  sh:property [
+    sh:path skos:prefLabel ;
+    sh:name "naam" ;
+    sh:datatype xsd:string
     ] .

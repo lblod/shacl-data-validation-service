@@ -3,11 +3,9 @@ import rdf from "rdf-ext";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
 import { generateTargetQuery } from "./sparql-generation";
+import { PREFIXES } from "../constants";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
-
-const SH = "http://www.w3.org/ns/shacl#";
-const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
@@ -34,13 +32,13 @@ function getListMembers(list) {
     visited.add(listNode);
     for (const quad of VALIDATION_SHAPES.match(
       listNode,
-      rdf.namedNode(RDF + "first"),
+      rdf.namedNode(PREFIXES.rdf + "first"),
     )) {
       members.push(quad.object);
     }
     for (const quad of VALIDATION_SHAPES.match(
       listNode,
-      rdf.namedNode(RDF + "rest"),
+      rdf.namedNode(PREFIXES.rdf + "rest"),
     )) {
       toVisit.push(quad.object);
     }
@@ -55,7 +53,7 @@ function checkReferencedShapes() {
   for (const name of SHAPE_REFERENCES) {
     for (const quad of VALIDATION_SHAPES.match(
       null,
-      rdf.namedNode(SH + name),
+      rdf.namedNode(PREFIXES.sh + name),
     )) {
       references.push({ from: quad.subject, shape: quad.object });
     }
@@ -63,7 +61,7 @@ function checkReferencedShapes() {
   for (const name of SHAPE_LIST_REFERENCES) {
     for (const quad of VALIDATION_SHAPES.match(
       null,
-      rdf.namedNode(SH + name),
+      rdf.namedNode(PREFIXES.sh + name),
     )) {
       for (const shape of getListMembers(quad.object)) {
         references.push({ from: quad.subject, shape });

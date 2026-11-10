@@ -41,22 +41,22 @@ async function handleResource(namedNode: NamedNodeExt) {
     // NOTE (22/10/2026): We may need to retrieve extra resource triples
     // depending on the validation shapes.  This becomes a concern when we
     // flesh out the data retrieval to work based on the shapes.
-    const { report } = await validate(resourceToValidate, namedNode.value);
+    const validation = await validate(resourceToValidate, namedNode.value);
 
-    if (!report) {
+    if (!validation) {
       if (env.LOGLEVEL === "info") {
         console.log(
           `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
         );
       }
-    } else if (report.conforms) {
+    } else if (validation.report.conforms) {
       if (env.LOGLEVEL === "info") {
         console.log(
           `\n>> INFO: Resource ${namedNode} was successfully validated`,
         );
       }
     } else {
-      await writeReportFile(report);
+      await writeReportFile(validation.report);
       if (env.LOGLEVEL === "info") {
         console.log(
           `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,

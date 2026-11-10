@@ -153,8 +153,7 @@ describe("validation shapes for a resource", () => {
   });
 
   test("selects nothing for a resource no target selects", async () => {
-    const { uris } = await shapesFor("other");
-    expect(uris).toEqual([]);
+    expect(await shapesFor("other")).toBeUndefined();
   });
 
   test("includes a property shape node shapes share", async () => {
@@ -186,8 +185,6 @@ describe("validation shapes for a resource", () => {
   });
 
   test("gives no report when no shape applies", async () => {
-    const { shapeUris, report } = await validateNamed("other");
-    expect(shapeUris).toEqual([]);
-    expect(report).toBeUndefined();
+    expect(await validateNamed("other")).toBeUndefined();
   });
 });

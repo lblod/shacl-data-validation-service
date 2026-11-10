@@ -1,17 +1,28 @@
 import * as fs from "node:fs/promises";
+import path from "path";
 
-export async function listFiles(dir) {
+// NOTE (04/11/2026): The ~extensions~ argument is an array to more easily allow
+// extending it to more file types in the future.  In that case the rdf-ext
+// helper function ~insertContentInDataset~ should also be made configurable to
+// handle different formats.
+export async function listFiles(dir, extensions = [".ttl"]) {
   try {
-    // Only files: subdirectories, e.g. disabled/, aren't listed
-    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const entries = await fs.readdir(dir, {
+      withFileTypes: true,
+      recursive: true,
+    });
 
     if (!dir.endsWith("/")) {
       dir += "/";
     }
 
     return entries
-      .filter((entry) => entry.isFile())
-      .map((entry) => dir + entry.name);
+      .filter(
+        (entry) =>
+          entry.isFile() &&
+          extensions.includes(path.extname(entry.name).toLowerCase()),
+      )
+      .map((entry) => path.join(entry.parentPath, entry.name));
   } catch (err) {
     console.error(
       `\n>> ERROR: failed to read files from ${dir}\n>> Full error: "${err}"`,

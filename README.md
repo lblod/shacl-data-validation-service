@@ -63,11 +63,13 @@ ext:activeOrganizationsShape a sh:NodeShape ;
 
 ### Environment variables.
 
-|Name              |Description                                                                                                        |Default value|
-|------------------|-------------------------------------------------------------------------------------------------------------------|-------------|
-|ENABLE_TEST_ROUTES|Whether to enable the `/test` routes.  They read resources through sudo, so only enable them during development.  |false        |
-|KEEP_ALL_REPORTS  |Whether to keep generated reports instead of overwriting one report.                                               |false        |
-|MAX_REPORTS       |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                            |100          |
+|Name               |Description                                                                                                         |Default value|
+|-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
+|ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
+|KEEP_ALL_REPORTS   |Whether to keep generated reports instead of overwriting one report.                                                |false        |
+|LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
+|MAX_REPORTS        |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                             |100          |
+|QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
 
 ## Methodology
 ### Resource retrieval
@@ -87,5 +89,8 @@ The tests check which shapes are selected for a resource, without a triplestore.
 ### GET /health
 Returns `{ "status": "ok" }` if the service is running.
 
+#### Test API
+The following endpoints are only available when `ENABLE_TEST_API` is set to true.
+
 ### GET /test/validate/:uri
-Endpoint meant for testing during service development, only available with `ENABLE_TEST_ROUTES` set to `true`.  The service will try to retrieve the data for the resource with the given URI and try to validate it according to the service's configuration.
+Endpoint meant for testing during service development.  The service will try to retrieve the data for the resource with the given URI and try to validate it according to the service's configuration.

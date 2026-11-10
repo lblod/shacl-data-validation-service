@@ -6,7 +6,7 @@ import { generateTargetQuery } from "../lib/sparql-generation";
 import { validate, validationShapesForResource } from "../lib/validation";
 import { VALIDATION_SHAPES } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
-import { insertContentInDataset } from "../util/dataset";
+import { insertContentInDataset } from "../util/rdf-ext-helpers";
 
 // The store the service queries, as a dataset
 const store = vi.hoisted(() => ({ data: undefined }));

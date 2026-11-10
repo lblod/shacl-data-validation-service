@@ -1,6 +1,6 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
-import { insertContentInDataset } from "../util/dataset";
+import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
 import { generateTargetQuery } from "./sparql-generation";
 

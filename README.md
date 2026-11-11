@@ -67,6 +67,8 @@ This services determines against which SHACL node shapes a resource should be va
 
 Second, the validation shapes linked by the applicable rules are collected.  The resource is validated against all of these shapes using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand.  The validation report is return as is, currently without any further processing.
 
+When a resource isn't valid, its report is written as N-Triples to `/share/report.nt`.  A report of a validation against a single shape is named after that shape instead: `report-<local name>-<hash>.nt`.  The next report with the same name overwrites it, unless `KEEP_ALL_REPORTS` is set.
+
 ## API
 ### GET /health
 Returns `{ "status": "ok" }` if the service is running.

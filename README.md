@@ -50,8 +50,8 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 |Name               |Description                                                                                                |Default value|
 |-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
-|KEEP_ALL_REPORTS   |Whether to keep generated reports instead of overwriting the report.                                       |false        |
-|MAX_REPORTS        |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                    |100          |
+|KEEP_ALL_REPORTS   |Whether to keep all generated reports instead of only the newest `MAX_REPORTS`.                            |false        |
+|MAX_REPORTS        |The number of reports to keep without `KEEP_ALL_REPORTS`.  The oldest reports are removed.                 |100          |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
 |ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
@@ -67,7 +67,7 @@ This services determines against which SHACL node shapes a resource should be va
 
 Second, the validation shapes linked by the applicable rules are collected.  The resource is validated against all of these shapes using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand.  The validation report is return as is, currently without any further processing.
 
-When a resource isn't valid, its report is written as N-Triples to `/share/report.nt`.  A report of a validation against a single shape is named after that shape instead: `report-<local name>-<hash>.nt`.  The next report with the same name overwrites it, unless `KEEP_ALL_REPORTS` is set.
+When a resource isn't valid, its report is written as N-Triples to `/share/<timestamp>--report.nt`.  A report of a validation against a single shape is named after that shape instead: `<timestamp>--report-<local name>-<hash>.nt`.  Only the newest `MAX_REPORTS` reports are kept, unless `KEEP_ALL_REPORTS` is set.
 
 ## API
 ### GET /health

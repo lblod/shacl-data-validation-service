@@ -19,7 +19,7 @@ function timestamp() {
   return new Date().toJSON().replace(/-|T|:|\.|Z/gi, "");
 }
 
-// Removes the oldest kept reports: their timestamps sort by age
+// Removes the oldest reports beyond MAX_REPORTS: their timestamps sort by age
 async function removeOldReports() {
   const reports = (await fs.readdir(REPORTS_DIR))
     .filter((file) => file.includes("--report"))
@@ -41,12 +41,11 @@ function reportFilename(shape?) {
 }
 
 export async function writeReportFile(report, shape?) {
-  const filenamePrefix = KEEP_ALL_REPORTS ? timestamp() + "--" : "";
-  const filePath = REPORTS_DIR + filenamePrefix + reportFilename(shape);
+  const filePath = REPORTS_DIR + timestamp() + "--" + reportFilename(shape);
 
   await fs.mkdir(REPORTS_DIR, { recursive: true });
   // The report object refers to its RDF factory, which can't be serialized as
   // JSON. Its dataset is the SHACL validation report.
   await fs.writeFile(filePath, report.dataset.toString());
-  if (KEEP_ALL_REPORTS) await removeOldReports();
+  if (!KEEP_ALL_REPORTS) await removeOldReports();
 }

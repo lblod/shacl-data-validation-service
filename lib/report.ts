@@ -8,8 +8,8 @@ import envvar from "env-var";
 
 const REPORTS_DIR = "/share/";
 
-const KEEP_ALL_REPORTS = envvar
-  .get("KEEP_ALL_REPORTS")
+const ONLY_KEEP_LATEST_REPORT = envvar
+  .get("ONLY_KEEP_LATEST_REPORT")
   .default("false")
   .asBool();
 
@@ -19,12 +19,19 @@ function timestamp() {
   return new Date().toJSON().replace(/-|T|:|\.|Z/gi, "");
 }
 
-// Removes the oldest reports beyond MAX_REPORTS: their timestamps sort by age
-async function removeOldReports() {
+/*
+ * Removes the older versions of the report with the given name, or else the
+ * oldest reports beyond MAX_REPORTS. Their timestamps sort reports by age, so
+ * the report just written comes last.
+ */
+async function removeOldReports(name: string) {
   const reports = (await fs.readdir(REPORTS_DIR))
     .filter((file) => file.includes("--report"))
     .sort();
-  for (const report of reports.slice(0, -MAX_REPORTS)) {
+  const oldReports = ONLY_KEEP_LATEST_REPORT
+    ? reports.filter((file) => file.endsWith("--" + name)).slice(0, -1)
+    : reports.slice(0, -MAX_REPORTS);
+  for (const report of oldReports) {
     await fs.rm(REPORTS_DIR + report);
   }
 }
@@ -41,11 +48,12 @@ function reportFilename(shape?) {
 }
 
 export async function writeReportFile(report, shape?) {
-  const filePath = REPORTS_DIR + timestamp() + "--" + reportFilename(shape);
+  const name = reportFilename(shape);
+  const filePath = REPORTS_DIR + timestamp() + "--" + name;
 
   await fs.mkdir(REPORTS_DIR, { recursive: true });
   // The report object refers to its RDF factory, which can't be serialized as
   // JSON. Its dataset is the SHACL validation report.
   await fs.writeFile(filePath, report.dataset.toString());
-  if (!KEEP_ALL_REPORTS) await removeOldReports();
+  await removeOldReports(name);
 }

@@ -66,9 +66,8 @@ ext:activeOrganizationsShape a sh:NodeShape ;
 |Name               |Description                                                                                                         |Default value|
 |-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
-|KEEP_ALL_REPORTS   |Whether to keep generated reports instead of overwriting one report.                                                |false        |
+|KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                               |false        |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
-|MAX_REPORTS        |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                             |100          |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
 
 ## Methodology

@@ -1,9 +1,10 @@
 import type { Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
-import { AstFactory, type QuerySelect } from "@traqula/rules-sparql-1-1";
+import { AstFactory, lex, type QuerySelect } from "@traqula/rules-sparql-1-1";
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
+import { PREFIXES } from "../constants";
 
 /*
  * Generates SPARQL queries from SHACL shapes:
@@ -45,11 +46,8 @@ import rdf from "rdf-ext";
  * used to select the focus nodes, but their triples are not retrieved.
  */
 
-const SH = "http://www.w3.org/ns/shacl#";
-const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-const RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-const XSD_BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";
-const XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
+const XSD_BOOLEAN = PREFIXES.xsd + "boolean";
+const XSD_STRING = PREFIXES.xsd + "string";
 
 const TARGET_PREDICATES = [
   "targetClass",
@@ -108,12 +106,12 @@ export type SparqlGenerationOptions = {
   maxDepth?: number;
 };
 
-// An absolute IRI, without the characters the SPARQL grammar doesn't allow in one
-const VALID_IRI = /^[A-Za-z][A-Za-z0-9+.-]*:[^\s<>"{}|^`\\]*$/;
+// An IRI as SPARQL's IRIREF allows it, using Traqula's lexer pattern
+const IRIREF = new RegExp(`^${lex.patterns.iriRefPattern.source}$`);
 const VALID_LANGUAGE = /^[A-Za-z]+(-[A-Za-z0-9]+)*$/;
 
 function validIri(value: string) {
-  if (!VALID_IRI.test(value)) throw new Error(`Invalid IRI ${value}`);
+  if (!IRIREF.test(`<${value}>`)) throw new Error(`Invalid IRI ${value}`);
   return value;
 }
 
@@ -213,8 +211,8 @@ const predicatePath = (value: string): Path => ({
 const TYPE_PATH: Path = {
   type: "sequence",
   paths: [
-    predicatePath(RDF + "type"),
-    { type: "zeroOrMore", path: predicatePath(RDFS + "subClassOf") },
+    predicatePath(PREFIXES.rdf + "type"),
+    { type: "zeroOrMore", path: predicatePath(PREFIXES.rdfs + "subClassOf") },
   ],
 };
 
@@ -382,21 +380,24 @@ class SparqlGenerator {
   getListItems(list) {
     const items = [];
     let listNode = list;
-    while (listNode && listNode.value !== RDF + "nil") {
-      const [first] = this.getObjects(listNode, RDF + "first");
+    while (listNode && listNode.value !== PREFIXES.rdf + "nil") {
+      const [first] = this.getObjects(listNode, PREFIXES.rdf + "first");
       if (!first) throw new Error(`${listNode.value} is not an RDF list`);
       items.push(first);
-      [listNode] = this.getObjects(listNode, RDF + "rest");
+      [listNode] = this.getObjects(listNode, PREFIXES.rdf + "rest");
     }
     return items;
   }
 
   // The path of a sh:path
   parseShaclPath(shaclPath): Path {
-    if (shaclPath.termType === "NamedNode" && shaclPath.value !== RDF + "nil") {
+    if (
+      shaclPath.termType === "NamedNode" &&
+      shaclPath.value !== PREFIXES.rdf + "nil"
+    ) {
       return predicatePath(shaclPath.value);
     }
-    if (this.getObjects(shaclPath, RDF + "first").length) {
+    if (this.getObjects(shaclPath, PREFIXES.rdf + "first").length) {
       return {
         type: "sequence",
         paths: this.getListItems(shaclPath).map((item) =>
@@ -404,9 +405,12 @@ class SparqlGenerator {
         ),
       };
     }
-    const [inverse] = this.getObjects(shaclPath, SH + "inversePath");
+    const [inverse] = this.getObjects(shaclPath, PREFIXES.sh + "inversePath");
     if (inverse) return invertPath(this.parseShaclPath(inverse));
-    const [alternatives] = this.getObjects(shaclPath, SH + "alternativePath");
+    const [alternatives] = this.getObjects(
+      shaclPath,
+      PREFIXES.sh + "alternativePath",
+    );
     if (alternatives) {
       return {
         type: "alternative",
@@ -416,7 +420,7 @@ class SparqlGenerator {
       };
     }
     for (const type of Object.keys(CLOSURE_OPERATORS)) {
-      const [path] = this.getObjects(shaclPath, `${SH}${type}Path`);
+      const [path] = this.getObjects(shaclPath, `${PREFIXES.sh}${type}Path`);
       if (path) {
         return { type, path: this.parseShaclPath(path) } as Path;
       }
@@ -576,7 +580,10 @@ class SparqlGenerator {
    */
   getShapeBranches(shape, focus: QueryNode, visited: string[]): Branch[] {
     const key = `${shape.termType}:${shape.value}`;
-    if (visited.includes(key) || this.hasTrueValue(shape, SH + "deactivated")) {
+    if (
+      visited.includes(key) ||
+      this.hasTrueValue(shape, PREFIXES.sh + "deactivated")
+    ) {
       return [];
     }
     if (visited.length >= this.maxDepth) {
@@ -587,13 +594,13 @@ class SparqlGenerator {
     }
     const followed = [...visited, key];
 
-    const [path] = this.getObjects(shape, SH + "path");
+    const [path] = this.getObjects(shape, PREFIXES.sh + "path");
     if (!path) {
       return [
         ...this.getValueNodeBranches(shape, focus, followed),
         ...this.getPairBranches(shape, focus),
-        ...this.getObjects(shape, SH + "property").flatMap((property) =>
-          this.getShapeBranches(property, focus, followed),
+        ...this.getObjects(shape, PREFIXES.sh + "property").flatMap(
+          (property) => this.getShapeBranches(property, focus, followed),
         ),
       ];
     }
@@ -613,21 +620,21 @@ class SparqlGenerator {
   // The data the constraints on the value nodes of a shape need
   getValueNodeBranches(shape, value: QueryNode, followed: string[]): Branch[] {
     const branches = [];
-    if (this.getObjects(shape, SH + "class").length) {
+    if (this.getObjects(shape, PREFIXES.sh + "class").length) {
       branches.push(...this.getPathBranches(TYPE_PATH, value));
     }
-    if (this.hasTrueValue(shape, SH + "closed")) {
+    if (this.hasTrueValue(shape, PREFIXES.sh + "closed")) {
       const property = this.createVariable("property");
       const object = this.createVariable("object");
       const pattern = triplePattern(value, property, object);
       branches.push({ patterns: [pattern], templates: [pattern], end: object });
     }
     const nestedShapes = [
-      ...this.getObjects(shape, SH + "node"),
-      ...this.getObjects(shape, SH + "not"),
-      ...this.getObjects(shape, SH + "qualifiedValueShape"),
+      ...this.getObjects(shape, PREFIXES.sh + "node"),
+      ...this.getObjects(shape, PREFIXES.sh + "not"),
+      ...this.getObjects(shape, PREFIXES.sh + "qualifiedValueShape"),
       ...LOGICAL_LIST_PREDICATES.flatMap((logical) =>
-        this.getObjects(shape, SH + logical).flatMap((list) =>
+        this.getObjects(shape, PREFIXES.sh + logical).flatMap((list) =>
           this.getListItems(list),
         ),
       ),
@@ -642,7 +649,7 @@ class SparqlGenerator {
   // property of the focus node
   getPairBranches(shape, focus: QueryNode): Branch[] {
     return PAIR_PREDICATES.flatMap((pair) =>
-      this.getObjects(shape, SH + pair).flatMap((property) =>
+      this.getObjects(shape, PREFIXES.sh + pair).flatMap((property) =>
         this.getPathBranches(predicatePath(property.value), focus),
       ),
     );
@@ -652,8 +659,8 @@ class SparqlGenerator {
     return (
       this.shapes.match(
         shape,
-        rdf.namedNode(RDF + "type"),
-        rdf.namedNode(RDFS + "Class"),
+        rdf.namedNode(PREFIXES.rdf + "type"),
+        rdf.namedNode(PREFIXES.rdfs + "Class"),
       ).size > 0
     );
   }
@@ -670,7 +677,7 @@ class SparqlGenerator {
 
   // sh:targetClass, and implicit class targets: a shape that is also a class
   getClassTargets(shape): CreateTarget[] {
-    const classes = this.getObjects(shape, SH + "targetClass");
+    const classes = this.getObjects(shape, PREFIXES.sh + "targetClass");
     if (this.isClass(shape)) classes.push(shape);
     return classes.map((targetClass) => (focus) => ({
       select: [
@@ -685,7 +692,7 @@ class SparqlGenerator {
 
   // sh:targetNode
   getNodeTargets(shape): CreateTarget[] {
-    const nodes = this.getObjects(shape, SH + "targetNode");
+    const nodes = this.getObjects(shape, PREFIXES.sh + "targetNode");
     if (!nodes.length) return [];
     const values = nodes.map(termToString).join(" ");
     return [
@@ -702,12 +709,14 @@ class SparqlGenerator {
    * the endpoint doesn't select the focus nodes of the whole store first.
    */
   getPropertyTargets(shape): CreateTarget[] {
-    const subjectsOf = this.getObjects(shape, SH + "targetSubjectsOf").map(
-      (property) => predicatePath(property.value),
-    );
-    const objectsOf = this.getObjects(shape, SH + "targetObjectsOf").map(
-      (property) => invertPath(predicatePath(property.value)),
-    );
+    const subjectsOf = this.getObjects(
+      shape,
+      PREFIXES.sh + "targetSubjectsOf",
+    ).map((property) => predicatePath(property.value));
+    const objectsOf = this.getObjects(
+      shape,
+      PREFIXES.sh + "targetObjectsOf",
+    ).map((property) => invertPath(predicatePath(property.value)));
     return [...subjectsOf, ...objectsOf].map((path) => (focus, focusNodes) => ({
       select: [
         (name) => {
@@ -724,8 +733,8 @@ class SparqlGenerator {
 
   // SPARQL-based targets with a sh:select
   getSparqlTargets(shape): CreateTarget[] {
-    return this.getObjects(shape, SH + "target").flatMap((target) => {
-      const [select] = this.getObjects(target, SH + "select");
+    return this.getObjects(shape, PREFIXES.sh + "target").flatMap((target) => {
+      const [select] = this.getObjects(target, PREFIXES.sh + "select");
       if (!select) return [];
       const createTarget: CreateTarget = (focus, focusNodes) =>
         this.getSparqlTarget(target, select.value, focus, focusNodes);
@@ -784,10 +793,19 @@ class SparqlGenerator {
   // The prefixes declared for a SPARQL-based target (sh:prefixes/sh:declare)
   getPrefixes(target) {
     const prefixes = {};
-    for (const declarations of this.getObjects(target, SH + "prefixes")) {
-      for (const declaration of this.getObjects(declarations, SH + "declare")) {
-        const [prefix] = this.getObjects(declaration, SH + "prefix");
-        const [namespace] = this.getObjects(declaration, SH + "namespace");
+    for (const declarations of this.getObjects(
+      target,
+      PREFIXES.sh + "prefixes",
+    )) {
+      for (const declaration of this.getObjects(
+        declarations,
+        PREFIXES.sh + "declare",
+      )) {
+        const [prefix] = this.getObjects(declaration, PREFIXES.sh + "prefix");
+        const [namespace] = this.getObjects(
+          declaration,
+          PREFIXES.sh + "namespace",
+        );
         if (prefix && namespace) prefixes[prefix.value] = namespace.value;
       }
     }
@@ -906,15 +924,18 @@ class SparqlGenerator {
   getTargetedShapes() {
     const shapes = rdf.termSet();
     for (const target of TARGET_PREDICATES) {
-      for (const quad of this.shapes.match(null, rdf.namedNode(SH + target))) {
+      for (const quad of this.shapes.match(
+        null,
+        rdf.namedNode(PREFIXES.sh + target),
+      )) {
         shapes.add(quad.subject);
       }
     }
     for (const type of ["NodeShape", "PropertyShape"]) {
       for (const quad of this.shapes.match(
         null,
-        rdf.namedNode(RDF + "type"),
-        rdf.namedNode(SH + type),
+        rdf.namedNode(PREFIXES.rdf + "type"),
+        rdf.namedNode(PREFIXES.sh + type),
       )) {
         if (this.isClass(quad.subject)) shapes.add(quad.subject);
       }
@@ -925,7 +946,7 @@ class SparqlGenerator {
   getSelectedShapes(options: SparqlGenerationOptions) {
     const shapes = options.shapes?.map(toTerm) ?? this.getTargetedShapes();
     return shapes.filter(
-      (shape) => !this.hasTrueValue(shape, SH + "deactivated"),
+      (shape) => !this.hasTrueValue(shape, PREFIXES.sh + "deactivated"),
     );
   }
 

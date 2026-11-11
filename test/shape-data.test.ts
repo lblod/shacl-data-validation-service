@@ -8,7 +8,7 @@ import {
   generateTargetQuery,
 } from "../lib/sparql-generation";
 import { readFile } from "../util/config";
-import { insertContentInDataset } from "../util/dataset";
+import { insertContentInDataset } from "../util/rdf-ext-helpers";
 
 const FIXTURES = "test/fixtures/shape-data/";
 const EX = "http://example.org/";

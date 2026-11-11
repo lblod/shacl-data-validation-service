@@ -50,7 +50,8 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 |Name               |Description                                                                                                |Default value|
 |-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
-|KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                      |false        |
+|KEEP_ALL_REPORTS   |Whether to keep generated reports instead of overwriting the report.                                       |false        |
+|MAX_REPORTS        |The number of reports to keep with `KEEP_ALL_REPORTS`.  The oldest reports are removed.                    |100          |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
 |ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |

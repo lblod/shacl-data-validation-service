@@ -2,6 +2,7 @@ import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
+import { resourceExists } from "../lib/resource-retrieval";
 import { generateTargetQuery } from "../lib/sparql-generation";
 import { validateResource, validateShape } from "../lib/validation";
 import {
@@ -217,22 +218,26 @@ describe("validation shapes for a resource", () => {
 
   test("gives a report per shape targeting the resource", async () => {
     store.data = resource("audited");
-    const results = await validateResource(ex("audited"));
+    const { results, errors } = await validateResource(ex("audited"));
     expect(
       results.map(({ shape, report }) => [shape.value, report.conforms]).sort(),
     ).toEqual([
       [ex("AuditedAuthorShape"), false],
       [ex("AuditedTitleShape"), true],
     ]);
+    expect(errors).toEqual([]);
   });
 
   test("gives no reports when no shape targets the resource", async () => {
     store.data = resource("other");
-    expect(await validateResource(ex("other"))).toEqual([]);
+    expect(await validateResource(ex("other"))).toEqual({
+      results: [],
+      errors: [],
+    });
   });
 
-  test("gives nothing for a resource that doesn't exist", async () => {
+  test("finds no resource that doesn't exist", async () => {
     store.data = rdf.dataset();
-    expect(await validateResource(ex("unknown"))).toBeUndefined();
+    expect(await resourceExists(ex("unknown"))).toBe(false);
   });
 });

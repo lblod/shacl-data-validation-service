@@ -1,6 +1,6 @@
 import rdf from "rdf-ext";
 import { validateFocusNode } from "./engine";
-import { getShapeData, resourceExists } from "./resource-retrieval";
+import { getShapeData } from "./resource-retrieval";
 import {
   shapeWithReferencedShapes,
   targetedShapesForResource,
@@ -19,17 +19,23 @@ export async function validateShape(data, shape, uri: string) {
 
 /*
  * Validates a resource against each validation shape that targets it, on the
- * data of that shape. Returns a SHACL validation report per shape, nothing if
- * the resource doesn't exist.
+ * data of that shape. Returns the SHACL validation report of each validated
+ * shape in results, and each shape whose validation failed with its error in
+ * errors. A resource that doesn't exist has no targeting shapes, so both are
+ * empty.
  */
 export async function validateResource(uri: string) {
-  if (!(await resourceExists(uri))) return undefined;
-
-  const shapes = await targetedShapesForResource(uri);
-  return Promise.all(
-    shapes.map(async (shape) => ({
-      shape,
-      report: await validateShape(await getShapeData(shape, uri), shape, uri),
-    })),
-  );
+  const results = [];
+  const errors = [];
+  // In series: one query at a time on the store, and a failing shape doesn't
+  // stop the others
+  for (const shape of await targetedShapesForResource(uri)) {
+    try {
+      const data = await getShapeData(shape, uri);
+      results.push({ shape, report: await validateShape(data, shape, uri) });
+    } catch (error) {
+      errors.push({ shape, error });
+    }
+  }
+  return { results, errors };
 }

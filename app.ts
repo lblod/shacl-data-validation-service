@@ -1,6 +1,7 @@
 import envvar from "env-var";
 import { app, errorHandler } from "mu";
 import { writeReportFile } from "./lib/report";
+import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
 import { loadValidationShapes } from "./lib/validation-shapes";
 
@@ -22,17 +23,39 @@ if (ENABLE_TEST_ROUTES) {
   app.get("/test/validate/:uri", async function (req, res, next) {
     try {
       const uri = req.params.uri;
-      const results = await validateResource(uri);
-      if (!results) {
+      if (!(await resourceExists(uri))) {
         // The URI comes from the request, so it can't be sent as HTML
         res.type("text/plain").send(`No resource found for ${uri}`);
-      } else if (!results.length) {
-        res.status(400).send("No applicable validation shapes for resource");
-      } else {
-        for (const { shape, report } of results) {
-          writeReportFile(report, shape);
-        }
+        return;
+      }
 
+      const { results, errors } = await validateResource(uri);
+      if (!results.length && !errors.length) {
+        res.status(400).send("No applicable validation shapes for resource");
+        return;
+      }
+
+      for (const { shape, report } of results) {
+        writeReportFile(report, shape);
+        console.log(
+          `Validation against ${shape.value} succeeded, conforms: ${report.conforms}`,
+        );
+      }
+      for (const { shape, error } of errors) {
+        console.error(`Validation against ${shape.value} failed:`, error);
+      }
+
+      if (errors.length) {
+        const failed = errors.map(({ shape }) => shape.value);
+        const written = results.map(({ shape }) => shape.value);
+        res
+          .status(500)
+          .type("text/plain")
+          .send(
+            `Validation failed for shapes: ${failed.join(", ")}, see the logs.\n` +
+              `Reports were written for shapes: ${written.join(", ") || "none"}`,
+          );
+      } else {
         res.send("Resource validated, see the reports for the result.");
       }
     } catch (err) {

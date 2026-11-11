@@ -70,8 +70,7 @@ ext:activeOrganizationShape-v2 a sh:NodeShape ;
 |Name              |Description                                                                                                        |Default value|
 |------------------|-------------------------------------------------------------------------------------------------------------------|-------------|
 |ENABLE_TEST_ROUTES|Whether to enable the `/test` routes.  They read resources through sudo, so only enable them during development.  |false        |
-|KEEP_ALL_REPORTS  |Whether to keep generated reports instead of overwriting the report of a shape.                                    |false        |
-|MAX_REPORTS       |The number of reports to keep with `KEEP_ALL_REPORTS`, each shape has its own.  The oldest reports are removed.    |100          |
+|KEEP_ALL_REPORTS  |Whether to keep all generated reports                                                                              |false        |
 
 ## Methodology
 ### Resource retrieval
@@ -83,8 +82,6 @@ SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:se
 
 ### Resource validation
 A resource is validated against each SHACL node shape that targets it, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape again: the data can hold other resources the target selects, for example a value node of the same class, without the data needed to validate them.  The validation report is returned as is, currently without any further processing.
-
-`/test/validate` writes one N-Triples report per shape to `/share`, named after the shape: `report-<local name>-<hash>.nt`.  A report is overwritten the next time the same shape runs, so reports of other shapes and resources stay in the folder.
 
 ## Tests
 The tests check which shapes target a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.

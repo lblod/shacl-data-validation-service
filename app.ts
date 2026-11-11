@@ -36,7 +36,7 @@ if (ENABLE_TEST_ROUTES) {
       }
 
       for (const { shape, report } of results) {
-        writeReportFile(report, shape);
+        await writeReportFile(report, shape);
         console.log(
           `Validation against ${shape.value} succeeded, conforms: ${report.conforms}`,
         );

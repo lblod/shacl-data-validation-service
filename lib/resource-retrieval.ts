@@ -17,7 +17,10 @@ export async function getResource(namedNode) {
       (binding) => binding.type.value,
     );
 
-    if (types.includes("http://www.w3.org/ns/org#Organization")) {
+    if (
+      types.includes("http://www.w3.org/ns/org#Organization") ||
+      types.includes("http://data.vlaanderen.be/ns/besluit#Bestuurseenheid")
+    ) {
       return getOrganizationData(uri);
     }
     if (types.includes("http://www.w3.org/ns/person#Person")) {
@@ -32,21 +35,27 @@ async function getOrganizationData(orgUri) {
   const orgQuery = `PREFIX org: <http://www.w3.org/ns/org#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX regorg: <http://www.w3.org/ns/regorg#>
+    PREFIX ere: <http://data.lblod.info/vocabularies/erediensten/>
     CONSTRUCT {
-      ?org a org:Organization ;
+      ?org a ?type ;
            ?predicate ?object .
     } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
+      VALUES ?g {
+        <http://mu.semte.ch/graphs/administrative-unit>
+        <http://mu.semte.ch/graphs/worship-service>
+      }
+      GRAPH ?g {
         VALUES ?org {
           ${sparqlEscapeUri(orgUri)}
         }
-        ?org a org:Organization .
+        ?org a ?type .
 
         VALUES ?predicate {
           skos:prefLabel
           skos:altLabel
           org:classification
           regorg:orgStatus
+          ere:wordtBediendDoor
         }
         OPTIONAL { ?org ?predicate ?object . }
       }

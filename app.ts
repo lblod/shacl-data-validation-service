@@ -56,7 +56,7 @@ async function handleResource(namedNode: NamedNodeExt) {
         );
       }
     } else {
-      writeReportFile(report);
+      await writeReportFile(report);
       if (env.LOGLEVEL === "info") {
         console.log(
           `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,

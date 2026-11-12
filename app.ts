@@ -59,7 +59,7 @@ async function handleResource(namedNode: NamedNodeExt) {
     if (report.conforms) {
       logInfo(`Resource ${namedNode} conforms to ${shape.value}`);
     } else {
-      writeReportFile(report, shape);
+      await writeReportFile(report, shape);
       logInfo(
         `Resource ${namedNode} doesn't conform to ${shape.value}, see report for result`,
       );

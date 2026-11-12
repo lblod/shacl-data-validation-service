@@ -1,0 +1,28 @@
+@prefix ex: <http://example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# A document needs a source. Its rule constructs the source from a link to the
+# source with a fragment, the data repair rules are used for.
+ex:DocumentShape a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  sh:property ex:hasSource ;
+  sh:rule ex:sourceFromLink .
+
+ex:sourceFromLink a sh:SPARQLRule ;
+  sh:construct """
+    PREFIX ex: <http://example.org/>
+    CONSTRUCT {
+      $this ex:source ?source .
+    } WHERE {
+      $this ex:link ?link .
+      BIND(IRI(REPLACE(STR(?link), "#.*$", "")) AS ?source)
+    }""" .
+
+# The same check without the rule
+ex:DraftShape a sh:NodeShape ;
+  sh:targetClass ex:Draft ;
+  sh:property ex:hasSource .
+
+ex:hasSource a sh:PropertyShape ;
+  sh:path ex:source ;
+  sh:minCount 1 .

@@ -25,6 +25,9 @@ export async function loadRules() {
   }
 }
 
+// TODO: Extend to support all ways of specifying targets:
+// - SHACL recommendation: <https://www.w3.org/TR/shacl/#targets>
+// - Advanced features: <https://www.w3.org/TR/shacl-af/#targets>
 function rulesForResourceTypes(types) {
   const result = rdf.termSet();
   RULES.filter(
@@ -43,6 +46,8 @@ export async function rulesForResource(resource: DatasetExt) {
 
   for (const rule of rulesForTypes) {
     const ruleResource = extractResource(rule, RULES);
+    // TODO: Need to retrieve additional data based on the properties and/or
+    // sh:target in `rule`.
 
     // NOTE (22/10/2026): We need to check the input resource against each
     // individual rule.  Therefore, we need to create a new validator each time.

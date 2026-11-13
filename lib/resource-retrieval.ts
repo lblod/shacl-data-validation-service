@@ -2,7 +2,10 @@ import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 import { toDataset } from "../util/rdf-ext-helpers";
-import { generateConstructQuery } from "./sparql-generation";
+import {
+  generateConstructQuery,
+  generateRuleQueries,
+} from "./sparql-generation";
 import { VALIDATION_SHAPES } from "./validation-shapes";
 
 export async function resourceExists(uri: string) {
@@ -14,14 +17,20 @@ export async function resourceExists(uri: string) {
 }
 
 // The data of a resource needed to validate it against a shape, retrieved with
-// a query generated from that shape, see lib/sparql-generation.ts
+// a query generated from that shape, with the triples the SPARQL rules of the
+// shape (sh:rule) construct on the store, see lib/sparql-generation.ts
 export async function getShapeData(shape, uri: string) {
-  const constructQuery = generateConstructQuery(VALIDATION_SHAPES, {
-    shapes: [shape],
-    focusNodes: [uri],
-  });
-  if (!constructQuery) return rdf.dataset();
+  const options = { shapes: [shape], focusNodes: [uri] };
+  const queries = [
+    generateConstructQuery(VALIDATION_SHAPES, options),
+    ...generateRuleQueries(VALIDATION_SHAPES, options),
+  ].filter(Boolean);
 
-  const result = await query(constructQuery);
-  return toDataset(result?.results?.bindings ?? []);
+  const data = rdf.dataset();
+  // In series, like the validation of the shapes
+  for (const constructQuery of queries) {
+    const result = await query(constructQuery);
+    data.addAll(toDataset(result?.results?.bindings ?? []));
+  }
+  return data;
 }

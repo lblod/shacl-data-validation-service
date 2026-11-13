@@ -78,6 +78,27 @@ The queries run through sudo, bypassing the authorization of mu-authorization, a
 
 SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.  Negated property sets in the `sh:select` of a target are used to select the focus nodes, but their triples are not retrieved.
 
+#### SPARQL rules
+A validation shape can add triples to the data of a resource with [SPARQL rules](https://www.w3.org/TR/shacl-af/#SPARQLRule), for example to repair a link with a fragment that the shape would otherwise reject.  `generateRuleQueries` binds `$this` in the `sh:construct` query of each `sh:rule` of the shape to the resource.  These queries run on the store, through sudo like the other queries, and the triples they construct are added to the data before the resource is validated against that shape.  Only the rules of the shape being validated run.
+
+```ttl
+ext:documentShape a sh:NodeShape ;
+  sh:targetClass ext:Document ;
+  sh:property ext:hasSource ;
+  sh:rule [
+    a sh:SPARQLRule ;
+    sh:construct """
+      PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+      CONSTRUCT { $this ext:source ?source . }
+      WHERE {
+        $this ext:link ?link .
+        BIND(IRI(REPLACE(STR(?link), "#.*$", "")) AS ?source)
+      }"""
+  ] .
+```
+
+Each rule runs on the store's data, so a rule doesn't see the triples other rules construct and `sh:order` has no effect.  The data query follows the property paths over the store's data as well: the data of a node that is only linked through a constructed triple is not retrieved.  Rules with a `sh:condition` are not supported, validating against such a shape gives an error, and triple rules (`sh:TripleRule`) are ignored.
+
 ### Resource validation
 A resource is validated against each SHACL node shape that targets it, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape again: the data can hold other resources the target selects, for example a value node of the same class, without the data needed to validate them.  The validation report is returned as is, currently without any further processing.
 

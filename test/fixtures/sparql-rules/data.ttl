@@ -1,0 +1,10 @@
+@prefix ex: <http://example.org/> .
+
+ex:document a ex:Document ;
+  ex:link <http://example.org/page#part> .
+
+ex:otherDocument a ex:Document ;
+  ex:link <http://example.org/otherPage#part> .
+
+ex:draft a ex:Draft ;
+  ex:link <http://example.org/page#part> .

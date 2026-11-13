@@ -24,3 +24,14 @@ ex:SessionShape a sh:NodeShape ;
     sh:path ex:hasDocument ;
     sh:minCount 1
   ] .
+
+ex:AuditedTitleShape a sh:NodeShape ;
+  sh:targetClass ex:Audited ;
+  sh:property ex:hasTitle .
+
+ex:AuditedAuthorShape a sh:NodeShape ;
+  sh:targetClass ex:Audited ;
+  sh:property [
+    sh:path ex:author ;
+    sh:minCount 1 ;
+  ] .

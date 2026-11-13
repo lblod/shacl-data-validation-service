@@ -72,17 +72,17 @@ ext:activeOrganizationsShape a sh:NodeShape ;
 
 ## Methodology
 ### Resource retrieval
-Currently, retrieving the appropriate triples for a given resource (type) consists of hardcoded queries.  In the future this will be made more dynamic, for example by automatically querying the appropriate data based on the information in the validation shapes.
+The data of a resource is retrieved with queries generated from the validation shapes, see [lib/sparql-generation.ts](lib/sparql-generation.ts).  `generateTargetQuery` determines on the store which shapes have a target that selects the resource.  For each of those shapes, `generateConstructQuery` then generates a CONSTRUCT query for the data that shape needs: the triples its target selects on, the triples along its property paths, and the data of the shapes it refers to, such as `sh:node` and `sh:or`.  Only this data is retrieved, so a property the shape doesn't mention is not part of the data it is validated on.
 
-At the time of writing only queries for `org:Organization` and `person:Person` resources are provided.  Furthermore, these queries are incomplete with respect to the full range of properties for such resources.
+The queries run through sudo, bypassing the authorization of mu-authorization, and don't specify a `GRAPH`, so they read the data from all graphs.
+
+SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.  Negated property sets in the `sh:select` of a target are used to select the focus nodes, but their triples are not retrieved.
 
 ### Resource validation
-This services determines against which SHACL node shapes a resource should be validated from their targets.  `generateTargetQuery` in [lib/sparql-generation.ts](lib/sparql-generation.ts) generates a SELECT query for the shapes whose targets select a focus node, which runs on the store.  The `sh:select` of SPARQL-based targets is parsed with [Traqula](https://github.com/comunica/traqula).
-
-The resource is validated against the selected shapes, with the shapes they refer to, using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand, and resolves SPARQL-based targets.  The validation report is returned as is, currently without any further processing.
+A resource is validated against each SHACL node shape that targets it, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape again: the data can hold other resources the target selects, for example a value node of the same class, without the data needed to validate them.  The validation report is returned as is, currently without any further processing.
 
 ## Tests
-The tests check which shapes are selected for a resource, without a triplestore.  Run them with `npm test`.
+The tests check which shapes target a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.
 
 ## API
 ### GET /health

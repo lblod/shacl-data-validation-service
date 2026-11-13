@@ -1,31 +1,41 @@
 import rdf from "rdf-ext";
-import { validateResourceWithSparqlTargets } from "./engine";
+import { validateFocusNode } from "./engine";
+import { getShapeData } from "./resource-retrieval";
 import {
   shapeWithReferencedShapes,
   targetedShapesForResource,
 } from "./validation-shapes";
 
-// The validation shapes whose targets select the resource, with the shapes they
-// refer to, or undefined if no shape selects it
-export async function validationShapesForResource(uri: string) {
-  const targetedShapes = await targetedShapesForResource(uri);
-  if (!targetedShapes.length) return undefined;
-
-  const shapes = rdf.dataset();
-  for (const shape of targetedShapes) {
-    shapes.addAll(shapeWithReferencedShapes(shape));
-  }
-
-  return shapes;
+// Validates a resource on its data against a validation shape, with the shapes
+// it refers to
+export async function validateShape(data, shape, uri: string) {
+  return validateFocusNode(
+    data,
+    shapeWithReferencedShapes(shape),
+    shape,
+    rdf.namedNode(uri),
+  );
 }
 
 /*
- * Validates a resource against its validation shapes. Returns the SHACL
- * validation report, or undefined if no validation shape applies to the
- * resource.
+ * Validates a resource against each validation shape that targets it, on the
+ * data of that shape. Returns the SHACL validation report of each validated
+ * shape in results, and each shape whose validation failed with its error in
+ * errors. A resource that doesn't exist has no targeting shapes, so both are
+ * empty.
  */
-export async function validate(resource, uri: string) {
-  const shapes = await validationShapesForResource(uri);
-  if (!shapes) return undefined;
-  return validateResourceWithSparqlTargets(resource, shapes);
+export async function validateResource(uri: string) {
+  const results = [];
+  const errors = [];
+  // In series: one query at a time on the store, and a failing shape doesn't
+  // stop the others
+  for (const shape of await targetedShapesForResource(uri)) {
+    try {
+      const data = await getShapeData(shape, uri);
+      results.push({ shape, report: await validateShape(data, shape, uri) });
+    } catch (error) {
+      errors.push({ shape, error });
+    }
+  }
+  return { results, errors };
 }

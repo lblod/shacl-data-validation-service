@@ -1,0 +1,69 @@
+@prefix ex: <http://example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# Paths
+ex:PredicateShape sh:targetNode ex:start ;
+  sh:property [ sh:path ex:label ] .
+
+ex:InverseShape sh:targetNode ex:start ;
+  sh:property [ sh:path [ sh:inversePath ex:next ] ] .
+
+ex:SequenceShape sh:targetNode ex:start ;
+  sh:property [ sh:path ( ex:next ex:part ) ] .
+
+ex:AlternativeShape sh:targetNode ex:start ;
+  sh:property [ sh:path [ sh:alternativePath ( ex:label ex:title ) ] ] .
+
+ex:ZeroOrMoreShape sh:targetNode ex:start ;
+  sh:property [ sh:path [ sh:zeroOrMorePath ex:next ] ] .
+
+ex:OneOrMoreShape sh:targetNode ex:start ;
+  sh:property [ sh:path [ sh:oneOrMorePath ex:next ] ] .
+
+ex:ZeroOrOneShape sh:targetNode ex:start ;
+  sh:property [ sh:path [ sh:zeroOrOnePath ex:next ] ] .
+
+# Nested shapes
+ex:NodeShape sh:targetNode ex:start ;
+  sh:property [ sh:path ex:next ; sh:node ex:WithPart ] .
+
+ex:WithPart sh:property [ sh:path ex:part ] .
+
+ex:OrShape sh:targetNode ex:start ;
+  sh:or ( [ sh:property [ sh:path ex:label ] ] [ sh:property [ sh:path ex:title ] ] ) .
+
+ex:AndShape sh:targetNode ex:start ;
+  sh:and ( [ sh:property [ sh:path ex:label ] ] [ sh:property [ sh:path ex:title ] ] ) .
+
+ex:NotShape sh:targetNode ex:start ;
+  sh:not [ sh:property [ sh:path ex:label ] ] .
+
+ex:DeactivatedNestedShape sh:targetNode ex:start ;
+  sh:property [ sh:path ex:next ; sh:node ex:DeactivatedPart ] .
+
+ex:DeactivatedPart sh:deactivated true ;
+  sh:property [ sh:path ex:part ] .
+
+# Other constraints that need data
+ex:ClassShape sh:targetNode ex:start ;
+  sh:property [ sh:path ex:owner ; sh:class ex:Person ] .
+
+ex:ClosedShape sh:targetNode ex:second ;
+  sh:closed true .
+
+ex:PairShape sh:targetNode ex:start ;
+  sh:property [ sh:path ex:label ; sh:equals ex:title ] .
+
+# Targets
+ex:ClassTargetShape sh:targetClass ex:Typed .
+
+ex:SubjectsOfTargetShape sh:targetSubjectsOf ex:marker .
+
+ex:SparqlTargetShape sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX ex: <http://example.org/>
+      SELECT ?this WHERE { ?this ex:heldBy ex:council . }"""
+  ] .
+
+ex:TopClassShape sh:targetClass ex:Top .

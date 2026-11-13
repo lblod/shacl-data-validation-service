@@ -1,97 +1,27 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import { sparqlEscapeUri } from "mu";
+import rdf from "rdf-ext";
 import { toDataset } from "../util/rdf-ext-helpers";
+import { generateConstructQuery } from "./sparql-generation";
+import { VALIDATION_SHAPES } from "./validation-shapes";
 
-// NOTE (22/10/2026): This is a highly simplified/hardcoded way to retrieve data
-// during the development of the service.  A more dynamic way to retrieve data
-// will be added later.
-
-export async function getResource(namedNode) {
-  const uri = namedNode.value;
+export async function resourceExists(uri: string) {
   const typesData = await query(`SELECT DISTINCT ?type {
     ${sparqlEscapeUri(uri)} a ?type .
   }`);
 
-  if (typesData.results.bindings.length > 0) {
-    const types = typesData.results.bindings.map(
-      (binding) => binding.type.value,
-    );
-
-    if (
-      types.includes("http://www.w3.org/ns/org#Organization") ||
-      types.includes("http://data.vlaanderen.be/ns/besluit#Bestuurseenheid")
-    ) {
-      return getOrganizationData(uri);
-    }
-    if (types.includes("http://www.w3.org/ns/person#Person")) {
-      return getPersonData(uri);
-    }
-  }
+  return typesData.results.bindings.length > 0;
 }
 
-// NOTE (21/10/2026): Hardcoded queries to retrieve appropriate data for now.
-// This will be replaced by a more dynamic method in the future.
-async function getOrganizationData(orgUri) {
-  const orgQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX regorg: <http://www.w3.org/ns/regorg#>
-    PREFIX ere: <http://data.lblod.info/vocabularies/erediensten/>
-    CONSTRUCT {
-      ?org a ?type ;
-           ?predicate ?object .
-    } WHERE {
-      VALUES ?g {
-        <http://mu.semte.ch/graphs/administrative-unit>
-        <http://mu.semte.ch/graphs/worship-service>
-      }
-      GRAPH ?g {
-        VALUES ?org {
-          ${sparqlEscapeUri(orgUri)}
-        }
-        ?org a ?type .
+// The data of a resource needed to validate it against a shape, retrieved with
+// a query generated from that shape, see lib/sparql-generation.ts
+export async function getShapeData(shape, uri: string) {
+  const constructQuery = generateConstructQuery(VALIDATION_SHAPES, {
+    shapes: [shape],
+    focusNodes: [uri],
+  });
+  if (!constructQuery) return rdf.dataset();
 
-        VALUES ?predicate {
-          skos:prefLabel
-          skos:altLabel
-          org:classification
-          regorg:orgStatus
-          ere:wordtBediendDoor
-        }
-        OPTIONAL { ?org ?predicate ?object . }
-      }
-    }`;
-
-  const orgData = await query(orgQuery);
-  const bindings = orgData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
-}
-
-async function getPersonData(personUri) {
-  const personQuery = `PREFIX org: <http://www.w3.org/ns/org#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX person: <http://www.w3.org/ns/person#>
-    CONSTRUCT {
-      ?person a person:Person ;
-              ?predicate ?object .
-    } WHERE {
-      GRAPH <http://mu.semte.ch/graphs/administrative-unit> {
-        VALUES ?person {
-          ${sparqlEscapeUri(personUri)}
-        }
-        ?person a person:Person .
-
-        VALUES ?predicate {
-          foaf:givenName
-          foaf:familyName
-        }
-        OPTIONAL { ?person ?predicate ?object . }
-      }
-    }`;
-
-  const personData = await query(personQuery);
-  const bindings = personData?.results?.bindings;
-  const dataset = toDataset(bindings);
-  return dataset;
+  const result = await query(constructQuery);
+  return toDataset(result?.results?.bindings ?? []);
 }

@@ -2,9 +2,11 @@ import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
+import { resourceExists } from "../lib/resource-retrieval";
 import { generateTargetQuery } from "../lib/sparql-generation";
-import { validate, validationShapesForResource } from "../lib/validation";
+import { validateResource, validateShape } from "../lib/validation";
 import {
+  shapeWithReferencedShapes,
   targetedShapesForResource,
   VALIDATION_SHAPES,
 } from "../lib/validation-shapes";
@@ -14,16 +16,44 @@ import { insertContentInDataset } from "../util/rdf-ext-helpers";
 // The store the service queries, as a dataset
 const store = vi.hoisted(() => ({ data: undefined }));
 
-vi.mock("@lblod/mu-auth-sudo", () => ({ querySudo: selectOnStore }));
+vi.mock("@lblod/mu-auth-sudo", () => ({ querySudo: runOnStore }));
 
-// Answers a SELECT query in the format of querySudo
-async function selectOnStore(query: string) {
+function termToBinding(term) {
+  switch (term.termType) {
+    case "NamedNode":
+      return { type: "uri", value: term.value };
+    case "BlankNode":
+      return { type: "bnode", value: term.value };
+    default:
+      return {
+        type: "literal",
+        value: term.value,
+        ...(term.language && { "xml:lang": term.language }),
+        datatype: term.datatype.value,
+      };
+  }
+}
+
+// Answers a query as querySudo does: a CONSTRUCT as bindings of s, p and o
+async function runOnStore(query: string) {
+  const sources = [
+    { match: (...args) => Readable.from(store.data.match(...args)) },
+  ];
+  const engine = new QueryEngine();
+  if (query.trimStart().startsWith("CONSTRUCT")) {
+    const quads = await (await engine.queryQuads(query, { sources })).toArray();
+    return {
+      results: {
+        bindings: quads.map((quad) => ({
+          s: termToBinding(quad.subject),
+          p: termToBinding(quad.predicate),
+          o: termToBinding(quad.object),
+        })),
+      },
+    };
+  }
   const bindings = await (
-    await new QueryEngine().queryBindings(query, {
-      sources: [
-        { match: (...args) => Readable.from(store.data.match(...args)) },
-      ],
-    })
+    await engine.queryBindings(query, { sources })
   ).toArray();
   return {
     results: {
@@ -31,7 +61,7 @@ async function selectOnStore(query: string) {
         Object.fromEntries(
           [...binding].map(([variable, term]) => [
             variable.value,
-            { value: term.value },
+            termToBinding(term),
           ]),
         ),
       ),
@@ -129,23 +159,14 @@ describe("validation shapes for a resource", () => {
   const data = rdf.dataset();
   const resource = (name: string) => data.match(rdf.namedNode(ex(name)));
 
-  // The store only holds the data of the resource at hand
-  function shapesFor(name: string) {
+  // The shapes targeting a resource, with a store holding its data
+  function targetingShapes(name: string) {
     store.data = resource(name);
-    return validationShapesForResource(ex(name));
+    return targetedShapesForResource(ex(name));
   }
 
-  // The URIs of the shapes whose targets select the resource
-  async function selectedShapes(name: string) {
-    store.data = resource(name);
-    return (await targetedShapesForResource(ex(name))).map(
-      (shape) => shape.value,
-    );
-  }
-
-  function validateNamed(name: string) {
-    store.data = resource(name);
-    return validate(resource(name), ex(name));
+  async function targetingShapeUris(name: string) {
+    return (await targetingShapes(name)).map((shape) => shape.value);
   }
 
   beforeAll(async () => {
@@ -154,39 +175,69 @@ describe("validation shapes for a resource", () => {
   });
 
   test("selects a shape on its sh:targetClass", async () => {
-    expect(await selectedShapes("document")).toEqual([ex("DocumentShape")]);
+    expect(await targetingShapeUris("document")).toEqual([ex("DocumentShape")]);
   });
 
   test("selects a shape on its SPARQL-based target", async () => {
-    expect(await selectedShapes("session")).toEqual([ex("SessionShape")]);
+    expect(await targetingShapeUris("session")).toEqual([ex("SessionShape")]);
   });
 
   test("selects nothing for a resource no target selects", async () => {
-    expect(await shapesFor("other")).toBeUndefined();
+    expect(await targetingShapeUris("other")).toEqual([]);
   });
 
   test("includes a property shape node shapes share", async () => {
     for (const name of ["document", "report"]) {
-      const shapes = await shapesFor(name);
-      expect(shapes.match(rdf.namedNode(ex("hasTitle"))).size).toBeGreaterThan(
-        0,
-      );
+      const [shape] = await targetingShapes(name);
+      expect(
+        shapeWithReferencedShapes(shape).match(rdf.namedNode(ex("hasTitle")))
+          .size,
+      ).toBeGreaterThan(0);
     }
   });
 
+  // The report of a resource against the shape targeting it
+  async function reportOf(name: string) {
+    const [shape] = await targetingShapes(name);
+    return validateShape(resource(name), shape, ex(name));
+  }
+
   test("validates against the shared property shape", async () => {
-    expect((await validateNamed("document")).conforms).toBe(true);
-    expect((await validateNamed("report")).conforms).toBe(false);
+    expect((await reportOf("document")).conforms).toBe(true);
+    expect(await targetingShapeUris("report")).toEqual([ex("ReportShape")]);
+    expect((await reportOf("report")).conforms).toBe(false);
   });
 
   test("validates against a shape selected on its SPARQL-based target", async () => {
-    expect((await validateNamed("session")).conforms).toBe(true);
-    expect((await validateNamed("sessionWithoutDocument")).conforms).toBe(
-      false,
-    );
+    expect((await reportOf("session")).conforms).toBe(true);
+    expect(await targetingShapeUris("sessionWithoutDocument")).toEqual([
+      ex("SessionShape"),
+    ]);
+    expect((await reportOf("sessionWithoutDocument")).conforms).toBe(false);
   });
 
-  test("gives no report when no shape applies", async () => {
-    expect(await validateNamed("other")).toBeUndefined();
+  test("gives a report per shape targeting the resource", async () => {
+    store.data = resource("audited");
+    const { results, errors } = await validateResource(ex("audited"));
+    expect(
+      results.map(({ shape, report }) => [shape.value, report.conforms]).sort(),
+    ).toEqual([
+      [ex("AuditedAuthorShape"), false],
+      [ex("AuditedTitleShape"), true],
+    ]);
+    expect(errors).toEqual([]);
+  });
+
+  test("gives no reports when no shape targets the resource", async () => {
+    store.data = resource("other");
+    expect(await validateResource(ex("other"))).toEqual({
+      results: [],
+      errors: [],
+    });
+  });
+
+  test("finds no resource that doesn't exist", async () => {
+    store.data = rdf.dataset();
+    expect(await resourceExists(ex("unknown"))).toBe(false);
   });
 });

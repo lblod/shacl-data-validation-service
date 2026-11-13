@@ -1,0 +1,59 @@
+@prefix ex: <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# The resource the path and nested shape shapes start from
+ex:start ex:next ex:second ;
+  ex:label "a label" ;
+  ex:title "a title" ;
+  ex:owner ex:owner1 ;
+  ex:notRetrieved "not retrieved" .
+
+ex:second ex:next ex:third ;
+  ex:part ex:partOfSecond ;
+  ex:notRetrieved "not retrieved" .
+
+ex:third ex:next ex:fourth .
+
+ex:previous ex:next ex:start .
+
+ex:owner1 a ex:Employee .
+
+ex:Employee rdfs:subClassOf ex:Person .
+
+# The resources selected by their targets
+ex:typed a ex:Typed .
+
+ex:subject ex:marker "a marker" .
+
+ex:session ex:heldBy ex:council .
+
+# A class chain: a target on ex:Top has to retrieve every step
+ex:report a ex:Report .
+
+ex:Report rdfs:subClassOf ex:Document , ex:NotOnTheRoute .
+
+ex:Document rdfs:subClassOf ex:Publication .
+
+ex:Publication rdfs:subClassOf ex:Top .
+
+# Resources to validate with validation-shapes.ttl
+ex:validPerson a ex:ValidatedPerson ;
+  ex:name "Valid" ;
+  ex:employer ex:validEmployer .
+
+ex:validEmployer a ex:Company ;
+  ex:name "A company" .
+
+ex:invalidPerson a ex:ValidatedPerson ;
+  ex:name 42 ;
+  ex:employer ex:invalidEmployer .
+
+ex:invalidEmployer a ex:Thing .
+
+# A value node the target of the shape selects as well
+ex:childOrganization a ex:ValidatedOrganization ;
+  ex:name "Child" ;
+  ex:parent ex:parentOrganization .
+
+ex:parentOrganization a ex:ValidatedOrganization ;
+  ex:name "Parent" .

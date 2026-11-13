@@ -11,10 +11,7 @@
       "@id": "sh:focusNode",
       "@type": "@id"
     },
-    "value": {
-      "@id": "sh:value",
-      "@type": "@id"
-    },
+    "value": "sh:value",
     "resultPath": {
       "@id": "sh:resultPath",
       "@type": "@id"

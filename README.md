@@ -52,6 +52,7 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
 |MAX_REPORTS        |The number of reports to keep, unless `ONLY_KEEP_LATEST_REPORT` is set.  The oldest reports are removed.   |100          |
 |ONLY_KEEP_LATEST_REPORT|Whether to only keep the most recent version of a report: writing a report deletes its older versions.  |false        |
+|REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
 |ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
@@ -68,6 +69,8 @@ This services determines against which SHACL node shapes a resource should be va
 Second, the validation shapes linked by the applicable rules are collected.  The resource is validated against all of these shapes using a `shacl-engine/Validator` that receives as input these shapes as well as the resource at hand.  The validation report is return as is, currently without any further processing.
 
 When a resource isn't valid, its report is written as N-Triples to `/share/<timestamp>--report.nt`.  A report of a validation against a single shape is named after that shape instead: `<timestamp>--report-<local name>-<hash>.nt`.  Only the newest `MAX_REPORTS` reports are kept.  With `ONLY_KEEP_LATEST_REPORT` set, writing a report deletes the older versions of that report instead, so each shape keeps its most recent report.
+
+With `REPORT_DEBUG_RESULTS` set, the report also has a result for each passed validation, with severity `shn:Debug` (`https://schemas.link/shacl-next#Debug`), which doesn't affect `sh:conforms`.  A report is then written for each validated resource, also when it conforms.
 
 ## API
 ### GET /health

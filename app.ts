@@ -66,8 +66,15 @@ async function handleResource(namedNode: NamedNodeExt) {
 
         const shapes = shapeResources(validationShapeUris);
 
-        const report = await validateResource(resourceToValidate, shapes);
+        const report = await validateResource(resourceToValidate, shapes, {
+          debug: env.REPORT_DEBUG_RESULTS,
+        });
 
+        // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report
+        // of passed validations too
+        if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
+          await writeReportFile(report);
+        }
         if (report.conforms) {
           if (env.LOGLEVEL === "info") {
             console.log(
@@ -75,7 +82,6 @@ async function handleResource(namedNode: NamedNodeExt) {
             );
           }
         } else {
-          await writeReportFile(report);
           if (env.LOGLEVEL === "info") {
             console.log(
               `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,

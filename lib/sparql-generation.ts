@@ -10,6 +10,7 @@ import {
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 import { PREFIXES } from "../constants";
+import { getObjects } from "../util/rdf-ext-helpers";
 
 /*
  * Generates SPARQL queries from SHACL shapes:
@@ -373,9 +374,7 @@ class SparqlGenerator {
   }
 
   getObjects(subject, predicate: string) {
-    return [...this.shapes.match(subject, rdf.namedNode(predicate))].map(
-      (quad) => quad.object,
-    );
+    return getObjects(this.shapes, subject, predicate);
   }
 
   hasTrueValue(subject, predicate: string) {

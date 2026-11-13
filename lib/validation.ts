@@ -12,7 +12,7 @@ import {
  * Fills the variables of the result messages: {?value} with the value of the
  * result, and {?name} with the values the value has in the data for each
  * property the shape lists with ext:messagePath, by the local name of the
- * property, e.g. {?bronUriAfwijkendeNotatie}. SHACL only fills the parameters
+ * property, e.g. {?nameVariable}. SHACL only fills the parameters
  * of the constraint.
  */
 function fillMessageVariables(report, shapes, data) {

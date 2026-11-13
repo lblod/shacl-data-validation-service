@@ -1,6 +1,6 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
-import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
 import { generateTargetQuery } from "./sparql-generation";
 import { PREFIXES } from "../constants";
@@ -30,18 +30,14 @@ function getListMembers(list) {
     const listNode = toVisit.pop();
     if (visited.has(listNode)) continue;
     visited.add(listNode);
-    for (const quad of VALIDATION_SHAPES.match(
+    const first = getObjects(
+      VALIDATION_SHAPES,
       listNode,
-      rdf.namedNode(PREFIXES.rdf + "first"),
-    )) {
-      members.push(quad.object);
-    }
-    for (const quad of VALIDATION_SHAPES.match(
-      listNode,
-      rdf.namedNode(PREFIXES.rdf + "rest"),
-    )) {
-      toVisit.push(quad.object);
-    }
+      PREFIXES.rdf + "first",
+    );
+    const rest = getObjects(VALIDATION_SHAPES, listNode, PREFIXES.rdf + "rest");
+    members.push(...first);
+    toVisit.push(...rest);
   }
   return members;
 }
@@ -51,18 +47,20 @@ function getListMembers(list) {
 function checkReferencedShapes() {
   const references = [];
   for (const name of SHAPE_REFERENCES) {
-    for (const quad of VALIDATION_SHAPES.match(
+    const quads = VALIDATION_SHAPES.match(
       null,
       rdf.namedNode(PREFIXES.sh + name),
-    )) {
+    );
+    for (const quad of quads) {
       references.push({ from: quad.subject, shape: quad.object });
     }
   }
   for (const name of SHAPE_LIST_REFERENCES) {
-    for (const quad of VALIDATION_SHAPES.match(
+    const quads = VALIDATION_SHAPES.match(
       null,
       rdf.namedNode(PREFIXES.sh + name),
-    )) {
+    );
+    for (const quad of quads) {
       for (const shape of getListMembers(quad.object)) {
         references.push({ from: quad.subject, shape });
       }

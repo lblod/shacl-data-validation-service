@@ -384,14 +384,10 @@ class SparqlGenerator {
   // The prefixes declared for a SPARQL-based target (sh:prefixes/sh:declare)
   getPrefixes(target) {
     const prefixes = {};
-    for (const declarations of this.getObjects(
-      target,
-      PREFIXES.sh + "prefixes",
-    )) {
-      for (const declaration of this.getObjects(
-        declarations,
-        PREFIXES.sh + "declare",
-      )) {
+    const prefixLists = this.getObjects(target, PREFIXES.sh + "prefixes");
+    for (const declarations of prefixLists) {
+      const declared = this.getObjects(declarations, PREFIXES.sh + "declare");
+      for (const declaration of declared) {
         const [prefix] = this.getObjects(declaration, PREFIXES.sh + "prefix");
         const [namespace] = this.getObjects(
           declaration,
@@ -407,19 +403,19 @@ class SparqlGenerator {
   getTargetedShapes() {
     const shapes = rdf.termSet();
     for (const target of TARGET_PREDICATES) {
-      for (const quad of this.shapes.match(
+      const quads = this.shapes.match(
         null,
         rdf.namedNode(PREFIXES.sh + target),
-      )) {
-        shapes.add(quad.subject);
-      }
+      );
+      for (const quad of quads) shapes.add(quad.subject);
     }
     for (const type of ["NodeShape", "PropertyShape"]) {
-      for (const quad of this.shapes.match(
+      const quads = this.shapes.match(
         null,
         rdf.namedNode(PREFIXES.rdf + "type"),
         rdf.namedNode(PREFIXES.sh + type),
-      )) {
+      );
+      for (const quad of quads) {
         if (this.isClass(quad.subject)) shapes.add(quad.subject);
       }
     }

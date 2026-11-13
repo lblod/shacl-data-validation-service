@@ -5,6 +5,7 @@ import { AstFactory, lex, type QuerySelect } from "@traqula/rules-sparql-1-1";
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 import { PREFIXES } from "../constants";
+import { getObjects } from "../util/rdf-ext-helpers";
 
 /*
  * Generates a SPARQL SELECT query for the SHACL shapes whose targets select a
@@ -248,9 +249,7 @@ class SparqlGenerator {
   }
 
   getObjects(subject, predicate: string) {
-    return [...this.shapes.match(subject, rdf.namedNode(predicate))].map(
-      (quad) => quad.object,
-    );
+    return getObjects(this.shapes, subject, predicate);
   }
 
   hasTrueValue(subject, predicate: string) {

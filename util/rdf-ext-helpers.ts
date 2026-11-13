@@ -19,6 +19,13 @@ export async function insertContentInDataset(content, dataset) {
   return dataset;
 }
 
+// The objects of the triples in the dataset with the subject and predicate
+export function getObjects(dataset, subject, predicate: string) {
+  return [...dataset.match(subject, rdf.namedNode(predicate))].map(
+    ({ object }) => object,
+  );
+}
+
 // TODO: This should probably be(come) part of some factory to convert SPARQL
 // query results JSON to rdf-ext objects
 export function toRdfExtTerm(term) {

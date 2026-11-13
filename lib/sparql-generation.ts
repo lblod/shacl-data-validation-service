@@ -117,8 +117,9 @@ function termToAst(term: Term) {
   if (term.language) {
     return F.termLiteral(F.gen(), term.value, validLanguage(term.language));
   }
-  if (term.datatype.value === XSD_STRING)
+  if (term.datatype.value === XSD_STRING) {
     return F.termLiteral(F.gen(), term.value);
+  }
   return F.termLiteral(
     F.gen(),
     term.value,

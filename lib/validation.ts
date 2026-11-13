@@ -1,5 +1,6 @@
 import rdf from "rdf-ext";
 import { PREFIXES } from "../constants";
+import { getObjects } from "../util/rdf-ext-helpers";
 import { validateFocusNode } from "./engine";
 import { getShapeData } from "./resource-retrieval";
 import {
@@ -17,29 +18,29 @@ import {
 function fillMessageVariables(report, shapes, data) {
   const dataset = report.dataset;
   const resultMessage = rdf.namedNode(PREFIXES.sh + "resultMessage");
-  for (const { object: result } of dataset.match(
-    null,
-    rdf.namedNode(PREFIXES.sh + "result"),
-  )) {
-    const [value] = [
-      ...dataset.match(result, rdf.namedNode(PREFIXES.sh + "value")),
-    ];
-    const [shape] = [
-      ...dataset.match(result, rdf.namedNode(PREFIXES.sh + "sourceShape")),
-    ];
+
+  const results = getObjects(dataset, null, PREFIXES.sh + "result");
+  for (const result of results) {
+    const [value] = getObjects(dataset, result, PREFIXES.sh + "value");
     if (!value) continue;
-    const variables = { value: value.object.value };
-    for (const { object: path } of shape
-      ? shapes.match(shape.object, rdf.namedNode(PREFIXES.ext + "messagePath"))
-      : []) {
+    const [shape] = getObjects(dataset, result, PREFIXES.sh + "sourceShape");
+    const paths = shape
+      ? getObjects(shapes, shape, PREFIXES.ext + "messagePath")
+      : [];
+
+    const variables = { value: value.value };
+    for (const path of paths) {
       const name = path.value.replace(/^.*[/#]/, "");
+      const values = getObjects(data, value, path.value).map(
+        (term) => term.value,
+      );
       // Sorted, so the message is the same for the same data
-      variables[name] = [...data.match(value.object, path)]
-        .map(({ object }) => object.value)
-        .sort()
-        .join(", ");
+      variables[name] = values.sort().join(", ");
     }
-    for (const quad of [...dataset.match(result, resultMessage)]) {
+
+    // A copy, as the loop replaces the messages in the dataset
+    const messages = [...dataset.match(result, resultMessage)];
+    for (const quad of messages) {
       const message = quad.object.value.replace(
         /\{\?(\w+)\}/g,
         (variable, name) => variables[name] ?? variable,

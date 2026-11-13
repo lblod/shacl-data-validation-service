@@ -4,9 +4,6 @@ import FormatsFactory from "@rdfjs/formats/Factory.js";
 import formats from "@rdfjs/formats/pretty.js";
 import * as datasetIo from "@rdfjs/io/dataset.js";
 import rdf, { Environment } from "rdf-ext";
-import DatasetExt from "rdf-ext/lib/Dataset";
-import NamedNodeExt from "rdf-ext/lib/NamedNode";
-import { resource } from "rdf-utils-dataset";
 
 // TODO: Copied from rdfjs/io's test support,  it should be possible to simplify
 // this.
@@ -22,21 +19,11 @@ export async function insertContentInDataset(content, dataset) {
   return dataset;
 }
 
-export function extractResource(
-  uri: NamedNodeExt,
-  dataset: DatasetExt,
-): DatasetExt {
-  return resource(dataset, uri);
-}
-
-// TODO: Can this be cleaner with a traverser?
-export function objectsForPredicate(predicate: string, dataset: DatasetExt) {
-  const objects = rdf.termSet();
-  dataset
-    .filter((quad) => quad.predicate.value === predicate)
-    .forEach((quad) => objects.add(quad.object));
-
-  return objects;
+// The objects of the triples in the dataset with the subject and predicate
+export function getObjects(dataset, subject, predicate: string) {
+  return [...dataset.match(subject, rdf.namedNode(predicate))].map(
+    ({ object }) => object,
+  );
 }
 
 // TODO: This should probably be(come) part of some factory to convert SPARQL

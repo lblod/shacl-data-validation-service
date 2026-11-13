@@ -1,18 +1,15 @@
 import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
-import { validateResource } from "./lib/engine";
 import { writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
-import { loadRules, rulesForResource } from "./lib/rules";
-import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
-import { objectsForPredicate } from "./util/rdf-ext-helpers";
+import { validate } from "./lib/validation";
+import { loadValidationShapes } from "./lib/validation-shapes";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
-  await loadRules();
   await loadValidationShapes();
 })();
 
@@ -41,57 +38,29 @@ async function handleResource(namedNode: NamedNodeExt) {
   const resourceToValidate = await getResource(namedNode);
 
   if (resourceToValidate) {
-    // Get a set<term> containing named nodes for a rule applicable for the
-    // given resource type
-    const rules = await rulesForResource(resourceToValidate);
+    // NOTE (22/10/2026): We may need to retrieve extra resource triples
+    // depending on the validation shapes.  This becomes a concern when we
+    // flesh out the data retrieval to work based on the shapes.
+    const report = await validate(resourceToValidate, namedNode.value);
 
-    // FIXME: language server complains size property does not exist in
-    // DatasetExt...
-    if (rules.size > 0) {
-      // NOTE (22/10/2026): We lose the connection between validation shape and
-      // rule here, that might be an issue when interpreting the report.  It is
-      // probably nice if we can convert the engine's report to something more
-      // readable that says which rule was violated and why.
-      const validationShapeUris = objectsForPredicate(
-        "http://mu.semte.ch/vocabularies/ext/validationShape",
-        rules,
-      );
-
-      if (validationShapeUris.size > 0) {
-        // NOTE (22/10/2026): We may need to retrieve extra resource triples
-        // depending on the validation shapes.  It is likely, the validation
-        // shapes require more input than the shapes in the rules. This becomes
-        // a concern when we flesh out the data retrieval to work based on the
-        // shapes.
-
-        const shapes = shapeResources(validationShapeUris);
-
-        const report = await validateResource(resourceToValidate, shapes);
-
-        if (report.conforms) {
-          if (env.LOGLEVEL === "info") {
-            console.log(
-              `\n>> INFO: Resource ${namedNode} was successfully validated`,
-            );
-          }
-        } else {
-          writeReportFile(report);
-          if (env.LOGLEVEL === "info") {
-            console.log(
-              `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
-            );
-          }
-        }
-      } else {
-        if (env.LOGLEVEL === "info") {
-          console.log(
-            `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
-          );
-        }
+    if (!report) {
+      if (env.LOGLEVEL === "info") {
+        console.log(
+          `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
+        );
+      }
+    } else if (report.conforms) {
+      if (env.LOGLEVEL === "info") {
+        console.log(
+          `\n>> INFO: Resource ${namedNode} was successfully validated`,
+        );
       }
     } else {
+      await writeReportFile(report);
       if (env.LOGLEVEL === "info") {
-        console.log(`\n>> INFO: No applicable rules for resource ${namedNode}`);
+        console.log(
+          `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
+        );
       }
     }
   } else {
@@ -105,13 +74,22 @@ async function handleResource(namedNode: NamedNodeExt) {
  * Internal API, used for testing and debugging only.
  */
 if (env.ENABLE_TEST_API) {
-  app.get("/test/validate/:uri", async function (req, res) {
-    const uri = req.params.uri;
-    await handleResource(new NamedNodeExt(uri));
+  app.get("/test/validate/:uri", async function (req, res, next) {
+    try {
+      const uri = req.params.uri;
+      await handleResource(new NamedNodeExt(uri));
 
-    res
-      .send(`Resource ${uri} validated, see logs and/or report for results`)
-      .end();
+      // The URI comes from the request, so it can't be sent as HTML
+      res
+        .type("text/plain")
+        .send(`Resource ${uri} validated, see logs and/or report for results`)
+        .end();
+    } catch (err) {
+      // Express doesn't catch rejections, which would stop the service
+      console.error(err);
+      err.status = 500;
+      next(err);
+    }
   });
 }
 

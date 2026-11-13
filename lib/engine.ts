@@ -1,8 +1,9 @@
-import rdfDataModel from "@rdfjs/data-model";
+import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 
 export async function validateResource(resource, shapes) {
-  const validator = new Validator(shapes, { factory: rdfDataModel });
+  // The report's dataset is built with the factory, which needs dataset()
+  const validator = new Validator(shapes, { factory: rdf });
   const report = await validator.validate({ dataset: resource });
 
   return report;

@@ -976,10 +976,8 @@ class SparqlGenerator {
   getDataBranches(options: SparqlGenerationOptions): Branch[] {
     const shapes = this.getSelectedShapes(options);
     const branches = [];
-    for (const { shape, focus, restricted, target } of this.getFocusTargets(
-      shapes,
-      options,
-    )) {
+    const focusTargets = this.getFocusTargets(shapes, options);
+    for (const { shape, focus, restricted, target } of focusTargets) {
       for (const branch of target.data) {
         branches.push(joinBranches(restricted, branch));
       }

@@ -1,13 +1,11 @@
 import rdf from "rdf-ext";
+import { PREFIXES } from "../constants";
 import { validateFocusNode } from "./engine";
 import { getShapeData } from "./resource-retrieval";
 import {
   shapeWithReferencedShapes,
   targetedShapesForResource,
 } from "./validation-shapes";
-
-const SH = "http://www.w3.org/ns/shacl#";
-const MESSAGE_PATH = "http://mu.semte.ch/vocabularies/ext/messagePath";
 
 /*
  * Fills the variables of the result messages: {?value} with the value of the
@@ -18,19 +16,21 @@ const MESSAGE_PATH = "http://mu.semte.ch/vocabularies/ext/messagePath";
  */
 function fillMessageVariables(report, shapes, data) {
   const dataset = report.dataset;
-  const resultMessage = rdf.namedNode(SH + "resultMessage");
+  const resultMessage = rdf.namedNode(PREFIXES.sh + "resultMessage");
   for (const { object: result } of dataset.match(
     null,
-    rdf.namedNode(SH + "result"),
+    rdf.namedNode(PREFIXES.sh + "result"),
   )) {
-    const [value] = [...dataset.match(result, rdf.namedNode(SH + "value"))];
+    const [value] = [
+      ...dataset.match(result, rdf.namedNode(PREFIXES.sh + "value")),
+    ];
     const [shape] = [
-      ...dataset.match(result, rdf.namedNode(SH + "sourceShape")),
+      ...dataset.match(result, rdf.namedNode(PREFIXES.sh + "sourceShape")),
     ];
     if (!value) continue;
     const variables = { value: value.object.value };
     for (const { object: path } of shape
-      ? shapes.match(shape.object, rdf.namedNode(MESSAGE_PATH))
+      ? shapes.match(shape.object, rdf.namedNode(PREFIXES.ext + "messagePath"))
       : []) {
       const name = path.value.replace(/^.*[/#]/, "");
       // Sorted, so the message is the same for the same data

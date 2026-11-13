@@ -1,22 +1,18 @@
-import DataFactory from "@rdfjs/data-model/Factory.js";
-import DatasetFactory from "@rdfjs/dataset/Factory.js";
-import FormatsFactory from "@rdfjs/formats/Factory.js";
-import formats from "@rdfjs/formats/pretty.js";
 import * as datasetIo from "@rdfjs/io/dataset.js";
-import rdf, { Environment } from "rdf-ext";
+import rdf from "rdf-ext";
 import DatasetExt from "rdf-ext/lib/Dataset";
 import NamedNodeExt from "rdf-ext/lib/NamedNode";
 import { resource } from "rdf-utils-dataset";
 
-// TODO: Copied from rdfjs/io's test support,  it should be possible to simplify
-// this.
-const factory = new Environment([DataFactory, DatasetFactory, FormatsFactory]);
-
-factory.formats.import(formats);
-
 export async function insertContentInDataset(content, dataset) {
   // TODO: make text/turtle configurable?
-  const ds = await datasetIo.fromText("text/turtle", content, { factory });
+  // Parsed with rdf-ext, like the validation report, so their blank nodes get
+  // different labels from the same counter. With another factory, the blank
+  // node of a property shape could have the label of a node of the report,
+  // e.g. the report itself, and its sh:sourceShape would point at that node.
+  const ds = await datasetIo.fromText("text/turtle", content, {
+    factory: rdf,
+  });
   dataset.addAll(ds);
 
   return dataset;

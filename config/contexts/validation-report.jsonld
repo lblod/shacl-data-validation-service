@@ -1,0 +1,65 @@
+{
+  "@context": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "shn": "https://schemas.link/shacl-next#",
+    "conforms": "sh:conforms",
+    "result": {
+      "@id": "sh:result",
+      "@container": "@set"
+    },
+    "focusNode": {
+      "@id": "sh:focusNode",
+      "@type": "@id"
+    },
+    "value": {
+      "@id": "sh:value",
+      "@type": "@id"
+    },
+    "resultPath": {
+      "@id": "sh:resultPath",
+      "@type": "@id"
+    },
+    "resultSeverity": {
+      "@id": "sh:resultSeverity",
+      "@type": "@id"
+    },
+    "resultMessage": {
+      "@id": "sh:resultMessage",
+      "@container": "@language"
+    },
+    "sourceShape": {
+      "@id": "sh:sourceShape",
+      "@type": "@id"
+    },
+    "sourceConstraintComponent": {
+      "@id": "sh:sourceConstraintComponent",
+      "@type": "@id"
+    },
+    "detail": {
+      "@id": "sh:detail",
+      "@container": "@set"
+    },
+    "name": "sh:name",
+    "alternativePath": {
+      "@id": "sh:alternativePath",
+      "@type": "@id",
+      "@container": "@list"
+    },
+    "inversePath": {
+      "@id": "sh:inversePath",
+      "@type": "@id"
+    },
+    "zeroOrMorePath": {
+      "@id": "sh:zeroOrMorePath",
+      "@type": "@id"
+    },
+    "oneOrMorePath": {
+      "@id": "sh:oneOrMorePath",
+      "@type": "@id"
+    },
+    "zeroOrOnePath": {
+      "@id": "sh:zeroOrOnePath",
+      "@type": "@id"
+    }
+  }
+}

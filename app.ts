@@ -4,6 +4,7 @@ import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { writeReportFile } from "./lib/report";
 import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
+import { loadRules } from "./lib/rules";
 import { loadValidationShapes } from "./lib/validation-shapes";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
@@ -11,6 +12,8 @@ import { SubjectQueue } from "./queue";
 
 (async function startup() {
   await loadValidationShapes();
+  // The rules link to the validation shapes, which are checked to be loaded
+  await loadRules();
 })();
 
 const subjectQueue = new SubjectQueue(handleResource);
@@ -39,9 +42,10 @@ function logInfo(message: string) {
 }
 
 /*
- * Validates a resource against each validation shape that targets it, and
- * writes the report of each shape it doesn't conform to. Returns the results
- * and errors per shape, or undefined if the resource doesn't exist.
+ * Validates a resource against each validation shape the rules that apply to
+ * it link to, and writes the report of each shape it doesn't conform to.
+ * Returns the results and errors per shape, or undefined if the resource
+ * doesn't exist.
  */
 async function handleResource(namedNode: NamedNodeExt) {
   if (!(await resourceExists(namedNode.value))) {
@@ -52,7 +56,7 @@ async function handleResource(namedNode: NamedNodeExt) {
   const validation = await validateResource(namedNode.value);
   const { results, errors } = validation;
   if (!results.length && !errors.length) {
-    logInfo(`No applicable validation shapes for resource ${namedNode}`);
+    logInfo(`No rule applies to resource ${namedNode}`);
   }
 
   for (const { shape, report } of results) {
@@ -93,7 +97,7 @@ if (env.ENABLE_TEST_API) {
 
       const { results, errors } = validation;
       if (!results.length && !errors.length) {
-        res.status(400).send("No applicable validation shapes for resource");
+        res.status(400).send("No rule applies to the resource");
       } else if (errors.length) {
         const failed = errors.map(({ shape }) => shape.value);
         const validated = results.map(({ shape }) => shape.value);

@@ -1,0 +1,24 @@
+@prefix ex: <http://example.org/> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ex:DocumentRule a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  ext:validationShape ex:DocumentShape .
+
+ex:ReportRule a sh:NodeShape ;
+  sh:targetClass ex:Report ;
+  ext:validationShape ex:ReportShape .
+
+ex:SessionRule a sh:NodeShape ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX ex: <http://example.org/>
+      SELECT ?this WHERE { ?this ex:heldBy ex:council . }"""
+  ] ;
+  ext:validationShape ex:SessionShape .
+
+ex:AuditedRule a sh:NodeShape ;
+  sh:targetClass ex:Audited ;
+  ext:validationShape ex:AuditedTitleShape, ex:AuditedAuthorShape .

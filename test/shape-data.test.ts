@@ -3,10 +3,7 @@ import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test } from "vitest";
 import { validateFocusNode } from "../lib/engine";
-import {
-  generateConstructQuery,
-  generateTargetQuery,
-} from "../lib/sparql-generation";
+import { generateConstructQuery } from "../lib/sparql-generation";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 
@@ -158,56 +155,32 @@ describe("generateConstructQuery", () => {
   });
 
   test.each([
-    {
-      name: "sh:targetClass",
-      shape: "ClassTargetShape",
-      focusNode: "typed",
-      expected: ["typed a Typed"],
-    },
+    { name: "sh:targetClass", shape: "ClassTargetShape", focusNode: "typed" },
     {
       name: "sh:targetSubjectsOf",
       shape: "SubjectsOfTargetShape",
       focusNode: "subject",
-      expected: ["subject marker a marker"],
     },
     {
       name: "a SPARQL-based target",
       shape: "SparqlTargetShape",
       focusNode: "session",
-      expected: ["session heldBy council"],
     },
-  ])(
-    "retrieves the triples $name selects on",
-    async ({ shape, focusNode, expected }) => {
-      expect(await retrievedTriples(shape, focusNode)).toEqual(expected);
-    },
-  );
-
-  test("only retrieves data of the focus nodes", async () => {
-    expect(await retrievedTriples("ClassTargetShape", "other")).toEqual([]);
+  ])("retrieves no triples $name selects on", ({ shape, focusNode }) => {
+    expect(
+      generateConstructQuery(shapes, {
+        shapes: [ex(shape)],
+        focusNodes: [ex(focusNode)],
+      }),
+    ).toBeUndefined();
   });
 
-  test("retrieves every step of a class chain, and no other steps", async () => {
-    expect(await retrievedTriples("TopClassShape", "report")).toEqual([
-      "Document subClassOf Publication",
-      "Publication subClassOf Top",
-      "Report subClassOf Document",
-      "report a Report",
+  test("only retrieves data of the focus nodes the targets select", async () => {
+    const shape = "LabelledClassTargetShape";
+    expect(await retrievedTriples(shape, "typed")).toEqual([
+      "typed label a typed label",
     ]);
-  });
-
-  test("selects a shape on a superclass in the retrieved data", async () => {
-    const focusNodes = [ex("report")];
-    const options = { shapes: [ex("TopClassShape")], focusNodes };
-    const retrieved = await retrieve(generateConstructQuery(shapes, options));
-
-    const targetQuery = generateTargetQuery(shapes, options);
-    const bindings = await (
-      await engine.queryBindings(targetQuery.query, {
-        sources: [source(retrieved)],
-      })
-    ).toArray();
-    expect(bindings).toHaveLength(1);
+    expect(await retrievedTriples(shape, "start")).toEqual([]);
   });
 
   test("generates no query without data to retrieve", () => {
@@ -293,5 +266,18 @@ describe("generateConstructQuery", () => {
       focusNode,
     );
     expect(report.conforms).toBe(true);
+  });
+
+  test("validates a focus node without any retrieved data", async () => {
+    const validationShapes = rdf.dataset();
+    await loadFixture("validation-shapes.ttl", validationShapes);
+    // ex:CompanyShape requires a name
+    const report = await validateFocusNode(
+      rdf.dataset(),
+      validationShapes,
+      rdf.namedNode(ex("CompanyShape")),
+      rdf.namedNode(ex("unknown")),
+    );
+    expect(report.conforms).toBe(false);
   });
 });

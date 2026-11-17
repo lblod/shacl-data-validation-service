@@ -57,6 +57,9 @@ ex:PairShape sh:targetNode ex:start ;
 # Targets
 ex:ClassTargetShape sh:targetClass ex:Typed .
 
+ex:LabelledClassTargetShape sh:targetClass ex:Typed ;
+  sh:property [ sh:path ex:label ] .
+
 ex:SubjectsOfTargetShape sh:targetSubjectsOf ex:marker .
 
 ex:SparqlTargetShape sh:target [
@@ -65,5 +68,3 @@ ex:SparqlTargetShape sh:target [
       PREFIX ex: <http://example.org/>
       SELECT ?this WHERE { ?this ex:heldBy ex:council . }"""
   ] .
-
-ex:TopClassShape sh:targetClass ex:Top .

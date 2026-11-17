@@ -13,10 +13,21 @@ export async function resourceExists(uri: string) {
   return typesData.results.bindings.length > 0;
 }
 
-// The data of a resource needed to validate it against a shape, retrieved with
-// a query generated from that shape, see lib/sparql-generation.ts
-export async function getShapeData(shape, uri: string) {
-  const constructQuery = generateConstructQuery(VALIDATION_SHAPES, {
+/*
+ * The data of a resource needed to validate it against a shape, retrieved with
+ * a query generated from that shape, see lib/sparql-generation.ts. The shapes
+ * are the validation shapes by default, or e.g. the rules. The data is always
+ * retrieved for a single resource: without one, the query would retrieve the
+ * data of every resource the shape's targets select.
+ */
+export async function getShapeData(
+  shape,
+  uri: string,
+  shapes = VALIDATION_SHAPES,
+) {
+  if (!uri)
+    throw new Error(`No resource to retrieve the data of ${shape.value}`);
+  const constructQuery = generateConstructQuery(shapes, {
     shapes: [shape],
     focusNodes: [uri],
   });

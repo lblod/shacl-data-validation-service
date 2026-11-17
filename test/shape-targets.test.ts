@@ -3,71 +3,20 @@ import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { resourceExists } from "../lib/resource-retrieval";
-import { generateTargetQuery } from "../lib/sparql-generation";
+import { rulesForResource, RULES, validationShapesOfRules } from "../lib/rules";
+import { generateFocusNodeQuery } from "../lib/sparql-generation";
 import { validateResource, validateShape } from "../lib/validation";
 import {
   shapeWithReferencedShapes,
-  targetedShapesForResource,
   VALIDATION_SHAPES,
 } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { store } from "./store";
 
-// The store the service queries, as a dataset
-const store = vi.hoisted(() => ({ data: undefined }));
-
-vi.mock("@lblod/mu-auth-sudo", () => ({ querySudo: runOnStore }));
-
-function termToBinding(term) {
-  switch (term.termType) {
-    case "NamedNode":
-      return { type: "uri", value: term.value };
-    case "BlankNode":
-      return { type: "bnode", value: term.value };
-    default:
-      return {
-        type: "literal",
-        value: term.value,
-        ...(term.language && { "xml:lang": term.language }),
-        datatype: term.datatype.value,
-      };
-  }
-}
-
-// Answers a query as querySudo does: a CONSTRUCT as bindings of s, p and o
-async function runOnStore(query: string) {
-  const sources = [
-    { match: (...args) => Readable.from(store.data.match(...args)) },
-  ];
-  const engine = new QueryEngine();
-  if (query.trimStart().startsWith("CONSTRUCT")) {
-    const quads = await (await engine.queryQuads(query, { sources })).toArray();
-    return {
-      results: {
-        bindings: quads.map((quad) => ({
-          s: termToBinding(quad.subject),
-          p: termToBinding(quad.predicate),
-          o: termToBinding(quad.object),
-        })),
-      },
-    };
-  }
-  const bindings = await (
-    await engine.queryBindings(query, { sources })
-  ).toArray();
-  return {
-    results: {
-      bindings: bindings.map((binding) =>
-        Object.fromEntries(
-          [...binding].map(([variable, term]) => [
-            variable.value,
-            termToBinding(term),
-          ]),
-        ),
-      ),
-    },
-  };
-}
+vi.mock("@lblod/mu-auth-sudo", async () => ({
+  querySudo: (await import("./store")).runOnStore,
+}));
 
 const FIXTURES = "test/fixtures/shape-targets/";
 const EX = "http://example.org/";
@@ -77,24 +26,23 @@ const ex = (name: string) => EX + name;
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
-describe("generateTargetQuery", () => {
+describe("generateFocusNodeQuery", () => {
   const shapes = rdf.dataset();
   const data = rdf.dataset();
 
-  // The URIs of the shapes the generated query selects in the data
-  async function selectedShapes(options) {
-    const targetQuery = generateTargetQuery(shapes, options);
+  // The focus nodes the query generated for a shape selects in the data, in
+  // the order of the query
+  async function selectedFocusNodes(shape: string, options = {}) {
+    const query = generateFocusNodeQuery(shapes, ex(shape), {
+      limit: 10,
+      ...options,
+    });
     const bindings = await (
-      await new QueryEngine().queryBindings(targetQuery.query, {
+      await new QueryEngine().queryBindings(query, {
         sources: [{ match: (...args) => Readable.from(data.match(...args)) }],
       })
     ).toArray();
-    return bindings
-      .map(
-        (binding) =>
-          targetQuery.shapes[Number(binding.get("shape").value)].value,
-      )
-      .sort();
+    return bindings.map((binding) => binding.get("focusNode").value);
   }
 
   beforeAll(async () => {
@@ -104,53 +52,96 @@ describe("generateTargetQuery", () => {
 
   test.each([
     {
-      name: "sh:targetClass, sh:targetSubjectsOf and sh:targetObjectsOf",
-      resource: "document",
-      expected: ["ClassShape", "ObjectsOfShape", "SubjectsOfShape"],
+      name: "sh:targetClass, of a superclass as well",
+      shape: "ClassShape",
+      expected: ["document", "report"],
     },
     {
-      name: "sh:targetClass of a superclass",
-      resource: "report",
-      expected: ["ClassShape"],
+      name: "sh:targetNode",
+      shape: "NodeTargetShape",
+      expected: ["session"],
     },
     {
-      name: "sh:targetNode and SPARQL-based targets",
-      resource: "session",
-      expected: ["DeclaredPrefixesShape", "NodeTargetShape", "SparqlShape"],
+      name: "sh:targetSubjectsOf",
+      shape: "SubjectsOfShape",
+      expected: ["audited", "document"],
     },
     {
-      name: "no shape for a resource no target selects",
-      resource: "other",
+      name: "sh:targetObjectsOf",
+      shape: "ObjectsOfShape",
+      expected: ["document"],
+    },
+    {
+      name: "a SPARQL-based target",
+      shape: "SparqlShape",
+      expected: ["session", "sessionWithoutDocument"],
+    },
+    {
+      name: "a SPARQL-based target with declared prefixes",
+      shape: "DeclaredPrefixesShape",
+      expected: ["session", "sessionWithoutDocument"],
+    },
+    {
+      name: "nothing for a target that selects nothing",
+      shape: "OtherClassShape",
       expected: [],
     },
-  ])("selects $name", async ({ resource, expected }) => {
-    expect(await selectedShapes({ focusNodes: [ex(resource)] })).toEqual(
-      expected.map(ex),
-    );
+  ])("selects the focus nodes of $name", async ({ shape, expected }) => {
+    expect(await selectedFocusNodes(shape)).toEqual(expected.map(ex));
   });
 
-  test("generates no query for only a deactivated shape", () => {
+  test("restricts the focus nodes to the given ones", async () => {
+    const options = { focusNodes: [ex("report"), ex("other")] };
+    expect(await selectedFocusNodes("ClassShape", options)).toEqual([
+      ex("report"),
+    ]);
+  });
+
+  test("selects at most limit focus nodes, offset selecting the next", async () => {
+    const pages = [];
+    for (const offset of [0, 1, 2]) {
+      pages.push(await selectedFocusNodes("ClassShape", { limit: 1, offset }));
+    }
+    expect(pages).toEqual([[ex("document")], [ex("report")], []]);
+  });
+
+  test.each([undefined, 0, -1, 1.5])(
+    "requires a positive limit, not %s",
+    (limit) => {
+      expect(() =>
+        generateFocusNodeQuery(shapes, ex("ClassShape"), { limit }),
+      ).toThrow(/limit/);
+    },
+  );
+
+  test("rejects a negative offset", () => {
+    expect(() =>
+      generateFocusNodeQuery(shapes, ex("ClassShape"), {
+        limit: 1,
+        offset: -1,
+      }),
+    ).toThrow(/offset/);
+  });
+
+  test("generates no query for a deactivated shape", () => {
     expect(
-      generateTargetQuery(shapes, {
-        shapes: [ex("DeactivatedShape")],
+      generateFocusNodeQuery(shapes, ex("DeactivatedShape"), {
         focusNodes: [ex("document")],
+        limit: 1,
       }),
     ).toBeUndefined();
   });
 
   test("applies a shape without a target to the focus nodes", async () => {
-    const untargeted = ex("UntargetedShape");
-    expect(
-      await selectedShapes({
-        shapes: [untargeted],
-        focusNodes: [ex("other")],
-      }),
-    ).toEqual([untargeted]);
+    const options = { focusNodes: [ex("other")] };
+    expect(await selectedFocusNodes("UntargetedShape", options)).toEqual([
+      ex("other"),
+    ]);
   });
 
-  test("generates no query without shapes", () => {
+  test("generates no query for a shape without a target or focus nodes", () => {
     expect(
-      generateTargetQuery(rdf.dataset(), { focusNodes: [ex("document")] }),
+      generateFocusNodeQuery(shapes, ex("UntargetedShape"), { limit: 1 }),
     ).toBeUndefined();
   });
 });
@@ -159,36 +150,38 @@ describe("validation shapes for a resource", () => {
   const data = rdf.dataset();
   const resource = (name: string) => data.match(rdf.namedNode(ex(name)));
 
-  // The shapes targeting a resource, with a store holding its data
-  function targetingShapes(name: string) {
+  // The validation shapes the rules that apply to a resource link to, with a
+  // store holding its data
+  async function shapesFor(name: string) {
     store.data = resource(name);
-    return targetedShapesForResource(ex(name));
+    return validationShapesOfRules(await rulesForResource(ex(name)));
   }
 
-  async function targetingShapeUris(name: string) {
-    return (await targetingShapes(name)).map((shape) => shape.value);
+  async function shapeUrisFor(name: string) {
+    return (await shapesFor(name)).map((shape) => shape.value).sort();
   }
 
   beforeAll(async () => {
     await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
+    await loadFixture("rules.ttl", RULES);
     await loadFixture("data.ttl", data);
   });
 
-  test("selects a shape on its sh:targetClass", async () => {
-    expect(await targetingShapeUris("document")).toEqual([ex("DocumentShape")]);
+  test("selects a shape through a rule's sh:targetClass", async () => {
+    expect(await shapeUrisFor("document")).toEqual([ex("DocumentShape")]);
   });
 
-  test("selects a shape on its SPARQL-based target", async () => {
-    expect(await targetingShapeUris("session")).toEqual([ex("SessionShape")]);
+  test("selects a shape through a rule's SPARQL-based target", async () => {
+    expect(await shapeUrisFor("session")).toEqual([ex("SessionShape")]);
   });
 
-  test("selects nothing for a resource no target selects", async () => {
-    expect(await targetingShapeUris("other")).toEqual([]);
+  test("selects nothing for a resource no rule applies to", async () => {
+    expect(await shapeUrisFor("other")).toEqual([]);
   });
 
   test("includes a property shape node shapes share", async () => {
     for (const name of ["document", "report"]) {
-      const [shape] = await targetingShapes(name);
+      const [shape] = await shapesFor(name);
       expect(
         shapeWithReferencedShapes(shape).match(rdf.namedNode(ex("hasTitle")))
           .size,
@@ -196,27 +189,27 @@ describe("validation shapes for a resource", () => {
     }
   });
 
-  // The report of a resource against the shape targeting it
+  // The report of a resource against the shape a rule selects for it
   async function reportOf(name: string) {
-    const [shape] = await targetingShapes(name);
+    const [shape] = await shapesFor(name);
     return validateShape(resource(name), shape, ex(name));
   }
 
   test("validates against the shared property shape", async () => {
     expect((await reportOf("document")).conforms).toBe(true);
-    expect(await targetingShapeUris("report")).toEqual([ex("ReportShape")]);
+    expect(await shapeUrisFor("report")).toEqual([ex("ReportShape")]);
     expect((await reportOf("report")).conforms).toBe(false);
   });
 
-  test("validates against a shape selected on its SPARQL-based target", async () => {
+  test("validates against a shape selected through a SPARQL-based target", async () => {
     expect((await reportOf("session")).conforms).toBe(true);
-    expect(await targetingShapeUris("sessionWithoutDocument")).toEqual([
+    expect(await shapeUrisFor("sessionWithoutDocument")).toEqual([
       ex("SessionShape"),
     ]);
     expect((await reportOf("sessionWithoutDocument")).conforms).toBe(false);
   });
 
-  test("gives a report per shape targeting the resource", async () => {
+  test("gives a report per shape the rules link to", async () => {
     store.data = resource("audited");
     const { results, errors } = await validateResource(ex("audited"));
     expect(
@@ -228,7 +221,7 @@ describe("validation shapes for a resource", () => {
     expect(errors).toEqual([]);
   });
 
-  test("gives no reports when no shape targets the resource", async () => {
+  test("gives no reports when no rule applies to the resource", async () => {
     store.data = resource("other");
     expect(await validateResource(ex("other"))).toEqual({
       results: [],

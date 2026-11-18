@@ -8,3 +8,5 @@ ex:otherDocument a ex:Document ;
 
 ex:draft a ex:Draft ;
   ex:link <http://example.org/page#part> .
+
+ex:unlinkedDocument a ex:Document .

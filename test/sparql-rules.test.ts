@@ -1,6 +1,6 @@
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import { RULES } from "../lib/rules";
+import { RULES, rulesForResource } from "../lib/rules";
 import { generateRuleQueries } from "../lib/sparql-generation";
 import { validateResource } from "../lib/validation";
 import { VALIDATION_SHAPES } from "../lib/validation-shapes";
@@ -58,5 +58,16 @@ describe("SPARQL rules", () => {
 
   test("leave the data as is for a shape without rules", async () => {
     expect(await conformance("draft")).toEqual([[ex("DraftShape"), false]]);
+  });
+
+  test("add the triples a rule's SPARQL rules construct to check a resource against it", async () => {
+    const rules = async (name: string) =>
+      (await rulesForResource(ex(name))).map((rule) => rule.value).sort();
+    // ex:document has no source in the store, only a link
+    expect(await rules("document")).toEqual([
+      ex("DocumentRule"),
+      ex("SourcedDocumentRule"),
+    ]);
+    expect(await rules("unlinkedDocument")).toEqual([ex("DocumentRule")]);
   });
 });

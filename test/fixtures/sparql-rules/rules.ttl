@@ -9,3 +9,24 @@ ex:DocumentRule a sh:NodeShape ;
 ex:DraftRule a sh:NodeShape ;
   sh:targetClass ex:Draft ;
   ext:validationShape ex:DraftShape .
+
+# Applies to documents with a source, which its SPARQL rule constructs from
+# their link
+ex:SourcedDocumentRule a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  sh:property [
+    sh:path ex:source ;
+    sh:minCount 1 ;
+  ] ;
+  sh:rule [
+    a sh:SPARQLRule ;
+    sh:construct """
+      PREFIX ex: <http://example.org/>
+      CONSTRUCT {
+        $this ex:source ?source .
+      } WHERE {
+        $this ex:link ?link .
+        BIND(IRI(REPLACE(STR(?link), "#.*$", "")) AS ?source)
+      }"""
+  ] ;
+  ext:validationShape ex:DocumentShape .

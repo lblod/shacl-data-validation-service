@@ -1,0 +1,11 @@
+@prefix ex: <http://example.org/> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ex:DocumentRule a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  ext:validationShape ex:DocumentShape .
+
+ex:DraftRule a sh:NodeShape ;
+  sh:targetClass ex:Draft ;
+  ext:validationShape ex:DraftShape .

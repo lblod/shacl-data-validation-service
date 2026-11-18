@@ -10,6 +10,12 @@ export const QUEUE_POLL_INTERVAL = envvar
   .default(100)
   .asIntPositive();
 
+// The maximum number of resources a rule selects at a time
+export const FOCUS_NODE_LIMIT = envvar
+  .get("FOCUS_NODE_LIMIT")
+  .default(100)
+  .asIntPositive();
+
 export const ENABLE_TEST_API = envvar
   .get("ENABLE_TEST_API")
   .default("false")

@@ -1,0 +1,22 @@
+@prefix ex: <http://example.org/> .
+
+ex:activeOrg a ex:Organization ;
+  ex:status ex:active ;
+  ex:classification ex:local .
+
+ex:inactiveOrg a ex:Organization ;
+  ex:status ex:inactive ;
+  ex:classification ex:regional .
+
+ex:pendingOrg a ex:Organization ;
+  ex:status ex:pending .
+
+ex:twoStatusOrg a ex:Organization ;
+  ex:status ex:active, ex:inactive .
+
+# Conforms to ex:SingleStatusRule, but isn't an organization
+ex:thing a ex:Thing ;
+  ex:status ex:active .
+
+ex:local ex:level ex:localLevel .
+ex:regional ex:level ex:regionalLevel .

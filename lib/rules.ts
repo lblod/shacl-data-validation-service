@@ -16,9 +16,10 @@ import {
 /*
  * A rule is a SHACL node shape that decides which resources are validated
  * against the validation shapes it links to with ext:validationShape. Its
- * targets select the resources it may apply to, and it applies to those that
- * conform to it, e.g. to its property shapes. The targets of the validation
- * shapes don't matter.
+ * targets select the resources it may apply to; a rule without a target may
+ * apply to every resource. Of those, it applies to the ones that conform to
+ * the property shapes of the rule. The targets of the validation shapes don't
+ * matter.
  */
 
 const RULES_FOLDER = "config/rules/";

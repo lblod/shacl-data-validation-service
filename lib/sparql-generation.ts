@@ -97,7 +97,8 @@ export type SparqlGenerationOptions = {
   // target
   shapes?: (string | Term)[];
   // Restricts the focus nodes of the shapes to these nodes, e.g. the resource
-  // being validated. Shapes without a target apply to these nodes.
+  // being validated. Shapes without a target apply to these nodes instead of
+  // to every resource.
   focusNodes?: (string | Term)[];
   // Graph to select the focus nodes and retrieve the data in
   graph?: string;
@@ -107,7 +108,8 @@ export type SparqlGenerationOptions = {
 
 export type FocusNodeQueryOptions = {
   // Restricts the focus nodes to these nodes, e.g. the resource being
-  // validated. A shape without a target applies to these nodes.
+  // validated. A shape without a target applies to these nodes instead of to
+  // every resource.
   focusNodes?: (string | Term)[];
   // Graph to select the focus nodes in
   graph?: string;
@@ -269,6 +271,15 @@ function focusNodeRestriction(
   const values = focusNodes.map(termToString).join(" ");
   return [(name) => `VALUES ${nodeToString(focus, name)} { ${values} }`];
 }
+
+// The target of a shape without a target: every resource, i.e. every node
+// with a type
+const allResourcesTarget: CreateTarget = (focus) => ({
+  select: [
+    (name) =>
+      `${nodeToString(focus, name)} ${pathToString(predicatePath(PREFIXES.rdf + "type"))} [] .`,
+  ],
+});
 
 // Copies a Traqula AST, replacing the nodes replace returns a node for
 function transformAst(astNode, replace: (astNode) => unknown) {
@@ -829,8 +840,10 @@ class SparqlGenerator {
     if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
     return shapes.flatMap((shape, index) => {
       let targets = this.getTargets(shape);
-      if (!targets.length && focusNodes) {
-        targets = [() => ({ select: [] })];
+      // A shape without a target applies to the given focus nodes, or else to
+      // every resource
+      if (!targets.length) {
+        targets = [focusNodes ? () => ({ select: [] }) : allResourcesTarget];
       }
       return targets.map((createTarget) => {
         const focus = this.createVariable("this");
@@ -954,8 +967,9 @@ const isCount = (value: number, minimum: number) =>
 /*
  * Generates a SELECT query for the focus nodes the targets of a shape select,
  * bound to ?focusNode: at most limit of them, ordered so offset selects the
- * next ones. A shape without a target selects the given focus nodes. Returns
- * undefined for a deactivated shape, or one without a target or focus nodes.
+ * next ones. A shape without a target selects the given focus nodes, or else
+ * every resource, i.e. every node with a type. Returns undefined for a
+ * deactivated shape.
  */
 export function generateFocusNodeQuery(
   shapes,

@@ -1,6 +1,7 @@
 @prefix ex: <http://example.org/> .
 @prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ex:DocumentRule a sh:NodeShape ;
   sh:targetClass ex:Document ;
@@ -22,3 +23,45 @@ ex:SessionRule a sh:NodeShape ;
 ex:AuditedRule a sh:NodeShape ;
   sh:targetClass ex:Audited ;
   ext:validationShape ex:AuditedTitleShape, ex:AuditedAuthorShape .
+
+# A rule per other kind of target. Each links to the validation shape the
+# resources it applies to already get from the rules above.
+ex:NodeTargetRule a sh:NodeShape ;
+  sh:targetNode ex:session ;
+  ext:validationShape ex:SessionShape .
+
+ex:SubjectsOfRule a sh:NodeShape ;
+  sh:targetSubjectsOf ex:heldBy ;
+  ext:validationShape ex:SessionShape .
+
+ex:ObjectsOfRule a sh:NodeShape ;
+  sh:targetObjectsOf ex:hasDocument ;
+  ext:validationShape ex:DocumentShape .
+
+ex:DeclaredPrefixesRule a sh:NodeShape ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:prefixes ex:prefixes ;
+    sh:select "SELECT ?this WHERE { ?this ex:heldBy ex:council . }"
+  ] ;
+  ext:validationShape ex:SessionShape .
+
+ex:prefixes sh:declare [
+  sh:prefix "ex" ;
+  sh:namespace "http://example.org/"^^xsd:anyURI
+] .
+
+ex:OtherClassRule a sh:NodeShape ;
+  sh:targetClass ex:Person ;
+  ext:validationShape ex:DocumentShape .
+
+ex:DeactivatedRule a sh:NodeShape ;
+  sh:targetClass ex:Document ;
+  sh:deactivated true ;
+  ext:validationShape ex:DocumentShape .
+
+# Without a target it applies to every resource that conforms to it, i.e. has
+# a document
+ex:UntargetedRule a sh:NodeShape ;
+  sh:property [ sh:path ex:hasDocument ; sh:minCount 1 ] ;
+  ext:validationShape ex:SessionShape .

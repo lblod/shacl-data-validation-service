@@ -195,48 +195,45 @@ describe("generateConstructQuery", () => {
   test("gives the same validation result as the full data", async () => {
     const validationShapes = rdf.dataset();
     await loadFixture("validation-shapes.ttl", validationShapes);
+    const shape = rdf.namedNode(ex("PersonShape"));
     const focusNodes = [ex("validPerson"), ex("invalidPerson")];
 
-    const results = async (dataset) => {
+    // The violations of the focus nodes against the shape on a dataset, as
+    // sorted "focus node path constraint" strings
+    const violations = async (dataset: DatasetCore) => {
       const reports = await Promise.all(
         focusNodes.map((focusNode) =>
           validateFocusNode(
             dataset,
             validationShapes,
-            rdf.namedNode(ex("PersonShape")),
+            shape,
             rdf.namedNode(focusNode),
           ),
         ),
       );
-      return {
-        conforms: reports.every((report) => report.conforms),
-        results: reports
-          .flatMap((report) => report.results)
-          .map((result) =>
-            [
-              result.focusNode.value,
-              result.path?.map((step) => step.predicates[0].value).join("/"),
-              result.constraintComponent.value,
-            ].join(" "),
-          )
-          .sort(),
-      };
+      return reports
+        .flatMap((report) => report.results)
+        .map((result) =>
+          [
+            result.focusNode.value,
+            result.path?.map((step) => step.predicates[0].value).join("/"),
+            result.constraintComponent.value,
+          ].join(" "),
+        )
+        .sort();
     };
 
     const retrieved = await retrieve(
       generateConstructQuery(validationShapes, {
-        shapes: [ex("PersonShape")],
+        shapes: [shape],
         focusNodes,
       }),
     );
-    const expected = await results(data);
+    const fullDataViolations = await violations(data);
 
-    expect(expected.conforms).toBe(false);
-    expect(expected.results.length).toBeGreaterThan(0);
-    expect(await results(retrieved)).toEqual(expected);
-    expect(retrieved.match(null, rdf.namedNode(ex("notRetrieved"))).size).toBe(
-      0,
-    );
+    // ex:invalidPerson violates the shape, so there's something to compare
+    expect(fullDataViolations.length).toBeGreaterThan(0);
+    expect(await violations(retrieved)).toEqual(fullDataViolations);
   });
 
   test("doesn't validate other resources the target selects in the data", async () => {

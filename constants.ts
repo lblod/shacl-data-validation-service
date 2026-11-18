@@ -7,3 +7,7 @@ export const PREFIXES = {
   sh: "http://www.w3.org/ns/shacl#",
   xsd: "http://www.w3.org/2001/XMLSchema#",
 };
+
+// Links a rule to the validation shapes the resources it applies to are
+// validated against
+export const VALIDATION_SHAPE_PREDICATE = PREFIXES.ext + "validationShape";

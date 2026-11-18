@@ -12,6 +12,7 @@ import {
 } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { ex } from "./helpers";
 import { store } from "./store";
 
 vi.mock("@lblod/mu-auth-sudo", async () => ({
@@ -19,9 +20,6 @@ vi.mock("@lblod/mu-auth-sudo", async () => ({
 }));
 
 const FIXTURES = "test/fixtures/shape-targets/";
-const EX = "http://example.org/";
-
-const ex = (name: string) => EX + name;
 
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);

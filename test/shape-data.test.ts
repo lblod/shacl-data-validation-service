@@ -1,4 +1,5 @@
 import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
+import type { DatasetCore } from "@rdfjs/types";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test } from "vitest";
@@ -6,16 +7,30 @@ import { validateFocusNode } from "../lib/engine";
 import { generateConstructQuery } from "../lib/sparql-generation";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { EX, ex } from "./helpers";
 
 const FIXTURES = "test/fixtures/shape-data/";
-const EX = "http://example.org/";
 const TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const SUB_CLASS_OF = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 
-const ex = (name: string) => EX + name;
-
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
+
+// The triples of a dataset as sorted "subject predicate object" strings, with
+// example.org IRIs, rdf:type and rdfs:subClassOf shortened
+const shortTriples = (dataset: DatasetCore) =>
+  [...dataset]
+    .map((quad) =>
+      [quad.subject, quad.predicate, quad.object]
+        .map((term) =>
+          term.value
+            .replace(EX, "")
+            .replace(TYPE, "a")
+            .replace(SUB_CLASS_OF, "subClassOf"),
+        )
+        .join(" "),
+    )
+    .sort();
 
 const engine = new QueryEngine();
 const source = (dataset) => ({
@@ -39,19 +54,7 @@ describe("generateConstructQuery", () => {
       shapes: [ex(shape)],
       ...(focusNode && { focusNodes: [ex(focusNode)] }),
     });
-    const retrieved = await retrieve(query);
-    return [...retrieved]
-      .map((quad) =>
-        [quad.subject, quad.predicate, quad.object]
-          .map((term) =>
-            term.value
-              .replace(EX, "")
-              .replace(TYPE, "a")
-              .replace(SUB_CLASS_OF, "subClassOf"),
-          )
-          .join(" "),
-      )
-      .sort();
+    return shortTriples(await retrieve(query));
   }
 
   beforeAll(async () => {

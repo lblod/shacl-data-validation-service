@@ -1,5 +1,6 @@
 import rdf from "rdf-ext";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import { VALIDATION_SHAPE_PREDICATE } from "../constants";
 import {
   checkRules,
   listRules,
@@ -12,6 +13,7 @@ import { validateResource } from "../lib/validation";
 import { VALIDATION_SHAPES } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { ex } from "./helpers";
 import { store } from "./store";
 
 vi.mock("@lblod/mu-auth-sudo", async () => ({
@@ -19,10 +21,6 @@ vi.mock("@lblod/mu-auth-sudo", async () => ({
 }));
 
 const FIXTURES = "test/fixtures/rules/";
-const EX = "http://example.org/";
-const VALIDATION_SHAPE = "http://mu.semte.ch/vocabularies/ext/validationShape";
-
-const ex = (name: string) => EX + name;
 
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
@@ -123,7 +121,7 @@ describe("checkRules", () => {
   });
 
   test("rejects a link to a validation shape that isn't loaded", () => {
-    add(ex("ActiveRule"), VALIDATION_SHAPE, ex("MissingShape"));
+    add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("MissingShape"));
     expect(() => checkRules()).toThrow(/MissingShape/);
   });
 
@@ -134,7 +132,7 @@ describe("checkRules", () => {
 
   test("warns about a linked validation shape with a target", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    add(ex("ActiveRule"), VALIDATION_SHAPE, ex("TargetedShape"));
+    add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("TargetedShape"));
     checkRules();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("TargetedShape"));
   });

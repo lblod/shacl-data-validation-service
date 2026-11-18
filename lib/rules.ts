@@ -1,6 +1,6 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
-import { PREFIXES } from "../constants";
+import { PREFIXES, VALIDATION_SHAPE_PREDICATE } from "../constants";
 import * as env from "../env";
 import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
@@ -22,7 +22,6 @@ import {
  */
 
 const RULES_FOLDER = "config/rules/";
-const VALIDATION_SHAPE = PREFIXES.ext + "validationShape";
 
 export const RULES = rdf.dataset();
 
@@ -50,7 +49,7 @@ export function checkRules() {
   checkReferencedShapes(RULES, "Rules");
 
   const missing = [];
-  const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE));
+  const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
   for (const { subject: rule, object: shape } of links) {
     if (!VALIDATION_SHAPES.match(shape).size) {
       missing.push(`${shape.value} (from ${rule.value})`);
@@ -75,7 +74,7 @@ export function checkRules() {
 // The rules that aren't deactivated
 export function listRules() {
   const rules = rdf.termSet();
-  const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE));
+  const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
   for (const { subject } of links) rules.add(subject);
   return [...rules].filter((rule) => !isDeactivated(RULES, rule));
 }
@@ -149,7 +148,7 @@ export async function rulesForResource(uri: string) {
 export function validationShapesOfRules(rules) {
   const shapes = rdf.termSet();
   for (const rule of rules) {
-    const linked = getObjects(RULES, rule, VALIDATION_SHAPE);
+    const linked = getObjects(RULES, rule, VALIDATION_SHAPE_PREDICATE);
     for (const shape of linked) {
       if (!isDeactivated(VALIDATION_SHAPES, shape)) shapes.add(shape);
     }

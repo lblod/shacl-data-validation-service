@@ -1,15 +1,27 @@
-import rdfDataModel from "@rdfjs/data-model";
+import rdf from "rdf-ext";
 import Validator from "shacl-engine/Validator.js";
 
-export async function validateResource(resource, shapes) {
-  const validator = new Validator(shapes, { factory: rdfDataModel });
-  const report = await validator.validate({ dataset: resource });
+/*
+ * shacl-engine skips the validation of an empty data graph, so a focus node
+ * without any retrieved data would conform to every shape, e.g. one with a
+ * sh:minCount. Validating an empty data graph with this triple instead keeps
+ * the result: no path from a focus node reaches it.
+ */
+const NOT_EMPTY = rdf.quad(
+  rdf.namedNode("urn:x-shacl-data-validation:data"),
+  rdf.namedNode("urn:x-shacl-data-validation:isNotEmpty"),
+  rdf.literal("true"),
+);
 
-  return report;
-}
-
-export async function isConformResource(resource, shapes) {
-  const report = await validateResource(resource, shapes);
-
-  return report.conforms;
+/*
+ * Validates a focus node against a shape. shapes also holds the shapes it refers
+ * to. The validator doesn't resolve the target of the shape: the data can hold
+ * other resources the target selects, without the data to validate those.
+ */
+export async function validateFocusNode(data, shapes, shape, focusNode) {
+  const validator = new Validator(shapes, { factory: rdf });
+  const dataset = data.size ? data : rdf.dataset([NOT_EMPTY]);
+  return validator.validate({ dataset, terms: [focusNode] }, [
+    { terms: [shape] },
+  ]);
 }

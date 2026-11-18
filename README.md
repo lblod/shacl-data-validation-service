@@ -48,14 +48,14 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 ### Environment variables.
 
-|Name               |Description                                                                                                |Default value|
-|-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
-|MAX_REPORTS        |The number of reports to keep.  The oldest reports are removed.                                            |100          |
-|REPORT_FORMAT      |The format of the report files: "n-triples" or "json-ld"                                                   |n-triples    |
+|Name                |Description                                                                                                                        |Default value|
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------|-------------|
+|MAX_REPORTS         |The number of reports to keep.  The oldest reports are removed.                                                                    |100          |
+|REPORT_FORMAT       |The format of the report files: "n-triples" or "json-ld"                                                                           |n-triples    |
 |REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
-|LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
-|QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
-|ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
+|LOGLEVEL            |Level of logging to the console: "silent" or "info"                                                                                |silent       |
+|QUEUE_POLL_INTERVAL |The number of milliseconds to wait before rechecking the queue.                                                                    |100          |
+|ENABLE_TEST_API     |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development              |false        |
 
 ## Methodology
 ### Resource retrieval

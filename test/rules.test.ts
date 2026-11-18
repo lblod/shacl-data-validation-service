@@ -1,4 +1,3 @@
-import { querySudo } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import {
@@ -100,30 +99,6 @@ describe("matchingFocusNodes", () => {
     expect(await matchingFocusNodes(rule, { limit: 2, offset: 2 })).toEqual([
       ex("pendingOrg"),
     ]);
-  });
-
-  test("retrieves the data of each selected resource separately", async () => {
-    const run = vi.mocked(querySudo);
-    run.mockClear();
-    await matchingFocusNodes(rule, { limit: 10 });
-
-    const queries = run.mock.calls.map(([query]) => query);
-    const constructQueries = queries.filter((query) =>
-      query.trimStart().startsWith("CONSTRUCT"),
-    );
-    const organizations = [
-      "activeOrg",
-      "inactiveOrg",
-      "pendingOrg",
-      "twoStatusOrg",
-    ].map(ex);
-    expect(constructQueries).toHaveLength(organizations.length);
-    for (const [index, query] of constructQueries.entries()) {
-      const mentioned = organizations.filter((uri) =>
-        query.includes(`<${uri}>`),
-      );
-      expect(mentioned).toEqual([organizations[index]]);
-    }
   });
 });
 

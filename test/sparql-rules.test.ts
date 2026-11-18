@@ -1,10 +1,12 @@
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
+import { RULES } from "../lib/rules";
 import { generateRuleQueries } from "../lib/sparql-generation";
 import { validateResource } from "../lib/validation";
 import { VALIDATION_SHAPES } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { EX, ex } from "./helpers";
 import { runOnStore, store } from "./store";
 
 vi.mock("@lblod/mu-auth-sudo", async () => ({
@@ -12,9 +14,6 @@ vi.mock("@lblod/mu-auth-sudo", async () => ({
 }));
 
 const FIXTURES = "test/fixtures/sparql-rules/";
-const EX = "http://example.org/";
-
-const ex = (name: string) => EX + name;
 
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
@@ -22,6 +21,7 @@ const loadFixture = async (name: string, dataset) =>
 describe("SPARQL rules", () => {
   beforeAll(async () => {
     await loadFixture("shapes.ttl", VALIDATION_SHAPES);
+    await loadFixture("rules.ttl", RULES);
     store.data = await loadFixture("data.ttl", rdf.dataset());
   });
 
@@ -43,7 +43,7 @@ describe("SPARQL rules", () => {
     expect(triples).toEqual(["document source page"]);
   });
 
-  // The conformance of a resource per shape targeting it
+  // The conformance of a resource per validation shape its rules link to
   async function conformance(name: string) {
     const { results, errors } = await validateResource(ex(name));
     expect(errors).toEqual([]);

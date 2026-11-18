@@ -1,8 +1,6 @@
-import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
-import { generateTargetQuery } from "./sparql-generation";
 import { PREFIXES } from "../constants";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
@@ -18,11 +16,11 @@ export async function loadValidationShapes() {
     const fileContents = await readFile(filePath);
     await insertContentInDataset(fileContents, VALIDATION_SHAPES);
   }
-  checkReferencedShapes();
+  checkReferencedShapes(VALIDATION_SHAPES, "Validation shapes");
 }
 
-// The members of an RDF list
-function getListMembers(list) {
+// The members of an RDF list in the shapes
+function getListMembers(shapes, list) {
   const members = [];
   const visited = rdf.termSet();
   const toVisit = [list];
@@ -30,12 +28,8 @@ function getListMembers(list) {
     const listNode = toVisit.pop();
     if (visited.has(listNode)) continue;
     visited.add(listNode);
-    const first = getObjects(
-      VALIDATION_SHAPES,
-      listNode,
-      PREFIXES.rdf + "first",
-    );
-    const rest = getObjects(VALIDATION_SHAPES, listNode, PREFIXES.rdf + "rest");
+    const first = getObjects(shapes, listNode, PREFIXES.rdf + "first");
+    const rest = getObjects(shapes, listNode, PREFIXES.rdf + "rest");
     members.push(...first);
     toVisit.push(...rest);
   }
@@ -43,44 +37,39 @@ function getListMembers(list) {
 }
 
 // The validator treats a reference to a shape that isn't loaded as a shape
-// without constraints, so its checks would silently never run.
-function checkReferencedShapes() {
+// without constraints, so its checks would silently never run. The description
+// names the shapes in the error, e.g. "Rules".
+export function checkReferencedShapes(shapes, description: string) {
   const references = [];
   for (const name of SHAPE_REFERENCES) {
-    const quads = VALIDATION_SHAPES.match(
-      null,
-      rdf.namedNode(PREFIXES.sh + name),
-    );
+    const quads = shapes.match(null, rdf.namedNode(PREFIXES.sh + name));
     for (const quad of quads) {
       references.push({ from: quad.subject, shape: quad.object });
     }
   }
   for (const name of SHAPE_LIST_REFERENCES) {
-    const quads = VALIDATION_SHAPES.match(
-      null,
-      rdf.namedNode(PREFIXES.sh + name),
-    );
+    const quads = shapes.match(null, rdf.namedNode(PREFIXES.sh + name));
     for (const quad of quads) {
-      for (const shape of getListMembers(quad.object)) {
+      const members = getListMembers(shapes, quad.object);
+      for (const shape of members) {
         references.push({ from: quad.subject, shape });
       }
     }
   }
 
-  const missing = references.filter(
-    ({ shape }) => !VALIDATION_SHAPES.match(shape).size,
-  );
+  const missing = references.filter(({ shape }) => !shapes.match(shape).size);
   if (missing.length) {
     const details = missing
       .map(({ from, shape }) => `${shape.value} (from ${from.value})`)
       .join(", ");
-    throw new Error(`Validation shapes refer to missing shapes: ${details}`);
+    throw new Error(`${description} refer to missing shapes: ${details}`);
   }
 }
 
 // A shape with the blank nodes and the named shapes it refers to, e.g. its
-// sh:property shapes, which node shapes can share.
-export function shapeWithReferencedShapes(shape) {
+// sh:property shapes, which node shapes can share. The shapes are the
+// validation shapes by default, or e.g. the rules.
+export function shapeWithReferencedShapes(shape, shapes = VALIDATION_SHAPES) {
   const result = rdf.dataset();
   const visited = rdf.termSet();
   const toVisit = [shape];
@@ -88,7 +77,7 @@ export function shapeWithReferencedShapes(shape) {
     const term = toVisit.pop();
     if (visited.has(term)) continue;
     visited.add(term);
-    for (const quad of VALIDATION_SHAPES.match(term)) {
+    for (const quad of shapes.match(term)) {
       result.add(quad);
       if (quad.object.termType !== "Literal") {
         toVisit.push(quad.object);
@@ -96,16 +85,4 @@ export function shapeWithReferencedShapes(shape) {
     }
   }
   return result;
-}
-
-// The shapes whose targets select the resource in the store
-export async function targetedShapesForResource(uri: string) {
-  const targetQuery = generateTargetQuery(VALIDATION_SHAPES, {
-    focusNodes: [uri],
-  });
-  if (!targetQuery) return [];
-  const result = await query(targetQuery.query);
-  return (result?.results?.bindings ?? []).map(
-    (binding) => targetQuery.shapes[Number(binding.shape.value)],
-  );
 }

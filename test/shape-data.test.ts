@@ -1,24 +1,36 @@
 import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
+import type { DatasetCore } from "@rdfjs/types";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test } from "vitest";
 import { validateFocusNode } from "../lib/engine";
-import {
-  generateConstructQuery,
-  generateTargetQuery,
-} from "../lib/sparql-generation";
+import { generateConstructQuery } from "../lib/sparql-generation";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
+import { EX, ex } from "./helpers";
 
 const FIXTURES = "test/fixtures/shape-data/";
-const EX = "http://example.org/";
 const TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const SUB_CLASS_OF = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
 
-const ex = (name: string) => EX + name;
-
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
+
+// The triples of a dataset as sorted "subject predicate object" strings, with
+// example.org IRIs, rdf:type and rdfs:subClassOf shortened
+const shortTriples = (dataset: DatasetCore) =>
+  [...dataset]
+    .map((quad) =>
+      [quad.subject, quad.predicate, quad.object]
+        .map((term) =>
+          term.value
+            .replace(EX, "")
+            .replace(TYPE, "a")
+            .replace(SUB_CLASS_OF, "subClassOf"),
+        )
+        .join(" "),
+    )
+    .sort();
 
 const engine = new QueryEngine();
 const source = (dataset) => ({
@@ -42,19 +54,7 @@ describe("generateConstructQuery", () => {
       shapes: [ex(shape)],
       ...(focusNode && { focusNodes: [ex(focusNode)] }),
     });
-    const retrieved = await retrieve(query);
-    return [...retrieved]
-      .map((quad) =>
-        [quad.subject, quad.predicate, quad.object]
-          .map((term) =>
-            term.value
-              .replace(EX, "")
-              .replace(TYPE, "a")
-              .replace(SUB_CLASS_OF, "subClassOf"),
-          )
-          .join(" "),
-      )
-      .sort();
+    return shortTriples(await retrieve(query));
   }
 
   beforeAll(async () => {
@@ -158,56 +158,32 @@ describe("generateConstructQuery", () => {
   });
 
   test.each([
-    {
-      name: "sh:targetClass",
-      shape: "ClassTargetShape",
-      focusNode: "typed",
-      expected: ["typed a Typed"],
-    },
+    { name: "sh:targetClass", shape: "ClassTargetShape", focusNode: "typed" },
     {
       name: "sh:targetSubjectsOf",
       shape: "SubjectsOfTargetShape",
       focusNode: "subject",
-      expected: ["subject marker a marker"],
     },
     {
       name: "a SPARQL-based target",
       shape: "SparqlTargetShape",
       focusNode: "session",
-      expected: ["session heldBy council"],
     },
-  ])(
-    "retrieves the triples $name selects on",
-    async ({ shape, focusNode, expected }) => {
-      expect(await retrievedTriples(shape, focusNode)).toEqual(expected);
-    },
-  );
-
-  test("only retrieves data of the focus nodes", async () => {
-    expect(await retrievedTriples("ClassTargetShape", "other")).toEqual([]);
+  ])("retrieves no triples $name selects on", ({ shape, focusNode }) => {
+    expect(
+      generateConstructQuery(shapes, {
+        shapes: [ex(shape)],
+        focusNodes: [ex(focusNode)],
+      }),
+    ).toBeUndefined();
   });
 
-  test("retrieves every step of a class chain, and no other steps", async () => {
-    expect(await retrievedTriples("TopClassShape", "report")).toEqual([
-      "Document subClassOf Publication",
-      "Publication subClassOf Top",
-      "Report subClassOf Document",
-      "report a Report",
+  test("only retrieves data of the focus nodes the targets select", async () => {
+    const shape = "LabelledClassTargetShape";
+    expect(await retrievedTriples(shape, "typed")).toEqual([
+      "typed label a typed label",
     ]);
-  });
-
-  test("selects a shape on a superclass in the retrieved data", async () => {
-    const focusNodes = [ex("report")];
-    const options = { shapes: [ex("TopClassShape")], focusNodes };
-    const retrieved = await retrieve(generateConstructQuery(shapes, options));
-
-    const targetQuery = generateTargetQuery(shapes, options);
-    const bindings = await (
-      await engine.queryBindings(targetQuery.query, {
-        sources: [source(retrieved)],
-      })
-    ).toArray();
-    expect(bindings).toHaveLength(1);
+    expect(await retrievedTriples(shape, "start")).toEqual([]);
   });
 
   test("generates no query without data to retrieve", () => {
@@ -219,48 +195,45 @@ describe("generateConstructQuery", () => {
   test("gives the same validation result as the full data", async () => {
     const validationShapes = rdf.dataset();
     await loadFixture("validation-shapes.ttl", validationShapes);
+    const shape = rdf.namedNode(ex("PersonShape"));
     const focusNodes = [ex("validPerson"), ex("invalidPerson")];
 
-    const results = async (dataset) => {
+    // The violations of the focus nodes against the shape on a dataset, as
+    // sorted "focus node path constraint" strings
+    const violations = async (dataset: DatasetCore) => {
       const reports = await Promise.all(
         focusNodes.map((focusNode) =>
           validateFocusNode(
             dataset,
             validationShapes,
-            rdf.namedNode(ex("PersonShape")),
+            shape,
             rdf.namedNode(focusNode),
           ),
         ),
       );
-      return {
-        conforms: reports.every((report) => report.conforms),
-        results: reports
-          .flatMap((report) => report.results)
-          .map((result) =>
-            [
-              result.focusNode.value,
-              result.path?.map((step) => step.predicates[0].value).join("/"),
-              result.constraintComponent.value,
-            ].join(" "),
-          )
-          .sort(),
-      };
+      return reports
+        .flatMap((report) => report.results)
+        .map((result) =>
+          [
+            result.focusNode.value,
+            result.path?.map((step) => step.predicates[0].value).join("/"),
+            result.constraintComponent.value,
+          ].join(" "),
+        )
+        .sort();
     };
 
     const retrieved = await retrieve(
       generateConstructQuery(validationShapes, {
-        shapes: [ex("PersonShape")],
+        shapes: [shape],
         focusNodes,
       }),
     );
-    const expected = await results(data);
+    const fullDataViolations = await violations(data);
 
-    expect(expected.conforms).toBe(false);
-    expect(expected.results.length).toBeGreaterThan(0);
-    expect(await results(retrieved)).toEqual(expected);
-    expect(retrieved.match(null, rdf.namedNode(ex("notRetrieved"))).size).toBe(
-      0,
-    );
+    // ex:invalidPerson violates the shape, so there's something to compare
+    expect(fullDataViolations.length).toBeGreaterThan(0);
+    expect(await violations(retrieved)).toEqual(fullDataViolations);
   });
 
   test("doesn't validate other resources the target selects in the data", async () => {
@@ -293,5 +266,18 @@ describe("generateConstructQuery", () => {
       focusNode,
     );
     expect(report.conforms).toBe(true);
+  });
+
+  test("validates a focus node without any retrieved data", async () => {
+    const validationShapes = rdf.dataset();
+    await loadFixture("validation-shapes.ttl", validationShapes);
+    // ex:CompanyShape requires a name
+    const report = await validateFocusNode(
+      rdf.dataset(),
+      validationShapes,
+      rdf.namedNode(ex("CompanyShape")),
+      rdf.namedNode(ex("unknown")),
+    );
+    expect(report.conforms).toBe(false);
   });
 });

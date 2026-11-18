@@ -21,20 +21,12 @@ ex:owner1 a ex:Employee .
 ex:Employee rdfs:subClassOf ex:Person .
 
 # The resources selected by their targets
-ex:typed a ex:Typed .
+ex:typed a ex:Typed ;
+  ex:label "a typed label" .
 
 ex:subject ex:marker "a marker" .
 
 ex:session ex:heldBy ex:council .
-
-# A class chain: a target on ex:Top has to retrieve every step
-ex:report a ex:Report .
-
-ex:Report rdfs:subClassOf ex:Document , ex:NotOnTheRoute .
-
-ex:Document rdfs:subClassOf ex:Publication .
-
-ex:Publication rdfs:subClassOf ex:Top .
 
 # Resources to validate with validation-shapes.ttl
 ex:validPerson a ex:ValidatedPerson ;

@@ -4,6 +4,8 @@ import * as fs from "node:fs/promises";
 import envvar from "env-var";
 import jsonld from "jsonld";
 import type { NodeObject } from "jsonld";
+import { sparqlEscapeUri, uuid } from "mu";
+import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
@@ -36,6 +38,15 @@ const REPORT_FORMAT = envvar
 
 const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 
+// TODO: Overlap with similar constant in rules
+const PREDICATES = {
+  TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+  UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
+};
+
+const TYPES = {
+  REPORT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationReport"),
+};
 
 function blankToNamed(term) {
   if (term.termType === "BlankNode") {
@@ -51,11 +62,44 @@ function replaceQuad(dataset, oldQuad, newQuad) {
   dataset.add(newQuad);
 }
 
+function replaceNode(oldNode, newNode, dataset) {
+  const subjectQuads = dataset.filter((quad) => quad.subject === oldNode);
+  subjectQuads.forEach((quad) =>
+    replaceQuad(dataset, quad, rdf.quad(newNode, quad.predicate, quad.object)),
+  );
+
+  const objectQuads = dataset.filter((quad) => quad.object === oldNode);
+  objectQuads.forEach((quad) =>
+    replaceQuad(dataset, quad, rdf.quad(quad.subject, quad.predicate, newNode)),
+  );
+}
+
 function processReportDataset(report) {
   const dataset = report.dataset;
 
   // Replace validation report blank node with proper URI + UUID
-  // TODO
+  const validationReports = dataset.filter(
+    (quad) =>
+      quad.predicate.equals(PREDICATES.TYPE) &&
+      quad.object.equals(TYPES.REPORT),
+  );
+
+  // TODO: Can a Report contain multiple validationReport resources?
+  for (const validationReport of validationReports) {
+    // Replace blank node with a proper URI
+    const reportUuid = uuid();
+    const reportUri = RESOURCE_BASE + reportUuid;
+    const reportNode = rdf.namedNode(reportUri);
+
+    replaceNode(validationReport.subject, reportNode, dataset);
+
+    // Add UUID triple
+    dataset.add(rdf.quad(reportNode, PREDICATES.UUID, rdf.literal(reportUuid)));
+
+    // Process validation results in report
+    // TODO
+  }
+
   // FIXME Temporarily replace remaining blank nodes so sparql-parser does not
   // error.  Remove this once all blank nodes are handled
   dataset.forEach((quad) =>

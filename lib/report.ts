@@ -41,12 +41,14 @@ const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 // TODO: Overlap with similar constant in rules
 const PREDICATES = {
   CREATED: rdf.namedNode("http://purl.org/dc/terms/created"),
+  RESULT: rdf.namedNode("http://www.w3.org/ns/shacl#result"),
   TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
   UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
 };
 
 const TYPES = {
   REPORT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationReport"),
+  RESULT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationResult"),
 };
 
 function blankToNamed(term) {
@@ -111,7 +113,22 @@ function processReportDataset(report) {
     );
 
     // Process validation results in report
-    // TODO
+    const validationResults = dataset.filter(
+      (quad) =>
+        quad.subject.equals(reportNode) &&
+        quad.predicate.equals(PREDICATES.RESULT),
+    );
+
+    for (const validationResult of validationResults) {
+      const resultUuid = uuid();
+      const resultUri = reportUri + "/" + resultUuid;
+      const resultNode = rdf.namedNode(resultUri);
+
+      replaceNode(validationResult.object, resultNode, dataset);
+
+      // Link and add source shapes
+      // TODO
+    }
   }
 
   // FIXME Temporarily replace remaining blank nodes so sparql-parser does not

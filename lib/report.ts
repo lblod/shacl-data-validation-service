@@ -4,6 +4,7 @@ import * as fs from "node:fs/promises";
 import envvar from "env-var";
 import jsonld from "jsonld";
 import type { NodeObject } from "jsonld";
+import rdf from "rdf-ext";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
 // just write the report's dataset as N-Triples or as JSON-LD.  Better ways to
@@ -34,6 +35,56 @@ const REPORT_FORMAT = envvar
   .asEnum(["n-triples", "json-ld"]);
 
 const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
+
+
+function blankToNamed(term) {
+  if (term.termType === "BlankNode") {
+    const uri = RESOURCE_BASE + term.value.slice(2);
+    return rdf.namedNode(uri);
+  }
+
+  return term;
+}
+
+function replaceQuad(dataset, oldQuad, newQuad) {
+  dataset.delete(oldQuad);
+  dataset.add(newQuad);
+}
+
+function processReportDataset(report) {
+  const dataset = report.dataset;
+
+  // Replace validation report blank node with proper URI + UUID
+  // TODO
+  // FIXME Temporarily replace remaining blank nodes so sparql-parser does not
+  // error.  Remove this once all blank nodes are handled
+  dataset.forEach((quad) =>
+    replaceQuad(
+      dataset,
+      quad,
+      rdf.quad(
+        blankToNamed(quad.subject),
+        quad.predicate,
+        blankToNamed(quad.object),
+      ),
+    ),
+  );
+
+  return dataset;
+}
+
+// TODO: Batch inserts
+export async function insertReport(report) {
+  const dataset = processReportDataset(report);
+
+  const triples = dataset.toString();
+  const insertQuery = `INSERT DATA {
+     GRAPH ${sparqlEscapeUri(REPORT_GRAPH)} {
+       ${triples}
+     }
+   }`;
+  await update(insertQuery);
+}
 
 function timestamp() {
   return new Date().toJSON().replace(/-|T|:|\.|Z/gi, "");

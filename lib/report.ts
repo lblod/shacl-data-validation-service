@@ -14,6 +14,11 @@ const REPORT_GRAPH = envvar
   .default("http://mu.semte.ch/graphs/shacl-validation-reports")
   .asString();
 
+const RESOURCE_BASE = envvar
+  .get("REPORT_RESOURCE_BASE")
+  .default("http://data.lblod.info/id/shacl-validation-reports/")
+  .asString();
+
 const REPORTS_DIR = "/share/";
 
 const ONLY_KEEP_LATEST_REPORT = envvar

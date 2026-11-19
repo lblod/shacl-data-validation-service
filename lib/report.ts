@@ -40,6 +40,7 @@ const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 
 // TODO: Overlap with similar constant in rules
 const PREDICATES = {
+  CREATED: rdf.namedNode("http://purl.org/dc/terms/created"),
   TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
   UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
 };
@@ -95,6 +96,19 @@ function processReportDataset(report) {
 
     // Add UUID triple
     dataset.add(rdf.quad(reportNode, PREDICATES.UUID, rdf.literal(reportUuid)));
+
+    // Add report creation date triple
+    const now = new Date().toISOString();
+    dataset.add(
+      rdf.quad(
+        reportNode,
+        PREDICATES.CREATED,
+        rdf.literal(
+          now,
+          rdf.namedNode("http://www.w3.org/2001/XMLSchema#dateTime"),
+        ),
+      ),
+    );
 
     // Process validation results in report
     // TODO

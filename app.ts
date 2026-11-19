@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateResource } from "./lib/engine";
-import { writeReportFile } from "./lib/report";
+import { insertReport, writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
@@ -69,6 +69,8 @@ async function handleResource(namedNode: NamedNodeExt) {
         const report = await validateResource(resourceToValidate, shapes, {
           debug: env.REPORT_DEBUG_RESULTS,
         });
+
+        insertReport(report);
 
         // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report
         // of passed validations too

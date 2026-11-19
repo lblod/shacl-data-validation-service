@@ -104,13 +104,14 @@ export type MatchOptions = {
 };
 
 /*
- * The resources a rule applies to: of the resources its targets select, at
- * most limit of them, the ones that conform to the rule. The data of each
- * resource is retrieved and validated separately, so the data of one resource
- * can't make another conform. The limit and offset apply to the selected
- * resources, so a page can hold fewer matching resources than the limit.
+ * The resources the targets of a rule select in the store, at most limit of
+ * them, without checking whether they conform to the rule. The selection is
+ * ordered, so offset selects the next ones.
  */
-export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
+export async function selectedFocusNodes(
+  rule,
+  options: MatchOptions = {},
+): Promise<string[]> {
   const { limit = env.FOCUS_NODE_LIMIT, ...rest } = options;
   const focusNodeQuery = generateFocusNodeQuery(RULES, rule, {
     ...rest,
@@ -120,9 +121,20 @@ export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
 
   const result = await query(focusNodeQuery);
   // A target can select literals, which aren't resources to validate
-  const candidates = (result?.results?.bindings ?? [])
+  return (result?.results?.bindings ?? [])
     .filter(({ focusNode }) => focusNode?.type === "uri")
     .map(({ focusNode }) => focusNode.value);
+}
+
+/*
+ * The resources a rule applies to: of the resources its targets select, at
+ * most limit of them, the ones that conform to the rule. The data of each
+ * resource is retrieved and validated separately, so the data of one resource
+ * can't make another conform. The limit and offset apply to the selected
+ * resources, so a page can hold fewer matching resources than the limit.
+ */
+export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
+  const candidates = await selectedFocusNodes(rule, options);
 
   const matching = [];
   // In series: one query at a time on the store

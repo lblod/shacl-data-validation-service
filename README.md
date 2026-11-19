@@ -66,6 +66,8 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 |Name               |Description                                                                                                         |Default value|
 |-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
+|BATCH_SIZE         |The number of resources a rule selects at a time for the periodic validation                                        |100          |
+|CRON_SCHEDULE      |The cron expression of the periodic validation of the resources the rules target, e.g. `0 2 * * *`; unset, there is none|             |
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
 |FOCUS_NODE_LIMIT   |The maximum number of resources the targets of a rule select at a time                                              |100          |
 |KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                               |false        |
@@ -87,6 +89,9 @@ SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:se
 
 ### Resource validation
 A resource is validated against each validation shape the rules that apply to it link to, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape: the data can hold other resources, for example a value node of the same class, without the data needed to validate them.  shacl-engine skips the validation of an empty data graph.  When nothing is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.  The validation report is returned as is, currently without any further processing.
+
+### Periodic validation
+A resource is validated when a delta message mentions it, and, with `CRON_SCHEDULE` set, periodically.  A periodic run validates every resource the rules target, a batch at a time (see [lib/batch.ts](lib/batch.ts)): for each rule, its focus node query selects `BATCH_SIZE` resources, these are validated as above, and the next `BATCH_SIZE` resources are selected with an `OFFSET` once they are done.  A resource several rules target is validated once per run.  A run validates its resources one after the other, separately from the queue of the delta messages.  A run that is due while the previous one is still busy is skipped.  A run doesn't know which resources were validated before, so each run validates all of them.
 
 ## Tests
 The tests check which resources the targets of a shape select, which rules apply to a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.

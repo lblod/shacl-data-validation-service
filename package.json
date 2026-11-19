@@ -19,6 +19,7 @@
     "@traqula/parser-sparql-1-1": "^1.4.0",
     "@traqula/rules-sparql-1-1": "^1.4.0",
     "body-parser": "^2.4.0",
+    "cron": "^4.4.0",
     "env-var": "^7.5.0",
     "lru-cache": "^5.1.1",
     "rdf-ext": "^2.6.0",

@@ -4,6 +4,8 @@ import envvar from "env-var";
 import jsonld from "jsonld";
 import type { NodeObject } from "jsonld";
 import { localName } from "../util/iri";
+import { sparqlEscapeUri, uuid } from "mu";
+import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
@@ -31,6 +33,16 @@ const REPORT_FORMAT = envvar
 
 const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 
+// TODO: Overlap with similar constant in rules
+const PREDICATES = {
+  TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+  UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
+};
+
+const TYPES = {
+  REPORT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationReport"),
+};
+
 function blankToNamed(term) {
   if (term.termType === "BlankNode") {
     const uri = RESOURCE_BASE + term.value.slice(2);
@@ -45,13 +57,61 @@ function replaceQuad(oldQuad, newQuad, dataset) {
   dataset.add(newQuad);
 }
 
+function replaceTerm(oldTerm, newTerm, dataset) {
+  dataset.forEach((quad) => {
+    // NOTE (24/11/2026): We ignore quads where subject and object are oldTerm
+    // as this does not occur in validation reports.
+    if (quad.subject.equals(oldTerm)) {
+      dataset.delete(quad);
+      dataset.add(rdf.quad(newTerm, quad.predicate, quad.object));
+    }
+    if (quad.object.equals(oldTerm)) {
+      dataset.delete(quad);
+      dataset.add(rdf.quad(quad.subject, quad.predicate, newTerm));
+    }
+  });
+}
+
+// NOTE (24/11/2026): This modifies the provided dataset, avoid calling it when
+// looping over that same dataset.
+function replaceBlankNode(blankNode, baseUri, dataset) {
+  // Construct full URI
+  const nodeUuid = uuid();
+  const uri = baseUri + nodeUuid;
+  const node = rdf.namedNode(uri);
+
+  // Replace all references the the blank node
+  replaceTerm(blankNode, node, dataset);
+
+  // Add UUID triple
+  dataset.add(rdf.quad(node, PREDICATES.UUID, rdf.literal(nodeUuid)));
+
+  return node;
+}
+
 function processReportDataset(report) {
   // NOTE (25/11/2026): This processing modifies the report's dataset so we make
   // a clone first.
   const dataset = report.dataset.clone();
 
   // Replace validation report blank node with proper URI + UUID
-  // TODO
+  const validationReports = dataset.filter(
+    (quad) =>
+      quad.predicate.equals(PREDICATES.TYPE) &&
+      quad.object.equals(TYPES.REPORT),
+  );
+
+  for (const validationReport of validationReports) {
+    const reportNode = replaceBlankNode(
+      validationReport.subject,
+      RESOURCE_BASE + "report/",
+      dataset,
+    );
+
+    // Process validation results in report
+    // TODO
+  }
+
   // FIXME Temporarily replace remaining blank nodes so sparql-parser does not
   // error.  Remove this once all blank nodes are handled
   dataset.forEach((quad) =>

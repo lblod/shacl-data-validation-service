@@ -1,12 +1,12 @@
+import { updateSudo as update } from "@lblod/mu-auth-sudo";
+import envvar from "env-var";
+import type { NodeObject } from "jsonld";
+import jsonld from "jsonld";
+import { sparqlEscapeUri, uuid } from "mu";
 import { readFileSync } from "node:fs";
 import * as fs from "node:fs/promises";
-import envvar from "env-var";
-import jsonld from "jsonld";
-import type { NodeObject } from "jsonld";
-import { localName } from "../util/iri";
-import { sparqlEscapeUri, uuid } from "mu";
-import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
+import { localName } from "../util/iri";
 import { shapeResources } from "./validation-shapes";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We

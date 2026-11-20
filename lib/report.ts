@@ -7,6 +7,7 @@ import type { NodeObject } from "jsonld";
 import { sparqlEscapeUri, uuid } from "mu";
 import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
+import { shapeResources } from "./validation-shapes";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
 // just write the report's dataset as N-Triples or as JSON-LD.  Better ways to
@@ -42,6 +43,7 @@ const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 const PREDICATES = {
   CREATED: rdf.namedNode("http://purl.org/dc/terms/created"),
   RESULT: rdf.namedNode("http://www.w3.org/ns/shacl#result"),
+  SOURCE_SHAPE: rdf.namedNode("http://www.w3.org/ns/shacl#sourceShape"),
   TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
   UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
 };
@@ -126,8 +128,19 @@ function processReportDataset(report) {
 
       replaceNode(validationResult.object, resultNode, dataset);
 
-      // Link and add source shapes
-      // TODO
+      // Add source shapes
+      const sourceShapes = dataset.filter(
+        (quad) =>
+          quad.subject.equals(resultNode) &&
+          quad.predicate.equals(PREDICATES.SOURCE_SHAPE),
+      );
+
+      for (const sourceShape of sourceShapes) {
+        const shapes = shapeResources([sourceShape.object]);
+        dataset.addAll(shapes);
+      }
+
+      // TODO: assign full URIs to added property shapes
     }
   }
 

@@ -7,6 +7,7 @@ import { localName } from "../util/iri";
 import { sparqlEscapeUri, uuid } from "mu";
 import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
+import { shapeResources } from "./validation-shapes";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
 // just write the report's dataset as N-Triples or as JSON-LD.  Better ways to
@@ -37,6 +38,7 @@ const EXTENSIONS = { "n-triples": "nt", "json-ld": "jsonld" };
 const PREDICATES = {
   CREATED: rdf.namedNode("http://purl.org/dc/terms/created"),
   RESULT: rdf.namedNode("http://www.w3.org/ns/shacl#result"),
+  SOURCE_SHAPE: rdf.namedNode("http://www.w3.org/ns/shacl#sourceShape"),
   TYPE: rdf.namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
   UUID: rdf.namedNode("http://mu.semte.ch/vocabularies/core/uuid"),
 };
@@ -45,20 +47,6 @@ const TYPES = {
   REPORT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationReport"),
   RESULT: rdf.namedNode("http://www.w3.org/ns/shacl#ValidationResult"),
 };
-
-function blankToNamed(term) {
-  if (term.termType === "BlankNode") {
-    const uri = RESOURCE_BASE + term.value.slice(2);
-    return rdf.namedNode(uri);
-  }
-
-  return term;
-}
-
-function replaceQuad(oldQuad, newQuad, dataset) {
-  dataset.delete(oldQuad);
-  dataset.add(newQuad);
-}
 
 function replaceTerm(oldTerm, newTerm, dataset) {
   dataset.forEach((quad) => {
@@ -131,31 +119,36 @@ function processReportDataset(report) {
         quad.predicate.equals(PREDICATES.RESULT),
     );
 
-    for (const validationResult of validationResults) {
-      const resultNode = replaceBlankNode(
-        validationResult.object,
-        RESOURCE_BASE + "result/",
-        dataset,
-      );
+    validationResults.forEach((result) =>
+      replaceBlankNode(result.object, RESOURCE_BASE + "result/", dataset),
+    );
 
-      // Link and add source shapes
-      // TODO
-    }
+    // Add source shapes linked by the report's results
+    dataset
+      .filter((quad) => quad.predicate.equals(PREDICATES.SOURCE_SHAPE))
+      .forEach((sourceShape) => {
+        const shapes = shapeResources([sourceShape.object]);
+        dataset.addAll(shapes);
+      });
+
+    // NOTE (25/11/2026):
+    // - At this point the only blank nodes in dataset should be (indirectly
+    //   linked) source shapes.  Therefore, we do not filter more specifically
+    //   for source shape blank nodes.  This way all other shapes linked by the
+    //   source shapes are also covered, as well as the `sh:sourceShape` quads
+    //   referencing a result's source shape.
+    // - Source shapes that are identified by blank nodes will be assigned a URI
+    //   per report referencing them.  So the same source shape will be
+    //   inserted multiple times for different reports under different URIs.
+    const blankNodes = rdf.termSet();
+    dataset
+      .filter((quad) => quad.subject.termType === "BlankNode")
+      .forEach((quad) => blankNodes.add(quad.subject));
+
+    blankNodes.forEach((bnode) => {
+      replaceBlankNode(bnode, RESOURCE_BASE + "source-shape/", dataset);
+    });
   }
-
-  // FIXME Temporarily replace remaining blank nodes so sparql-parser does not
-  // error.  Remove this once all blank nodes are handled
-  dataset.forEach((quad) =>
-    replaceQuad(
-      quad,
-      rdf.quad(
-        blankToNamed(quad.subject),
-        quad.predicate,
-        blankToNamed(quad.object),
-      ),
-      dataset,
-    ),
-  );
 
   return dataset;
 }

@@ -1,20 +1,15 @@
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import envvar from "env-var";
 import jsonld from "jsonld";
 import type { NodeObject } from "jsonld";
+import { localName } from "../util/iri";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
 // just write the report's dataset as N-Triples or as JSON-LD.  Better ways to
 // handle the report will be added in the future.
 
-const REPORTS_DIR = "/share/";
-
-const ONLY_KEEP_LATEST_REPORT = envvar
-  .get("ONLY_KEEP_LATEST_REPORT")
-  .default("false")
-  .asBool();
+export const REPORTS_DIR = "/share/";
 
 const MAX_REPORTS = envvar.get("MAX_REPORTS").default("100").asIntPositive();
 
@@ -29,34 +24,26 @@ function timestamp() {
   return new Date().toJSON().replace(/-|T|:|\.|Z/gi, "");
 }
 
-/*
- * Removes the older versions of the report with the given name, or else the
- * oldest reports beyond MAX_REPORTS. Their timestamps sort reports by age, so
- * the report just written comes last.
- */
-async function removeOldReports(name: string) {
+// Removes the oldest reports beyond MAX_REPORTS. Their timestamps sort reports
+// by age.
+async function removeOldReports() {
   const reports = (await fs.readdir(REPORTS_DIR))
     .filter((file) => file.includes("--report"))
     .sort();
-  const oldReports = ONLY_KEEP_LATEST_REPORT
-    ? reports.filter((file) => file.endsWith("--" + name)).slice(0, -1)
-    : reports.slice(0, -MAX_REPORTS);
+  const oldReports = reports.slice(0, -MAX_REPORTS);
   for (const report of oldReports) {
     await fs.rm(REPORTS_DIR + report);
   }
 }
 
-// A report of a validation against a single shape is named after that shape.
-// The hash keeps shapes with the same local name apart. The extension is the
-// one of the REPORT_FORMAT.
+// A report's filename starts with a timestamp, which sorts reports by age. A
+// report of a validation against a single shape is named after that shape.
+// The extension is the one of the REPORT_FORMAT.
 function reportFilename(shape?) {
   const extension = EXTENSIONS[REPORT_FORMAT];
-  if (!shape) return `report.${extension}`;
-  const localName = shape.value
-    .replace(/^.*[#/:]/, "")
-    .replace(/[^A-Za-z0-9_-]/g, "_");
-  const hash = createHash("sha256").update(shape.value).digest("hex");
-  return `report-${localName}-${hash.slice(0, 8)}.${extension}`;
+  if (!shape) return `${timestamp()}--report.${extension}`;
+  const name = localName(shape.value);
+  return `${timestamp()}--report-${name}.${extension}`;
 }
 
 // The report object refers to its RDF factory, which can't be serialized as
@@ -69,12 +56,11 @@ async function serializeReport(report) {
 }
 
 export async function writeReportFile(report, shape?) {
-  const name = reportFilename(shape);
-  const filePath = REPORTS_DIR + timestamp() + "--" + name;
+  const filename = reportFilename(shape);
+  const filePath = REPORTS_DIR + filename;
 
-  await fs.mkdir(REPORTS_DIR, { recursive: true });
   await fs.writeFile(filePath, await serializeReport(report));
-  await removeOldReports(name);
+  await removeOldReports();
 }
 
 // The JSON-LD context of the report: the SHACL terms by their local name,

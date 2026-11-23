@@ -76,7 +76,7 @@ const REPORT_CONTEXT = JSON.parse(
  * language (resultMessage). The report is canonicalised first, so its blank
  * nodes get the same labels, and the same report gives the same JSON.
  */
-export async function reportJsonLd(report) {
+async function reportJsonLd(report) {
   // RDFC-1.0, the default algorithm
   const nquads = await jsonld.canonize(report.dataset.toString(), {
     inputFormat: "application/n-quads",

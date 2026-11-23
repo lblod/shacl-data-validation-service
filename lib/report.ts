@@ -20,40 +20,43 @@ function timestamp() {
 }
 
 /*
- * Removes the older versions of the report with the given name, or else the
+ * Removes the older versions of the report with the given filename, or else the
  * oldest reports beyond MAX_REPORTS. Their timestamps sort reports by age, so
  * the report just written comes last.
  */
-async function removeOldReports(name: string) {
+async function removeOldReports(filename: string) {
+  // Versions of a report differ only in their timestamp, which has no dashes.
+  const name = filename.slice(filename.indexOf("--"));
   const reports = (await fs.readdir(REPORTS_DIR))
     .filter((file) => file.includes("--report"))
     .sort();
   const oldReports = ONLY_KEEP_LATEST_REPORT
-    ? reports.filter((file) => file.endsWith("--" + name)).slice(0, -1)
+    ? reports.filter((file) => file.endsWith(name)).slice(0, -1)
     : reports.slice(0, -MAX_REPORTS);
   for (const report of oldReports) {
     await fs.rm(REPORTS_DIR + report);
   }
 }
 
-// A report of a validation against a single shape is named after that shape.
-// The hash keeps shapes with the same local name apart.
+// A report's filename starts with a timestamp, which sorts reports by age. A
+// report of a validation against a single shape is named after that shape. The
+// hash keeps shapes with the same local name apart.
 function reportFilename(shape?) {
-  if (!shape) return "report.nt";
+  if (!shape) return `${timestamp()}--report.nt`;
   const localName = shape.value
     .replace(/^.*[#/:]/, "")
     .replace(/[^A-Za-z0-9_-]/g, "_");
   const hash = createHash("sha256").update(shape.value).digest("hex");
-  return `report-${localName}-${hash.slice(0, 8)}.nt`;
+  return `${timestamp()}--report-${localName}-${hash.slice(0, 8)}.nt`;
 }
 
 export async function writeReportFile(report, shape?) {
-  const name = reportFilename(shape);
-  const filePath = REPORTS_DIR + timestamp() + "--" + name;
+  const filename = reportFilename(shape);
+  const filePath = REPORTS_DIR + filename;
 
   await fs.mkdir(REPORTS_DIR, { recursive: true });
   // The report object refers to its RDF factory, which can't be serialized as
   // JSON. Its dataset is the SHACL validation report.
   await fs.writeFile(filePath, report.dataset.toString());
-  await removeOldReports(name);
+  await removeOldReports(filename);
 }

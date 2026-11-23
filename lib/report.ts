@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
 import envvar from "env-var";
+import { localName } from "../util/iri";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
 // just write the report's dataset as N-Triples.  Better ways to handle the
@@ -43,11 +44,9 @@ async function removeOldReports(filename: string) {
 // hash keeps shapes with the same local name apart.
 function reportFilename(shape?) {
   if (!shape) return `${timestamp()}--report.nt`;
-  const localName = shape.value
-    .replace(/^.*[#/:]/, "")
-    .replace(/[^A-Za-z0-9_-]/g, "_");
+  const name = localName(shape.value);
   const hash = createHash("sha256").update(shape.value).digest("hex");
-  return `${timestamp()}--report-${localName}-${hash.slice(0, 8)}.nt`;
+  return `${timestamp()}--report-${name}-${hash.slice(0, 8)}.nt`;
 }
 
 export async function writeReportFile(report, shape?) {

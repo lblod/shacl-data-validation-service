@@ -1,8 +1,9 @@
+import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateResource } from "./lib/engine";
-import { writeReportFile } from "./lib/report";
+import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
@@ -12,6 +13,7 @@ import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
+  await fs.mkdir(REPORTS_DIR, { recursive: true });
   await loadRules();
   await loadValidationShapes();
 })();

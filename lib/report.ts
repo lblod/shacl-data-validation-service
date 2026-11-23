@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
 import envvar from "env-var";
 import { localName } from "../util/iri";
@@ -7,7 +6,7 @@ import { localName } from "../util/iri";
 // just write the report's dataset as N-Triples.  Better ways to handle the
 // report will be added in the future.
 
-const REPORTS_DIR = "/share/";
+export const REPORTS_DIR = "/share/";
 
 const ONLY_KEEP_LATEST_REPORT = envvar
   .get("ONLY_KEEP_LATEST_REPORT")
@@ -51,7 +50,6 @@ export async function writeReportFile(report, shape?) {
   const filename = reportFilename(shape);
   const filePath = REPORTS_DIR + filename;
 
-  await fs.mkdir(REPORTS_DIR, { recursive: true });
   // The report object refers to its RDF factory, which can't be serialized as
   // JSON. Its dataset is the SHACL validation report.
   await fs.writeFile(filePath, report.dataset.toString());

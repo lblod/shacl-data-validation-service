@@ -59,6 +59,8 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |LOGLEVEL               |Level of logging to the console: "silent" or "info"                                                                                |silent                                             |
 |QUEUE_POLL_INTERVAL    |The number of milliseconds to wait before rechecking the queue.                                                                    |100                                                |
 |ENABLE_TEST_API        |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development              |false                                              |
+|BATCH_SIZE             |The maximum number of triples written into the store in a single `INSERT` query                                                    |100                                                |
+|SLEEP_TIME             |The time (in milliseconds) to wait between insert queries                                                                          |1000                                               |
 
 ## Methodology
 ### Resource retrieval

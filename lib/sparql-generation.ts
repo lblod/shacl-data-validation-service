@@ -10,6 +10,7 @@ import {
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
 import { PREFIXES } from "../constants";
+import { localName } from "../util/iri";
 import { getObjects } from "../util/rdf-ext-helpers";
 
 /*
@@ -363,12 +364,11 @@ class SparqlGenerator {
 
   // A new variable, named after the hint so the generated query stays
   // readable, e.g. ?heeftAgenda_3 for besluit:heeftAgenda. An IRI is cut to its
-  // local name (after the last '#', '/' or ':'), characters a SPARQL variable
-  // name doesn't allow become '_', and an empty name becomes 'v'. The counter
-  // makes the variable unique in the query, so the name only has to be readable.
+  // local name, without the '-' a SPARQL variable name doesn't allow, and an
+  // empty name becomes 'v'. The counter makes the variable unique in the query,
+  // so the name only has to be readable.
   createVariable(hint: string): VariableNode {
-    const name =
-      hint.replace(/^.*[#/:]/, "").replace(/[^A-Za-z0-9_]/g, "_") || "v";
+    const name = localName(hint, /[^A-Za-z0-9_]/g) || "v";
     return { variable: `${name}_${++this.variableCount}` };
   }
 

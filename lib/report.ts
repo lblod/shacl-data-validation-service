@@ -1,12 +1,12 @@
-import { updateSudo as update } from "@lblod/mu-auth-sudo";
 import envvar from "env-var";
 import type { NodeObject } from "jsonld";
 import jsonld from "jsonld";
-import { sparqlEscapeUri, uuid } from "mu";
+import { uuid } from "mu";
 import { readFileSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import rdf from "rdf-ext";
 import { localName } from "../util/iri";
+import { insertDataset } from "../util/insert";
 import { shapeResources } from "./validation-shapes";
 
 // NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
@@ -153,17 +153,10 @@ function processReportDataset(report) {
   return dataset;
 }
 
-// TODO: Batch inserts
 export async function insertReport(report) {
   const dataset = processReportDataset(report);
 
-  const triples = dataset.toString();
-  const insertQuery = `INSERT DATA {
-     GRAPH ${sparqlEscapeUri(REPORT_GRAPH)} {
-       ${triples}
-     }
-   }`;
-  await update(insertQuery);
+  await insertDataset(dataset, REPORT_GRAPH);
 }
 
 function timestamp() {

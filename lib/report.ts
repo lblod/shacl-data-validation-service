@@ -40,13 +40,11 @@ async function removeOldReports(filename: string) {
 }
 
 // A report's filename starts with a timestamp, which sorts reports by age. A
-// report of a validation against a single shape is named after that shape. The
-// hash keeps shapes with the same local name apart.
+// report of a validation against a single shape is named after that shape.
 function reportFilename(shape?) {
   if (!shape) return `${timestamp()}--report.nt`;
   const name = localName(shape.value);
-  const hash = createHash("sha256").update(shape.value).digest("hex");
-  return `${timestamp()}--report-${name}-${hash.slice(0, 8)}.nt`;
+  return `${timestamp()}--report-${name}.nt`;
 }
 
 export async function writeReportFile(report, shape?) {

@@ -12,13 +12,13 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * Generates SPARQL queries from SHACL shapes:
  * - a SELECT query for the focus nodes the targets of a shape select, at most
  *   a limited number at a time, e.g. the resources a rule may apply to
- * - a CONSTRUCT query retrieving the data needed to validate focus nodes against
- *   shapes, inspired by SHACL Play's SHACL2SPARQL
+ * - a CONSTRUCT query retrieving the data needed to validate given focus nodes
+ *   against shapes, inspired by SHACL Play's SHACL2SPARQL
  *   (https://shacl-play.sparna.fr/play/sparql)
  *
- * Starting from the focus nodes, restricted to the ones the targets of a shape
- * select, the CONSTRUCT query follows the sh:path of its property shapes and
- * recurses into the shapes their value nodes have to conform to (sh:node,
+ * Only the SELECT query uses the targets of a shape. Starting from the given
+ * focus node(s), the CONSTRUCT query follows the sh:path of its property shapes
+ * and recurses into the shapes their value nodes have to conform to (sh:node,
  * sh:qualifiedValueShape, sh:and, sh:or, sh:xone, sh:not). It retrieves:
  * - the triples along the property paths, including sequence, alternative,
  *   inverse, zero-or-more, one-or-more and zero-or-one paths
@@ -31,18 +31,6 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * the values violating those constraints are exactly the ones the validator
  * has to see.
  *
- * Every target, and every way to reach data, is a branch of a UNION. A branch
- * only consists of plain graph patterns and subqueries, restricted to the focus
- * nodes, which keeps the variables of a branch bound when they are used in a
- * BIND or FILTER and lets the endpoint evaluate each branch from the focus nodes.
- * Every branch has its own variables: a CONSTRUCT template is instantiated for
- * every solution binding its variables, sharing variables would construct
- * triples of one branch out of the solutions of another (e.g. ?s <p> ?o out of a
- * solution of ?s (<p>|<q>) ?o matching <q>).
- *
- * The triples the targets select the focus nodes on aren't retrieved: the
- * focus nodes are validated as given, without resolving the targets again.
- *
  * Not supported: SPARQL-based constraints (sh:sparql) and SPARQL-based targets
  * without a sh:select.
  */
@@ -50,15 +38,6 @@ import { getObjects } from "../util/rdf-ext-helpers";
 const XSD_BOOLEAN = PREFIXES.xsd + "boolean";
 const XSD_STRING = PREFIXES.xsd + "string";
 
-// The predicates of the targets of a shape: SHACL Core's, and sh:target of
-// SHACL Advanced Features, e.g. a SPARQL-based target
-export const TARGET_PREDICATES = [
-  "targetClass",
-  "targetNode",
-  "targetSubjectsOf",
-  "targetObjectsOf",
-  "target",
-];
 const PAIR_PREDICATES = ["equals", "disjoint", "lessThan", "lessThanOrEqual"];
 const LOGICAL_LIST_PREDICATES = ["and", "or", "xone"];
 
@@ -94,14 +73,12 @@ type Target = { select: Fragment[] };
 type CreateTarget = (focus: VariableNode, focusNodes?: Term[]) => Target;
 
 export type SparqlGenerationOptions = {
-  // The shapes to check or retrieve data for, by default all shapes with a
-  // target
-  shapes?: (string | Term)[];
-  // Restricts the focus nodes of the shapes to these nodes, e.g. the resource
-  // being validated. Shapes without a target apply to these nodes instead of
-  // to every resource.
-  focusNodes?: (string | Term)[];
-  // Graph to select the focus nodes and retrieve the data in
+  // The shapes to retrieve data for
+  shapes: (string | Term)[];
+  // The focus nodes to retrieve data for, e.g. the resource being validated,
+  // whatever the targets of the shapes select
+  focusNodes: (string | Term)[];
+  // Graph to retrieve the data in
   graph?: string;
   // Maximum number of nested shapes to follow from a shape
   maxDepth?: number;
@@ -271,6 +248,16 @@ function focusNodeRestriction(
   if (!focusNodes) return [];
   const values = focusNodes.map(termToString).join(" ");
   return [(name) => `VALUES ${nodeToString(focus, name)} { ${values} }`];
+}
+
+// The focus nodes as terms. Blank nodes aren't allowed in VALUES.
+function toFocusNodes(focusNodes?: (string | Term)[]) {
+  const terms = focusNodes?.map(toTerm);
+  const invalid = terms?.find(
+    (term) => term.termType !== "NamedNode" && term.termType !== "Literal",
+  );
+  if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
+  return terms;
 }
 
 // The target of a shape without a target: every resource, i.e. every node
@@ -799,87 +786,63 @@ class SparqlGenerator {
     return prefixes;
   }
 
-  // Shapes with a target, as the validator would select them
-  getTargetedShapes() {
-    const shapes = rdf.termSet();
-    for (const target of TARGET_PREDICATES) {
-      const quads = this.shapes.match(
-        null,
-        rdf.namedNode(PREFIXES.sh + target),
+  // The shapes that aren't deactivated
+  getActiveShapes(shapes: (string | Term)[]) {
+    return shapes
+      .map(toTerm)
+      .filter(
+        (shape) => !this.hasTrueValue(shape, PREFIXES.sh + "deactivated"),
       );
-      for (const quad of quads) shapes.add(quad.subject);
-    }
-    for (const type of ["NodeShape", "PropertyShape"]) {
-      const quads = this.shapes.match(
-        null,
-        rdf.namedNode(PREFIXES.rdf + "type"),
-        rdf.namedNode(PREFIXES.sh + type),
-      );
-      for (const quad of quads) {
-        if (this.isClass(quad.subject)) shapes.add(quad.subject);
-      }
-    }
-    return [...shapes];
   }
 
-  getSelectedShapes(options: SparqlGenerationOptions) {
-    const shapes = options.shapes?.map(toTerm) ?? this.getTargetedShapes();
-    return shapes.filter(
-      (shape) => !this.hasTrueValue(shape, PREFIXES.sh + "deactivated"),
-    );
+  // A focus node variable restricted to the focus nodes, if any
+  getRestrictedFocus(focusNodes?: Term[]) {
+    const focus = this.createVariable("this");
+    const restricted: Branch = {
+      ...emptyBranch(focus),
+      patterns: focusNodeRestriction(focus, focusNodes),
+    };
+    return { focus, restricted };
   }
 
-  // The targets of the shapes, each with its own focus node variable
-  // restricted to the focus nodes
-  getFocusTargets(shapes, options: { focusNodes?: (string | Term)[] }) {
-    const focusNodes = options.focusNodes?.map(toTerm);
-    // Blank nodes aren't allowed in VALUES
-    const invalid = focusNodes?.find(
-      (term) => term.termType !== "NamedNode" && term.termType !== "Literal",
-    );
-    if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
-    return shapes.flatMap((shape, index) => {
-      let targets = this.getTargets(shape);
-      // A shape without a target applies to the given focus nodes, or else to
-      // every resource
-      if (!targets.length) {
-        targets = [focusNodes ? () => ({ select: [] }) : allResourcesTarget];
-      }
-      return targets.map((createTarget) => {
-        const focus = this.createVariable("this");
-        const restricted: Branch = {
-          ...emptyBranch(focus),
-          patterns: focusNodeRestriction(focus, focusNodes),
-        };
-        const target = createTarget(focus, focusNodes);
-        return { shape, index, focus, restricted, target };
-      });
-    });
-  }
-
-  // The branches retrieving the data to validate the focus nodes the targets
-  // select
+  // The branches retrieving the data to validate the focus nodes against the
+  // shapes, without their targets
   getDataBranches(options: SparqlGenerationOptions): Branch[] {
-    const shapes = this.getSelectedShapes(options);
+    const focusNodes = toFocusNodes(options.focusNodes);
+    if (!focusNodes?.length) {
+      throw new Error("No focus nodes to retrieve the data of");
+    }
     const branches = [];
-    const focusTargets = this.getFocusTargets(shapes, options);
-    for (const { shape, focus, restricted, target } of focusTargets) {
-      const selection = {
-        ...restricted,
-        patterns: [...restricted.patterns, ...target.select],
-      };
+    for (const shape of this.getActiveShapes(options.shapes)) {
+      const { focus, restricted } = this.getRestrictedFocus(focusNodes);
       for (const branch of this.getShapeBranches(shape, focus, [])) {
-        branches.push(joinBranches(selection, branch));
+        branches.push(joinBranches(restricted, branch));
       }
     }
     return branches.filter((branch) => branch.templates.length);
   }
 
+  // The targets of a shape, each with its own focus node variable restricted
+  // to the focus nodes. A shape without a target applies to the given focus
+  // nodes, or else to every resource.
+  getFocusTargets(shape, focusNodes?: Term[]) {
+    const targets = this.getTargets(shape);
+    if (!targets.length) {
+      targets.push(focusNodes ? () => ({ select: [] }) : allResourcesTarget);
+    }
+    return targets.map((createTarget) => {
+      const { focus, restricted } = this.getRestrictedFocus(focusNodes);
+      return { focus, restricted, target: createTarget(focus, focusNodes) };
+    });
+  }
+
   // A branch per target of the shape, binding the focus nodes it selects to
   // ?focusNode
   getFocusNodeBranches(shape, options: FocusNodeQueryOptions): Branch[] {
-    const shapes = this.getSelectedShapes({ shapes: [shape] });
-    const focusTargets = this.getFocusTargets(shapes, options);
+    const focusNodes = toFocusNodes(options.focusNodes);
+    const focusTargets = this.getActiveShapes([shape]).flatMap((active) =>
+      this.getFocusTargets(active, focusNodes),
+    );
     return focusTargets.map(({ focus, restricted, target }) => ({
       ...restricted,
       patterns: [
@@ -938,13 +901,13 @@ function renderUnion(rendered: { patterns: string[] }[], graph?: string) {
 }
 
 /*
- * Generates a CONSTRUCT query retrieving the data to validate the focus nodes
- * of the given shapes, see the top of this file. Returns undefined when the
- * shapes don't need any data.
+ * Generates a CONSTRUCT query retrieving the data to validate the given focus
+ * nodes against the given shapes, see the top of this file. Returns undefined
+ * when the shapes don't need any data.
  */
 export function generateConstructQuery(
   shapes,
-  options: SparqlGenerationOptions = {},
+  options: SparqlGenerationOptions,
 ) {
   const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
   const branches = sparqlGenerator.getDataBranches(options);

@@ -6,7 +6,7 @@ import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { validateFocusNode } from "./engine";
 import { getShapeData } from "./resource-retrieval";
-import { generateFocusNodeQuery, TARGET_PREDICATES } from "./sparql-generation";
+import { generateFocusNodeQuery } from "./sparql-generation";
 import {
   checkReferencedShapes,
   shapeWithReferencedShapes,
@@ -41,10 +41,7 @@ const isDeactivated = (shapes, shape) =>
   );
 
 /*
- * Every rule links to validation shapes that are loaded, and refers to shapes
- * that are loaded. A linked validation shape with a target of its own gets a
- * warning: the target doesn't decide what the shape validates, but it
- * restricts the data retrieved for it to the resources it selects.
+ * Every rule links to validation shapes that have validation triples loaded
  */
 export function checkRules() {
   checkReferencedShapes(RULES, "Rules");
@@ -54,15 +51,6 @@ export function checkRules() {
   for (const { subject: rule, object: shape } of links) {
     if (!VALIDATION_SHAPES.match(shape).size) {
       missing.push(`${shape.value} (from ${rule.value})`);
-    } else if (
-      TARGET_PREDICATES.some(
-        (name) =>
-          getObjects(VALIDATION_SHAPES, shape, PREFIXES.sh + name).length,
-      )
-    ) {
-      console.warn(
-        `\n>> WARNING: Validation shape ${shape.value} of rule ${rule.value} has a target, which restricts the data retrieved to validate a resource`,
-      );
     }
   }
   if (missing.length) {

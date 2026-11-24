@@ -17,8 +17,9 @@ export async function resourceExists(uri: string) {
  * The data of a resource needed to validate it against a shape, retrieved with
  * a query generated from that shape, see lib/sparql-generation.ts. The shapes
  * are the validation shapes by default, or e.g. the rules. The data is always
- * retrieved for a single resource: without one, the query would retrieve the
- * data of every resource the shape's targets select.
+ * retrieved for a single resource. The query doesn't use the targets of the
+ * shape: the rules decide which resources a validation shape validates, and
+ * the targets of a rule already selected the resource.
  */
 export async function getShapeData(
   shape,

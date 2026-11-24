@@ -69,6 +69,7 @@ describe("rules for a resource", () => {
   });
 
   test("validates a resource against the shapes of its rules", async () => {
+    // ex:StatusShape conforms although its target doesn't select ex:pendingOrg
     const { results, errors } = await validateResource(ex("pendingOrg"));
     expect(
       results.map(({ shape, report }) => [shape.value, report.conforms]).sort(),
@@ -128,12 +129,5 @@ describe("checkRules", () => {
   test("rejects a rule referring to a shape that isn't loaded", () => {
     add(ex("ActiveRule"), "http://www.w3.org/ns/shacl#node", ex("Missing"));
     expect(() => checkRules()).toThrow(/Rules refer to missing shapes/);
-  });
-
-  test("warns about a linked validation shape with a target", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("TargetedShape"));
-    checkRules();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("TargetedShape"));
   });
 });

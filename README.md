@@ -48,7 +48,7 @@ This service doesn't start when a rule links to a validation shape that isn't co
 ### Validation shapes
 The SHACL node shapes used to actually validate data resources should be configured in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
 
-The rules decide which resources a validation shape validates, so a validation shape doesn't need a target.  A target of a validation shape doesn't select resources to validate, but it does restrict the data retrieved to validate a resource to the resources it selects, so the service warns about it on startup.
+The rules decide which resources a validation shape validates, so a validation shape doesn't need a target.  A target of a validation shape has no effect: it doesn't select resources to validate, and it doesn't restrict the data retrieved to validate a resource.
 
 Node shapes *can* share a property shape by referring to its URI. A property shape is validated for each node shape that refers to it with `sh:property`. For example, organizations are expected to have at least one prefLabel:
 
@@ -74,20 +74,25 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
 
 ## Methodology
-A resource is handled in two phases: the rules select whether, and against which validation shapes, it is validated, and it is then validated against those shapes.  Both phases retrieve the data with the same generated queries and validate it with the same validator, separately for each resource.
+A resource is handled in two phases: first, the rules are selected that target the resource (using a combination of a generated SELECT query and validation), and second, the resource gets validated with the validation shapes that are linked with the selected rules. Both phases retrieve the data of the resource with the same generated CONSTRUCT queries and validate it with the same validator.
 
-### Resource selection
-For each rule, `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query for the resources the targets of the rule select in the store, restricted to the resource being handled.  This query always has a `LIMIT`, `FOCUS_NODE_LIMIT` by default, and is ordered so an `OFFSET` selects the next resources: without a limit, a rule would retrieve and validate every resource its targets select.  For each selected resource separately, the data of the rule is retrieved and validated, as below, and the rule applies to the resource if it conforms.  The targets are selected in the store first, because the validator doesn't resolve the targets of a shape for a given resource.
-
-### Resource retrieval
-The data of a resource is retrieved with a CONSTRUCT query generated from a rule or a validation shape by `generateConstructQuery`: the triples along its property paths and the data of the shapes it refers to, such as `sh:node` and `sh:or`, for a resource its targets select.  The triples the targets select the resource on, such as its `rdf:type` for `sh:targetClass`, are not retrieved: the resource is validated as given, without resolving the targets again.  Only this data is retrieved, so a property the shape doesn't mention is not part of the data it is validated on.  The query always retrieves the data of a single resource.
+The data of a resource is retrieved with a CONSTRUCT query that `generateConstructQuery` generates from a rule or a validation shape: the triples along its property paths and the data of the shapes it refers to, such as `sh:node` and `sh:or`.  The query always retrieves the data of a single resource: its focus node variable is bound to the resource with `VALUES`.
 
 The queries run through sudo, bypassing the authorization of mu-authorization, and don't specify a `GRAPH`, so they read the data from all graphs.
 
 SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.
 
+### Rule selection
+A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
+
+The query is used in two ways:
+- **For one resource**, e.g. the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.
+- **For all resources a rule targets**, the query selects at most `FOCUS_NODE_LIMIT` resources at a time.  It is ordered by resource, so an `OFFSET` selects the next ones.  The limit and offset apply to the selected resources before they are validated with the rule, so a page can hold fewer resources the rule applies to than the limit.
+
+For each resource the query selects, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
+
 ### Resource validation
-A resource is validated against each validation shape the rules that apply to it link to, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape: the data can hold other resources, for example a value node of the same class, without the data needed to validate them.  shacl-engine skips the validation of an empty data graph.  When nothing is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.  The validation report is returned as is, currently without any further processing.
+A resource is validated against each validation shape separately. The data of the resource is retrieved using a CONSTRUCT query as described above. The SHACL engine does not resolve the target of the shape, and only validates the resource. The data can hold other resources, for example a value node of the same class, without the data needed to validate them.  When no data is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead. The validation report is returned as is, currently without any further processing.
 
 ## Tests
 The tests check which resources the targets of a shape select, which rules apply to a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.

@@ -9,10 +9,6 @@ import { localName } from "../util/iri";
 import { insertDataset } from "../util/insert";
 import { shapeResources } from "./validation-shapes";
 
-// NOTE (03/11/2026): Very rudimentary way to persist validation reports.  We
-// just write the report's dataset as N-Triples or as JSON-LD.  Better ways to
-// handle the report will be added in the future.
-
 const REPORT_GRAPH = envvar
   .get("REPORT_GRAPH")
   .default("http://mu.semte.ch/graphs/shacl-validation-reports")

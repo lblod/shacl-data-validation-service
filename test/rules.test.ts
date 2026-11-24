@@ -25,7 +25,7 @@ const FIXTURES = "test/fixtures/rules/";
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
-const values = (terms) => terms.map((term) => term.value).sort();
+const values = (terms) => [...terms].map((term) => term.value).sort();
 
 beforeAll(async () => {
   await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
@@ -54,7 +54,7 @@ describe("rules for a resource", () => {
 
   test("doesn't apply a rule to a resource its target doesn't select", async () => {
     // ex:thing conforms to ex:SingleStatusRule, which targets organizations
-    expect(await rulesForResource(ex("thing"))).toEqual([]);
+    expect((await rulesForResource(ex("thing"))).size).toBe(0);
   });
 
   test("leaves out a deactivated rule", () => {

@@ -64,8 +64,10 @@ export function checkRules() {
 export function listRules() {
   const rules = rdf.termSet();
   const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
-  for (const { subject } of links) rules.add(subject);
-  return [...rules].filter((rule) => !isDeactivated(RULES, rule));
+  for (const { subject } of links) {
+    if (!isDeactivated(RULES, subject)) rules.add(subject);
+  }
+  return rules;
 }
 
 // Whether a resource conforms to a rule, validated on the data of the rule for
@@ -122,13 +124,13 @@ export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
 
 // The rules that apply to a resource
 export async function rulesForResource(uri: string) {
-  const matching = [];
+  const matching = rdf.termSet();
   for (const rule of listRules()) {
     const focusNodes = await matchingFocusNodes(rule, {
       focusNodes: [uri],
       limit: 1,
     });
-    if (focusNodes.includes(uri)) matching.push(rule);
+    if (focusNodes.includes(uri)) matching.add(rule);
   }
   return matching;
 }
@@ -142,5 +144,5 @@ export function validationShapesOfRules(rules) {
       if (!isDeactivated(VALIDATION_SHAPES, shape)) shapes.add(shape);
     }
   }
-  return [...shapes];
+  return shapes;
 }

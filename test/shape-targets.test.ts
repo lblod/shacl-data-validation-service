@@ -178,7 +178,7 @@ describe("validation shapes for a resource", () => {
   }
 
   async function shapeUrisFor(name: string) {
-    return (await shapesFor(name)).map((shape) => shape.value).sort();
+    return [...(await shapesFor(name))].map((shape) => shape.value).sort();
   }
 
   test("selects a shape through a rule's sh:targetClass", async () => {

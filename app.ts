@@ -1,8 +1,9 @@
+import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateResource } from "./lib/engine";
-import { writeReportFile } from "./lib/report";
+import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
@@ -12,6 +13,7 @@ import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
+  await fs.mkdir(REPORTS_DIR, { recursive: true });
   await loadRules();
   await loadValidationShapes();
 })();
@@ -66,8 +68,15 @@ async function handleResource(namedNode: NamedNodeExt) {
 
         const shapes = shapeResources(validationShapeUris);
 
-        const report = await validateResource(resourceToValidate, shapes);
+        const report = await validateResource(resourceToValidate, shapes, {
+          debug: env.REPORT_DEBUG_RESULTS,
+        });
 
+        // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report
+        // of passed validations too
+        if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
+          await writeReportFile(report);
+        }
         if (report.conforms) {
           if (env.LOGLEVEL === "info") {
             console.log(
@@ -75,7 +84,6 @@ async function handleResource(namedNode: NamedNodeExt) {
             );
           }
         } else {
-          writeReportFile(report);
           if (env.LOGLEVEL === "info") {
             console.log(
               `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,

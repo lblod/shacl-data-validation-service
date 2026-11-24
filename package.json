@@ -17,6 +17,7 @@
     "@rdfjs/dataset": "^2.0.3",
     "body-parser": "^2.4.0",
     "env-var": "^7.5.0",
+    "jsonld": "^9.0.0",
     "rdf-ext": "^2.6.0",
     "rdf-utils-dataset": "^2.0.1",
     "shacl-engine": "^1.1.2"

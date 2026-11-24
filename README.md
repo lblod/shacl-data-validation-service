@@ -42,10 +42,11 @@ ext:activeOrganizationRule a sh:NodeShape ;
   ext:validationShape ext:organizationWithAltNameShape .
 ```
 
-A rule can link to several validation shapes, and several rules can link to the same validation shape: a resource is validated once against each validation shape the rules that apply to it link to.  The service doesn't start when a rule links to a validation shape that isn't loaded.
+A rule can link to several validation shapes using `ext:validationShape`. Vice versa, a validation shape can be used by multiple rules.
+This service doesn't start when a rule links to a validation shape that isn't configured.
 
 ### Validation shapes
-The SHACL node shapes used to actually validate data resources should be specified in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
+The SHACL node shapes used to actually validate data resources should be configured in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
 
 The rules decide which resources a validation shape validates, so a validation shape doesn't need a target.  A target of a validation shape doesn't select resources to validate, but it does restrict the data retrieved to validate a resource to the resources it selects, so the service warns about it on startup.
 

@@ -1,23 +1,42 @@
+import type { DatasetCore, Term } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
 import { PREFIXES, TermType } from "../constants";
+import { getShapeData } from "./resource-retrieval";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
 
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
 
-export const VALIDATION_SHAPES = rdf.dataset();
+// Only used through the functions of this module
+const VALIDATION_SHAPES = rdf.dataset();
 
-export async function loadValidationShapes() {
-  const shapeFiles = await listFiles(VALIDATION_SHAPES_FOLDER);
+export async function loadValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
+  const shapeFiles = await listFiles(folder);
   for (const filePath of shapeFiles) {
     const fileContents = await readFile(filePath);
     await insertContentInDataset(fileContents, VALIDATION_SHAPES);
   }
   checkReferencedShapes(VALIDATION_SHAPES, "Validation shapes");
 }
+
+// Whether a validation shape is loaded
+export const hasValidationShape = (shape: Term) =>
+  VALIDATION_SHAPES.match(shape).size > 0;
+
+export const isDeactivated = (shapes: DatasetCore, shape: Term) =>
+  getObjects(shapes, shape, PREFIXES.sh + "deactivated").some(
+    (object) => object.value === "true",
+  );
+
+export const isActiveValidationShape = (shape: Term) =>
+  !isDeactivated(VALIDATION_SHAPES, shape);
+
+// The data of a resource needed to validate it against a validation shape
+export const getValidationShapeData = (shape: Term, uri: string) =>
+  getShapeData(shape, uri, VALIDATION_SHAPES);
 
 // The members of an RDF list in the shapes
 function getListMembers(shapes, list) {

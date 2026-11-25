@@ -4,13 +4,13 @@ import { VALIDATION_SHAPE_PREDICATE } from "../constants";
 import {
   checkRules,
   listRules,
+  loadRules,
   matchingFocusNodes,
-  RULES,
   rulesForResource,
   validationShapesOfRules,
 } from "../lib/rules";
 import { validateResource } from "../lib/validation";
-import { VALIDATION_SHAPES } from "../lib/validation-shapes";
+import { loadValidationShapes } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { ex } from "./helpers";
@@ -28,8 +28,9 @@ const loadFixture = async (name: string, dataset) =>
 const values = (terms) => [...terms].map((term) => term.value).sort();
 
 beforeAll(async () => {
-  await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
-  await loadFixture("rules.ttl", RULES);
+  // The rules link to the validation shapes, which are checked to be loaded
+  await loadValidationShapes(FIXTURES + "validation-shapes/");
+  await loadRules(FIXTURES + "rules/");
   store.data = rdf.dataset();
   await loadFixture("data.ttl", store.data);
 });
@@ -102,32 +103,38 @@ describe("matchingFocusNodes", () => {
 });
 
 describe("checkRules", () => {
+  const rules = rdf.dataset();
   const added = [];
+
+  beforeAll(async () => {
+    await loadFixture("rules/rules.ttl", rules);
+  });
+
   const add = (...quad) => {
     const [subject, predicate, object] = quad.map((value) =>
       rdf.namedNode(value),
     );
     const triple = rdf.quad(subject, predicate, object);
-    RULES.add(triple);
+    rules.add(triple);
     added.push(triple);
   };
 
   afterEach(() => {
-    for (const triple of added.splice(0)) RULES.delete(triple);
+    for (const triple of added.splice(0)) rules.delete(triple);
     vi.restoreAllMocks();
   });
 
   test("accepts the rules", () => {
-    expect(() => checkRules()).not.toThrow();
+    expect(() => checkRules(rules)).not.toThrow();
   });
 
   test("rejects a link to a validation shape that isn't loaded", () => {
     add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("MissingShape"));
-    expect(() => checkRules()).toThrow(/MissingShape/);
+    expect(() => checkRules(rules)).toThrow(/MissingShape/);
   });
 
   test("rejects a rule referring to a shape that isn't loaded", () => {
     add(ex("ActiveRule"), "http://www.w3.org/ns/shacl#node", ex("Missing"));
-    expect(() => checkRules()).toThrow(/Rules refer to missing shapes/);
+    expect(() => checkRules(rules)).toThrow(/Rules refer to missing shapes/);
   });
 });

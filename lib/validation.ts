@@ -1,8 +1,10 @@
 import rdf from "rdf-ext";
 import { validateFocusNode } from "./engine";
-import { getShapeData } from "./resource-retrieval";
 import { rulesForResource, validationShapesOfRules } from "./rules";
-import { shapeWithReferencedShapes } from "./validation-shapes";
+import {
+  getValidationShapeData,
+  shapeWithReferencedShapes,
+} from "./validation-shapes";
 
 // Validates a resource on its data against a validation shape, with the shapes
 // it refers to
@@ -30,7 +32,7 @@ export async function validateResource(uri: string) {
   const shapes = validationShapesOfRules(await rulesForResource(uri));
   for (const shape of shapes) {
     try {
-      const data = await getShapeData(shape, uri);
+      const data = await getValidationShapeData(shape, uri);
       results.push({ shape, report: await validateShape(data, shape, uri) });
     } catch (error) {
       errors.push({ shape, error });

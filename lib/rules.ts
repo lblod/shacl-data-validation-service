@@ -1,20 +1,22 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
+import type { DatasetCore, Term } from "@rdfjs/types";
 import rdf from "rdf-ext";
-import {
-  BindingType,
-  PREFIXES,
-  VALIDATION_SHAPE_PREDICATE,
-} from "../constants";
+import { BindingType, VALIDATION_SHAPE_PREDICATE } from "../constants";
 import * as env from "../env";
 import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { validateFocusNode } from "./engine";
 import { getShapeData } from "./resource-retrieval";
-import { generateFocusNodeQuery } from "./sparql-generation";
+import {
+  type FocusNodeQueryOptions,
+  generateFocusNodeQuery,
+} from "./sparql-generation";
 import {
   checkReferencedShapes,
+  hasValidationShape,
+  isActiveValidationShape,
+  isDeactivated,
   shapeWithReferencedShapes,
-  VALIDATION_SHAPES,
 } from "./validation-shapes";
 
 /*
@@ -28,32 +30,28 @@ import {
 
 const RULES_FOLDER = "config/rules/";
 
-export const RULES = rdf.dataset();
+// Only used through the functions of this module
+const RULES = rdf.dataset();
 
-export async function loadRules() {
-  const ruleFiles = await listFiles(RULES_FOLDER);
+export async function loadRules(folder = RULES_FOLDER) {
+  const ruleFiles = await listFiles(folder);
   for (const filePath of ruleFiles) {
     const fileContents = await readFile(filePath);
     await insertContentInDataset(fileContents, RULES);
   }
-  checkRules();
+  checkRules(RULES);
 }
 
-const isDeactivated = (shapes, shape) =>
-  getObjects(shapes, shape, PREFIXES.sh + "deactivated").some(
-    (object) => object.value === "true",
-  );
-
 /*
- * Every rule links to validation shapes that have validation triples loaded
+ * Every rule links to validation shapes that are loaded
  */
-export function checkRules() {
-  checkReferencedShapes(RULES, "Rules");
+export function checkRules(rules: DatasetCore) {
+  checkReferencedShapes(rules, "Rules");
 
   const missing = [];
-  const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
+  const links = rules.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
   for (const { subject: rule, object: shape } of links) {
-    if (!VALIDATION_SHAPES.match(shape).size) {
+    if (!hasValidationShape(shape)) {
       missing.push(`${shape.value} (from ${rule.value})`);
     }
   }
@@ -97,6 +95,13 @@ export type MatchOptions = {
   offset?: number;
 };
 
+// The SELECT query for the resources the targets of a rule select, see
+// generateFocusNodeQuery
+export const focusNodeQuery = (
+  rule: string | Term,
+  options: FocusNodeQueryOptions,
+) => generateFocusNodeQuery(RULES, rule, options);
+
 /*
  * The resources a rule applies to: of the resources its targets select, at
  * most limit of them, the ones that conform to the rule. The data of each
@@ -106,13 +111,10 @@ export type MatchOptions = {
  */
 export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
   const { limit = env.FOCUS_NODE_LIMIT, ...rest } = options;
-  const focusNodeQuery = generateFocusNodeQuery(RULES, rule, {
-    ...rest,
-    limit,
-  });
-  if (!focusNodeQuery) return [];
+  const selectQuery = focusNodeQuery(rule, { ...rest, limit });
+  if (!selectQuery) return [];
 
-  const result = await query(focusNodeQuery);
+  const result = await query(selectQuery);
   // A target can select literals, which aren't resources to validate
   const candidates = (result?.results?.bindings ?? [])
     .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)
@@ -145,7 +147,7 @@ export function validationShapesOfRules(rules) {
   for (const rule of rules) {
     const linked = getObjects(RULES, rule, VALIDATION_SHAPE_PREDICATE);
     for (const shape of linked) {
-      if (!isDeactivated(VALIDATION_SHAPES, shape)) shapes.add(shape);
+      if (isActiveValidationShape(shape)) shapes.add(shape);
     }
   }
   return shapes;

@@ -1,10 +1,18 @@
 import type { Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
-import { AstFactory, lex, type QuerySelect } from "@traqula/rules-sparql-1-1";
+import {
+  AstFactory,
+  lex,
+  type PatternValues,
+  type QuerySelect,
+  type TermBlank,
+  type TermIriPrefixed,
+  type TermVariable,
+} from "@traqula/rules-sparql-1-1";
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
-import { PREFIXES } from "../constants";
+import { PREFIXES, TermType } from "../constants";
 import { localName } from "../util/iri";
 import { getObjects } from "../util/rdf-ext-helpers";
 
@@ -46,12 +54,37 @@ const parser = new Parser();
 const generator = new Generator();
 const F = new AstFactory();
 
-type Path =
-  | { type: "predicate"; iri: string; inverse: boolean }
-  | { type: "sequence" | "alternative"; paths: Path[] }
-  | { type: "zeroOrMore" | "oneOrMore" | "zeroOrOne"; path: Path };
+enum PathType {
+  Predicate = "predicate",
+  Sequence = "sequence",
+  Alternative = "alternative",
+  ZeroOrMore = "zeroOrMore",
+  OneOrMore = "oneOrMore",
+  ZeroOrOne = "zeroOrOne",
+}
 
-const CLOSURE_OPERATORS = { zeroOrMore: "*", oneOrMore: "+", zeroOrOne: "?" };
+type ClosureType =
+  PathType.ZeroOrMore | PathType.OneOrMore | PathType.ZeroOrOne;
+
+type Path =
+  | { type: PathType.Predicate; iri: string; inverse: boolean }
+  | { type: PathType.Sequence | PathType.Alternative; paths: Path[] }
+  | { type: ClosureType; path: Path };
+
+const CLOSURE_OPERATORS: Record<ClosureType, string> = {
+  [PathType.ZeroOrMore]: "*",
+  [PathType.OneOrMore]: "+",
+  [PathType.ZeroOrOne]: "?",
+};
+// The SHACL predicates of the closure paths
+const CLOSURE_PATH_PREDICATES: Record<ClosureType, string> = {
+  [PathType.ZeroOrMore]: PREFIXES.sh + "zeroOrMorePath",
+  [PathType.OneOrMore]: PREFIXES.sh + "oneOrMorePath",
+  [PathType.ZeroOrOne]: PREFIXES.sh + "zeroOrOnePath",
+};
+
+// The variable SHACL pre-binds to the focus node, e.g. in a SPARQL-based target
+const THIS_VARIABLE = "this";
 
 // A variable, by its id, which gets its name when its branch is rendered
 type VariableNode = { variable: string };
@@ -136,11 +169,11 @@ function literalToString(
 // An RDF/JS term, e.g. of the shapes, in SPARQL syntax
 function termToString(term: Term) {
   switch (term.termType) {
-    case "NamedNode":
+    case TermType.NamedNode:
       return iriToString(term.value);
-    case "BlankNode":
+    case TermType.BlankNode:
       return `_:${term.value}`;
-    case "Literal":
+    case TermType.Literal:
       return literalToString(term.value, term.language || term.datatype);
     default:
       throw new Error(`Unsupported term ${term.value}`);
@@ -149,7 +182,7 @@ function termToString(term: Term) {
 
 // An RDF/JS term as a term of a Traqula AST
 function termToAst(term: Term) {
-  if (term.termType !== "Literal") {
+  if (term.termType !== TermType.Literal) {
     return F.termNamed(F.gen(), validIri(term.value));
   }
   if (term.language) {
@@ -171,28 +204,34 @@ const toTerm = (value: string | Term) =>
   typeof value === "string" ? rdf.namedNode(value) : value;
 
 const predicatePath = (value: string): Path => ({
-  type: "predicate",
+  type: PathType.Predicate,
   iri: value,
   inverse: false,
 });
 // rdf:type/rdfs:subClassOf*, the path sh:targetClass and sh:class rely on
 const TYPE_PATH: Path = {
-  type: "sequence",
+  type: PathType.Sequence,
   paths: [
     predicatePath(PREFIXES.rdf + "type"),
-    { type: "zeroOrMore", path: predicatePath(PREFIXES.rdfs + "subClassOf") },
+    {
+      type: PathType.ZeroOrMore,
+      path: predicatePath(PREFIXES.rdfs + "subClassOf"),
+    },
   ],
 };
 
 // Inverse paths are pushed down to their predicates, e.g. ^(p/q) is ^q/^p
 function invertPath(path: Path): Path {
   switch (path.type) {
-    case "predicate":
+    case PathType.Predicate:
       return { ...path, inverse: !path.inverse };
-    case "sequence":
-      return { type: "sequence", paths: path.paths.map(invertPath).reverse() };
-    case "alternative":
-      return { type: "alternative", paths: path.paths.map(invertPath) };
+    case PathType.Sequence:
+      return {
+        type: PathType.Sequence,
+        paths: path.paths.map(invertPath).reverse(),
+      };
+    case PathType.Alternative:
+      return { type: PathType.Alternative, paths: path.paths.map(invertPath) };
     default:
       return { type: path.type, path: invertPath(path.path) };
   }
@@ -200,11 +239,11 @@ function invertPath(path: Path): Path {
 
 function pathToString(path: Path): string {
   switch (path.type) {
-    case "predicate":
+    case PathType.Predicate:
       return (path.inverse ? "^" : "") + iriToString(path.iri);
-    case "sequence":
+    case PathType.Sequence:
       return `(${path.paths.map(pathToString).join("/")})`;
-    case "alternative":
+    case PathType.Alternative:
       return `(${path.paths.map(pathToString).join("|")})`;
     default:
       return `(${pathToString(path.path)})${CLOSURE_OPERATORS[path.type]}`;
@@ -255,7 +294,9 @@ function focusNodeRestriction(
 function toFocusNodes(focusNodes?: (string | Term)[]) {
   const terms = focusNodes?.map(toTerm);
   const invalid = terms?.find(
-    (term) => term.termType !== "NamedNode" && term.termType !== "Literal",
+    (term) =>
+      term.termType !== TermType.NamedNode &&
+      term.termType !== TermType.Literal,
   );
   if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
   return terms;
@@ -269,6 +310,16 @@ const allResourcesTarget: CreateTarget = (focus) => ({
       `${nodeToString(focus, name)} ${pathToString(predicatePath(PREFIXES.rdf + "type"))} [] .`,
   ],
 });
+
+// Traqula's guards, narrowing to its node types instead of to just their type
+// and subType
+const isTermVariable = (node: object): node is TermVariable =>
+  F.isTermVariable(node);
+const isTermBlank = (node: object): node is TermBlank => F.isTermBlank(node);
+const isPatternValues = (node: object): node is PatternValues =>
+  F.isPatternValues(node);
+const isTermIriPrefixed = (node: object): node is TermIriPrefixed =>
+  F.isTermNamedPrefixed(node);
 
 // Copies a Traqula AST, replacing the nodes replace returns a node for
 function transformAst(astNode, replace: (astNode) => unknown) {
@@ -291,15 +342,15 @@ function transformAst(astNode, replace: (astNode) => unknown) {
 function renameVariables(ast, rename: (variable: string) => string) {
   let anonymous = 0;
   const replace = (astNode) => {
-    if (astNode.type === "term" && astNode.subType === "variable") {
+    if (isTermVariable(astNode)) {
       return F.termVariable(rename(astNode.value), astNode.loc);
     }
-    if (astNode.type === "term" && astNode.subType === "blankNode") {
+    if (isTermBlank(astNode)) {
       const label = astNode.label ?? `anonymous_${++anonymous}`;
       return F.termVariable(rename(`_:${label}`), astNode.loc);
     }
     // The rows of VALUES are keyed by variable name, e.g. { x: <a> }
-    if (astNode.type === "pattern" && astNode.subType === "values") {
+    if (isPatternValues(astNode)) {
       return F.patternValues(
         transformAst(astNode.variables, replace),
         astNode.values.map((row) =>
@@ -318,11 +369,7 @@ function renameVariables(ast, rename: (variable: string) => string) {
 // Replaces prefixed names by full IRIs: a subquery can't declare prefixes
 function expandPrefixes(ast, prefixes: Record<string, string>) {
   return transformAst(ast, (astNode) => {
-    if (
-      astNode.type === "term" &&
-      astNode.subType === "namedNode" &&
-      astNode.prefix !== undefined
-    ) {
+    if (isTermIriPrefixed(astNode)) {
       if (!(astNode.prefix in prefixes)) {
         throw new Error(`Undeclared prefix ${astNode.prefix}:`);
       }
@@ -378,14 +425,14 @@ class SparqlGenerator {
   // The path of a sh:path
   parseShaclPath(shaclPath): Path {
     if (
-      shaclPath.termType === "NamedNode" &&
+      shaclPath.termType === TermType.NamedNode &&
       shaclPath.value !== PREFIXES.rdf + "nil"
     ) {
       return predicatePath(shaclPath.value);
     }
     if (this.getObjects(shaclPath, PREFIXES.rdf + "first").length) {
       return {
-        type: "sequence",
+        type: PathType.Sequence,
         paths: this.getListItems(shaclPath).map((item) =>
           this.parseShaclPath(item),
         ),
@@ -399,16 +446,16 @@ class SparqlGenerator {
     );
     if (alternatives) {
       return {
-        type: "alternative",
+        type: PathType.Alternative,
         paths: this.getListItems(alternatives).map((item) =>
           this.parseShaclPath(item),
         ),
       };
     }
-    for (const type of Object.keys(CLOSURE_OPERATORS)) {
-      const [path] = this.getObjects(shaclPath, `${PREFIXES.sh}${type}Path`);
+    for (const [type, predicate] of Object.entries(CLOSURE_PATH_PREDICATES)) {
+      const [path] = this.getObjects(shaclPath, predicate);
       if (path) {
-        return { type, path: this.parseShaclPath(path) } as Path;
+        return { type: type as ClosureType, path: this.parseShaclPath(path) };
       }
     }
     throw new Error(`Unsupported SHACL path ${shaclPath.value}`);
@@ -420,7 +467,7 @@ class SparqlGenerator {
    */
   getPathBranches(path: Path, start: QueryNode, end?: QueryNode): Branch[] {
     switch (path.type) {
-      case "predicate": {
+      case PathType.Predicate: {
         const target = end ?? this.createVariable(path.iri);
         const predicate = { constant: iriToString(path.iri) };
         const pattern = path.inverse
@@ -428,7 +475,7 @@ class SparqlGenerator {
           : triplePattern(start, predicate, target);
         return [{ patterns: [pattern], templates: [pattern], end: target }];
       }
-      case "sequence":
+      case PathType.Sequence:
         return path.paths.reduce(
           (branches, step, index) =>
             branchProduct(branches, (branch) =>
@@ -440,19 +487,19 @@ class SparqlGenerator {
             ),
           [emptyBranch(start)],
         );
-      case "alternative":
+      case PathType.Alternative:
         return this.getAlternativeBranches(path.paths, start, end);
-      case "zeroOrOne":
+      case PathType.ZeroOrOne:
         return [
           this.getZeroLengthBranch(start, end),
           ...this.getPathBranches(path.path, start, end),
         ];
-      case "zeroOrMore":
+      case PathType.ZeroOrMore:
         return [
           this.getZeroLengthBranch(start, end),
           ...this.getOneOrMoreBranches(path.path, start, end),
         ];
-      case "oneOrMore":
+      case PathType.OneOrMore:
         return this.getOneOrMoreBranches(path.path, start, end);
     }
   }
@@ -462,7 +509,9 @@ class SparqlGenerator {
     const branches = [];
     for (const inverse of [false, true]) {
       const iris = paths.flatMap((path) =>
-        path.type === "predicate" && path.inverse === inverse ? [path.iri] : [],
+        path.type === PathType.Predicate && path.inverse === inverse
+          ? [path.iri]
+          : [],
       );
       if (iris.length) {
         branches.push(
@@ -471,7 +520,7 @@ class SparqlGenerator {
       }
     }
     for (const path of paths) {
-      if (path.type !== "predicate") {
+      if (path.type !== PathType.Predicate) {
         branches.push(...this.getPathBranches(path, start, end));
       }
     }
@@ -489,7 +538,7 @@ class SparqlGenerator {
   ): Branch {
     if (iris.length === 1) {
       return this.getPathBranches(
-        { type: "predicate", iri: iris[0], inverse },
+        { type: PathType.Predicate, iri: iris[0], inverse },
         start,
         end,
       )[0];
@@ -737,7 +786,7 @@ class SparqlGenerator {
     // sh:select holds a SELECT query
     const parsed = parser.parse(select, { prefixes }) as QuerySelect;
     for (const declaration of parsed.context) {
-      if (declaration.subType === "prefix") {
+      if (F.isContextDefinitionPrefix(declaration)) {
         prefixes[declaration.key] = declaration.value.value;
       }
     }
@@ -745,7 +794,7 @@ class SparqlGenerator {
     const query = renameVariables(
       expandPrefixes({ ...parsed, context: [] }, prefixes),
       (variable) => {
-        if (variable === "this") return focus.variable;
+        if (variable === THIS_VARIABLE) return focus.variable;
         if (!ids.has(variable)) {
           ids.set(variable, this.createVariable(variable).variable);
         }
@@ -798,7 +847,7 @@ class SparqlGenerator {
 
   // A focus node variable restricted to the focus nodes, if any
   getRestrictedFocus(focusNodes?: Term[]) {
-    const focus = this.createVariable("this");
+    const focus = this.createVariable(THIS_VARIABLE);
     const restricted: Branch = {
       ...emptyBranch(focus),
       patterns: focusNodeRestriction(focus, focusNodes),

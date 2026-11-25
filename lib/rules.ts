@@ -1,6 +1,10 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import rdf from "rdf-ext";
-import { PREFIXES, VALIDATION_SHAPE_PREDICATE } from "../constants";
+import {
+  BindingType,
+  PREFIXES,
+  VALIDATION_SHAPE_PREDICATE,
+} from "../constants";
 import * as env from "../env";
 import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
@@ -111,7 +115,7 @@ export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
   const result = await query(focusNodeQuery);
   // A target can select literals, which aren't resources to validate
   const candidates = (result?.results?.bindings ?? [])
-    .filter(({ focusNode }) => focusNode?.type === "uri")
+    .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)
     .map(({ focusNode }) => focusNode.value);
 
   const matching = [];

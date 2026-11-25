@@ -4,6 +4,7 @@ import FormatsFactory from "@rdfjs/formats/Factory.js";
 import formats from "@rdfjs/formats/pretty.js";
 import * as datasetIo from "@rdfjs/io/dataset.js";
 import rdf, { Environment } from "rdf-ext";
+import { BindingType } from "../constants";
 
 // TODO: Copied from rdfjs/io's test support,  it should be possible to simplify
 // this.
@@ -30,14 +31,14 @@ export function getObjects(dataset, subject, predicate: string) {
 // query results JSON to rdf-ext objects
 export function toRdfExtTerm(term) {
   switch (term.type) {
-    case "uri":
+    case BindingType.Uri:
       return rdf.namedNode(term.value);
-    case "literal":
-    case "typed-literal": {
+    case BindingType.Literal:
+    case BindingType.TypedLiteral: {
       const datatype = term.datatype && rdf.namedNode(term.datatype);
       return rdf.literal(term.value, datatype || term["xml:lang"]);
     }
-    case "bnode":
+    case BindingType.BlankNode:
       return rdf.blankNode(term.value);
     default:
       return term;

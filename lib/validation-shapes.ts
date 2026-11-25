@@ -1,7 +1,7 @@
 import rdf from "rdf-ext";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
-import { PREFIXES } from "../constants";
+import { PREFIXES, TermType } from "../constants";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
 
@@ -79,7 +79,7 @@ export function shapeWithReferencedShapes(shape, shapes = VALIDATION_SHAPES) {
     visited.add(term);
     for (const quad of shapes.match(term)) {
       result.add(quad);
-      if (quad.object.termType !== "Literal") {
+      if (quad.object.termType !== TermType.Literal) {
         toVisit.push(quad.object);
       }
     }

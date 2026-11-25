@@ -99,9 +99,10 @@ export type FocusNodeQueryOptions = {
   offset?: number;
 };
 
-// An IRI as SPARQL's IRIREF allows it, using Traqula's lexer pattern
+// An IRI and a language tag as SPARQL's IRIREF and LANGTAG allow them, using
+// Traqula's lexer patterns
 const IRIREF = new RegExp(`^${lex.patterns.iriRefPattern.source}$`);
-const VALID_LANGUAGE = /^[A-Za-z]+(-[A-Za-z0-9]+)*$/;
+const VALID_LANGUAGE = new RegExp(`^${lex.patterns.langTagPattern.source}$`);
 
 function validIri(value: string) {
   if (!IRIREF.test(`<${value}>`)) throw new Error(`Invalid IRI ${value}`);
@@ -109,7 +110,7 @@ function validIri(value: string) {
 }
 
 function validLanguage(value: string) {
-  if (!VALID_LANGUAGE.test(value)) {
+  if (!VALID_LANGUAGE.test(`@${value}`)) {
     throw new Error(`Invalid language tag ${value}`);
   }
   return value;

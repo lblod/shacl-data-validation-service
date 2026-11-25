@@ -42,19 +42,18 @@ function logInfo(message: string) {
 }
 
 /*
- * Validates a resource against each validation shape the rules that apply to
- * it link to, and writes the report of each shape it doesn't conform to.
- * Returns the results and errors per shape, or undefined if the resource
- * doesn't exist.
+ * Validates a resource against the validation shapes of the rules that apply
+ * to it. Writes a report for each validation shape it doesn't conform to. The
+ * queue calls it asynchronously, so the outcome is only logged: depending on
+ * LOGLEVEL, and the errors always.
  */
-async function handleResource(namedNode: NamedNodeExt) {
+async function handleResource(namedNode: NamedNodeExt): Promise<void> {
   if (!(await resourceExists(namedNode.value))) {
     logInfo(`No resource found for ${namedNode}`);
-    return undefined;
+    return;
   }
 
-  const validation = await validateResource(namedNode.value);
-  const { results, errors } = validation;
+  const { results, errors } = await validateResource(namedNode.value);
   if (!results.length && !errors.length) {
     logInfo(`No rule applies to resource ${namedNode}`);
   }
@@ -75,8 +74,12 @@ async function handleResource(namedNode: NamedNodeExt) {
       error,
     );
   }
-
-  return validation;
+  if (results.length || errors.length) {
+    logInfo(
+      `Validated ${namedNode} against ${results.length} shape(s)` +
+        (errors.length ? `, failed for ${errors.length} shape(s)` : ""),
+    );
+  }
 }
 
 /*
@@ -86,32 +89,13 @@ if (env.ENABLE_TEST_API) {
   app.get("/test/validate/:uri", async function (req, res, next) {
     try {
       const uri = req.params.uri;
-      const validation = await handleResource(new NamedNodeExt(uri));
+      await handleResource(new NamedNodeExt(uri));
       // The URI comes from the request, so it can't be sent as HTML
-      res.type("text/plain");
-
-      if (!validation) {
-        res.send(`No resource found for ${uri}`);
-        return;
-      }
-
-      const { results, errors } = validation;
-      if (!results.length && !errors.length) {
-        res.status(400).send("No rule applies to the resource");
-      } else if (errors.length) {
-        const failed = errors.map(({ shape }) => shape.value);
-        const validated = results.map(({ shape }) => shape.value);
-        res
-          .status(500)
-          .send(
-            `Validation failed for shapes: ${failed.join(", ")}, see the logs.\n` +
-              `Validated against shapes: ${validated.join(", ") || "none"}`,
-          );
-      } else {
-        res.send(
-          `Resource ${uri} validated, see logs and/or reports for results`,
+      res
+        .type("text/plain")
+        .send(
+          `Resource ${uri} handled, see the logs and/or reports for the results`,
         );
-      }
     } catch (err) {
       // Express doesn't catch rejections, which would stop the service
       console.error(err);

@@ -3,7 +3,6 @@ import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { VALIDATION_SHAPE_PREDICATE } from "../constants";
 import {
   checkRules,
-  listRules,
   loadRules,
   matchingFocusNodes,
   rulesForResource,
@@ -56,10 +55,6 @@ describe("rules for a resource", () => {
   test("doesn't apply a rule to a resource its target doesn't select", async () => {
     // ex:thing conforms to ex:SingleStatusRule, which targets organizations
     expect((await rulesForResource(ex("thing"))).size).toBe(0);
-  });
-
-  test("leaves out a deactivated rule", () => {
-    expect(values(listRules())).not.toContain(ex("DeactivatedRule"));
   });
 
   test("links to each validation shape once", async () => {
@@ -131,6 +126,15 @@ describe("checkRules", () => {
   test("rejects a link to a validation shape that isn't loaded", () => {
     add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("MissingShape"));
     expect(() => checkRules(rules)).toThrow(/MissingShape/);
+  });
+
+  test("rejects a rule without a validation shape", () => {
+    add(
+      ex("UnlinkedRule"),
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "http://www.w3.org/ns/shacl#NodeShape",
+    );
+    expect(() => checkRules(rules)).toThrow(/UnlinkedRule/);
   });
 
   test("rejects a rule referring to a shape that isn't loaded", () => {

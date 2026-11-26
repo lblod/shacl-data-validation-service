@@ -55,11 +55,6 @@ ex:OtherClassRule a sh:NodeShape ;
   sh:targetClass ex:Person ;
   ext:validationShape ex:DocumentShape .
 
-ex:DeactivatedRule a sh:NodeShape ;
-  sh:targetClass ex:Document ;
-  sh:deactivated true ;
-  ext:validationShape ex:DocumentShape .
-
 # Without a target it applies to every resource that conforms to it, i.e. has
 # a document
 ex:UntargetedRule a sh:NodeShape ;

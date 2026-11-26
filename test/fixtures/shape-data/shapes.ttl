@@ -27,11 +27,6 @@ ex:AndShape sh:and ( [ sh:property [ sh:path ex:label ] ] [ sh:property [ sh:pat
 
 ex:NotShape sh:not [ sh:property [ sh:path ex:label ] ] .
 
-ex:DeactivatedNestedShape sh:property [ sh:path ex:next ; sh:node ex:DeactivatedPart ] .
-
-ex:DeactivatedPart sh:deactivated true ;
-  sh:property [ sh:path ex:part ] .
-
 # Other constraints that need data
 ex:ClassShape sh:property [ sh:path ex:owner ; sh:class ex:Person ] .
 

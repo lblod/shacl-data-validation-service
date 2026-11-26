@@ -130,15 +130,6 @@ describe("generateFocusNodeQuery", () => {
     ).toThrow(/offset/);
   });
 
-  test("generates no query for a deactivated rule", () => {
-    expect(
-      focusNodeQuery(ex("DeactivatedRule"), {
-        focusNodes: [ex("document")],
-        limit: 1,
-      }),
-    ).toBeUndefined();
-  });
-
   test("applies a rule without a target to the focus nodes", async () => {
     const options = { focusNodes: [ex("other")] };
     expect(await selectedFocusNodes("UntargetedRule", options)).toEqual([

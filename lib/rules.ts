@@ -1,7 +1,11 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
 import type { DatasetCore, Term } from "@rdfjs/types";
 import rdf from "rdf-ext";
-import { BindingType, VALIDATION_SHAPE_PREDICATE } from "../constants";
+import {
+  BindingType,
+  PREFIXES,
+  VALIDATION_SHAPE_PREDICATE,
+} from "../constants";
 import * as env from "../env";
 import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
@@ -14,8 +18,7 @@ import {
 import {
   checkReferencedShapes,
   hasValidationShape,
-  isActiveValidationShape,
-  isDeactivated,
+  listShapeReferences,
   shapeWithReferencedShapes,
 } from "./validation-shapes";
 
@@ -43,10 +46,33 @@ export async function loadRules(folder = RULES_FOLDER) {
 }
 
 /*
- * Every rule links to validation shapes that are loaded
+ * Every rule links to at least one validation shape using VALIDATION_SHAPE_PREDICATE.
+ * Each validation shape must be loaded in the local store.
  */
 export function checkRules(rules: DatasetCore) {
   checkReferencedShapes(rules, "Rules");
+
+  const referred = rdf.termSet(
+    listShapeReferences(rules).map(({ shape }) => shape),
+  );
+  const withoutShape = [];
+  const nodeShapes = rules.match(
+    null,
+    rdf.namedNode(PREFIXES.rdf + "type"),
+    rdf.namedNode(PREFIXES.sh + "NodeShape"),
+  );
+  for (const { subject } of nodeShapes) {
+    const links = rules.match(
+      subject,
+      rdf.namedNode(VALIDATION_SHAPE_PREDICATE),
+    );
+    if (!referred.has(subject) && !links.size) withoutShape.push(subject.value);
+  }
+  if (withoutShape.length) {
+    throw new Error(
+      `Rules without a validation shape: ${withoutShape.join(", ")}`,
+    );
+  }
 
   const missing = [];
   const links = rules.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
@@ -62,13 +88,10 @@ export function checkRules(rules: DatasetCore) {
   }
 }
 
-// The rules that aren't deactivated
 export function listRules() {
   const rules = rdf.termSet();
   const links = RULES.match(null, rdf.namedNode(VALIDATION_SHAPE_PREDICATE));
-  for (const { subject } of links) {
-    if (!isDeactivated(RULES, subject)) rules.add(subject);
-  }
+  for (const { subject } of links) rules.add(subject);
   return rules;
 }
 
@@ -111,10 +134,7 @@ export const focusNodeQuery = (
  */
 export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
   const { limit = env.FOCUS_NODE_LIMIT, ...rest } = options;
-  const selectQuery = focusNodeQuery(rule, { ...rest, limit });
-  if (!selectQuery) return [];
-
-  const result = await query(selectQuery);
+  const result = await query(focusNodeQuery(rule, { ...rest, limit }));
   // A target can select literals, which aren't resources to validate
   const candidates = (result?.results?.bindings ?? [])
     .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)
@@ -141,14 +161,12 @@ export async function rulesForResource(uri: string) {
   return matching;
 }
 
-// The validation shapes the rules link to that aren't deactivated
+// The validation shapes the rules link to
 export function validationShapesOfRules(rules) {
   const shapes = rdf.termSet();
   for (const rule of rules) {
     const linked = getObjects(RULES, rule, VALIDATION_SHAPE_PREDICATE);
-    for (const shape of linked) {
-      if (isActiveValidationShape(shape)) shapes.add(shape);
-    }
+    for (const shape of linked) shapes.add(shape);
   }
   return shapes;
 }

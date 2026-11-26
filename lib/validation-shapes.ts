@@ -26,14 +26,6 @@ export async function loadValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
 export const hasValidationShape = (shape: Term) =>
   VALIDATION_SHAPES.match(shape).size > 0;
 
-export const isDeactivated = (shapes: DatasetCore, shape: Term) =>
-  getObjects(shapes, shape, PREFIXES.sh + "deactivated").some(
-    (object) => object.value === "true",
-  );
-
-export const isActiveValidationShape = (shape: Term) =>
-  !isDeactivated(VALIDATION_SHAPES, shape);
-
 // The data of a resource needed to validate it against a validation shape
 export const getValidationShapeData = (shape: Term, uri: string) =>
   getShapeData(shape, uri, VALIDATION_SHAPES);
@@ -55,10 +47,9 @@ function getListMembers(shapes, list) {
   return members;
 }
 
-// The validator treats a reference to a shape that isn't loaded as a shape
-// without constraints, so its checks would silently never run. The description
-// names the shapes in the error, e.g. "Rules".
-export function checkReferencedShapes(shapes, description: string) {
+// The shapes the shapes refer to, e.g. with sh:node, each with the shape that
+// refers to it
+export function listShapeReferences(shapes: DatasetCore) {
   const references = [];
   for (const name of SHAPE_REFERENCES) {
     const quads = shapes.match(null, rdf.namedNode(PREFIXES.sh + name));
@@ -76,6 +67,14 @@ export function checkReferencedShapes(shapes, description: string) {
     }
   }
 
+  return references;
+}
+
+// The validator treats a reference to a shape that isn't loaded as a shape
+// without constraints, so its checks would silently never run. The description
+// names the shapes in the error, e.g. "Rules".
+export function checkReferencedShapes(shapes, description: string) {
+  const references = listShapeReferences(shapes);
   const missing = references.filter(({ shape }) => !shapes.match(shape).size);
   if (missing.length) {
     const details = missing

@@ -82,6 +82,8 @@ The queries run through sudo, bypassing the authorization of mu-authorization, a
 
 SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.
 
+`sh:deactivated` is not supported: to stop using a rule, remove it or comment it out. A deactivated rule conforms, so it would apply to every resource its targets select.
+
 ### Rule selection
 A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
 

@@ -42,8 +42,3 @@ ex:OpenRule a sh:NodeShape ;
     sh:or ( [ sh:hasValue ex:active ] [ sh:hasValue ex:pending ] ) ;
   ] ;
   ext:validationShape ex:AltLabelShape .
-
-ex:DeactivatedRule a sh:NodeShape ;
-  sh:targetClass ex:Organization ;
-  sh:deactivated true ;
-  ext:validationShape ex:StatusShape .

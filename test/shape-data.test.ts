@@ -153,12 +153,6 @@ describe("generateConstructQuery", () => {
     expect(await retrievedTriples(shape, focusNode)).toEqual(expected);
   });
 
-  test("doesn't follow a deactivated shape", async () => {
-    expect(await retrievedTriples("DeactivatedNestedShape")).toEqual([
-      "start next second",
-    ]);
-  });
-
   test("doesn't use the targets of a shape", async () => {
     const shape = "LabelledClassTargetShape";
     // Not the rdf:type the target selects ex:typed on

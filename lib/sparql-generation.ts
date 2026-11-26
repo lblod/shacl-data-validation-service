@@ -615,12 +615,7 @@ class SparqlGenerator {
    */
   getShapeBranches(shape, focus: QueryNode, visited: string[]): Branch[] {
     const key = `${shape.termType}:${shape.value}`;
-    if (
-      visited.includes(key) ||
-      this.hasTrueValue(shape, PREFIXES.sh + "deactivated")
-    ) {
-      return [];
-    }
+    if (visited.includes(key)) return [];
     if (visited.length >= this.maxDepth) {
       console.warn(
         `Not retrieving the data of ${shape.value}: it is nested deeper than ${this.maxDepth} shapes`,
@@ -836,15 +831,6 @@ class SparqlGenerator {
     return prefixes;
   }
 
-  // The shapes that aren't deactivated
-  getActiveShapes(shapes: (string | Term)[]) {
-    return shapes
-      .map(toTerm)
-      .filter(
-        (shape) => !this.hasTrueValue(shape, PREFIXES.sh + "deactivated"),
-      );
-  }
-
   // A focus node variable restricted to the focus nodes, if any
   getRestrictedFocus(focusNodes?: Term[]) {
     const focus = this.createVariable(THIS_VARIABLE);
@@ -863,7 +849,7 @@ class SparqlGenerator {
       throw new Error("No focus nodes to retrieve the data of");
     }
     const branches = [];
-    for (const shape of this.getActiveShapes(options.shapes)) {
+    for (const shape of options.shapes.map(toTerm)) {
       const { focus, restricted } = this.getRestrictedFocus(focusNodes);
       for (const branch of this.getShapeBranches(shape, focus, [])) {
         branches.push(joinBranches(restricted, branch));
@@ -890,9 +876,7 @@ class SparqlGenerator {
   // ?focusNode
   getFocusNodeBranches(shape, options: FocusNodeQueryOptions): Branch[] {
     const focusNodes = toFocusNodes(options.focusNodes);
-    const focusTargets = this.getActiveShapes([shape]).flatMap((active) =>
-      this.getFocusTargets(active, focusNodes),
-    );
+    const focusTargets = this.getFocusTargets(shape, focusNodes);
     return focusTargets.map(({ focus, restricted, target }) => ({
       ...restricted,
       patterns: [
@@ -981,8 +965,7 @@ const isCount = (value: number, minimum: number) =>
  * Generates a SELECT query for the focus nodes the targets of a shape select,
  * bound to ?focusNode: at most limit of them, ordered so offset selects the
  * next ones. A shape without a target selects the given focus nodes, or else
- * every resource, i.e. every node with a type. Returns undefined for a
- * deactivated shape.
+ * every resource, i.e. every node with a type.
  */
 export function generateFocusNodeQuery(
   shapes,
@@ -997,7 +980,6 @@ export function generateFocusNodeQuery(
 
   const sparqlGenerator = new SparqlGenerator(shapes);
   const branches = sparqlGenerator.getFocusNodeBranches(toTerm(shape), options);
-  if (!branches.length) return undefined;
 
   return `SELECT DISTINCT ?focusNode WHERE {
 ${renderUnion(renderDistinctBranches(branches), options.graph)}

@@ -1,7 +1,8 @@
+import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
-import { writeReportFile } from "./lib/report";
+import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
 import { loadRules } from "./lib/rules";
@@ -11,6 +12,7 @@ import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
+  await fs.mkdir(REPORTS_DIR, { recursive: true });
   await loadValidationShapes();
   // The rules link to the validation shapes, which are checked to be loaded
   await loadRules();
@@ -43,9 +45,10 @@ function logInfo(message: string) {
 
 /*
  * Validates a resource against the validation shapes of the rules that apply
- * to it. Writes a report for each validation shape it doesn't conform to. The
- * queue calls it asynchronously, so the outcome is only logged: depending on
- * LOGLEVEL, and the errors always.
+ * to it. Writes a report for each validation shape it doesn't conform to, or
+ * for each validation shape with REPORT_DEBUG_RESULTS. The queue calls it
+ * asynchronously, so the outcome is only logged: depending on LOGLEVEL, and
+ * the errors always.
  */
 async function handleResource(namedNode: NamedNodeExt): Promise<void> {
   if (!(await resourceExists(namedNode.value))) {
@@ -59,10 +62,14 @@ async function handleResource(namedNode: NamedNodeExt): Promise<void> {
   }
 
   for (const { shape, report } of results) {
+    // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report of
+    // passed validations too
+    if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
+      await writeReportFile(report, shape);
+    }
     if (report.conforms) {
       logInfo(`Resource ${namedNode} conforms to ${shape.value}`);
     } else {
-      await writeReportFile(report, shape);
       logInfo(
         `Resource ${namedNode} doesn't conform to ${shape.value}, see report for result`,
       );

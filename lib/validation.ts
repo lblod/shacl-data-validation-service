@@ -1,4 +1,5 @@
 import rdf from "rdf-ext";
+import * as env from "../env";
 import { validateFocusNode } from "./engine";
 import { rulesForResource, validationShapesOfRules } from "./rules";
 import {
@@ -7,13 +8,15 @@ import {
 } from "./validation-shapes";
 
 // Validates a resource on its data against a validation shape, with the shapes
-// it refers to
+// it refers to. With REPORT_DEBUG_RESULTS, the report also has the passed
+// validations.
 export async function validateShape(data, shape, uri: string) {
   return validateFocusNode(
     data,
     shapeWithReferencedShapes(shape),
     shape,
     rdf.namedNode(uri),
+    { debug: env.REPORT_DEBUG_RESULTS },
   );
 }
 

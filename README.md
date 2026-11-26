@@ -69,9 +69,11 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
 |FOCUS_NODE_LIMIT   |The maximum number of resources the targets of a rule select at a time                                              |100          |
-|KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                               |false        |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
+|MAX_REPORTS        |The number of reports to keep.  The oldest reports are removed.                                                     |100          |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
+|REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
+|REPORT_FORMAT      |The format of the report files: "n-triples" or "json-ld"                                                            |n-triples    |
 
 ## Methodology
 A resource is handled in two phases: first, the rules are selected that target the resource (using a combination of a generated SELECT query and validation), and second, the resource gets validated with the validation shapes that are linked with the selected rules. Both phases retrieve the data of the resource with the same generated CONSTRUCT queries and validate it with the same validator.
@@ -94,7 +96,13 @@ The query is used in two ways:
 For each resource the query selects, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
 
 ### Resource validation
-A resource is validated against each validation shape separately. The data of the resource is retrieved using a CONSTRUCT query as described above. The SHACL engine does not resolve the target of the shape, and only validates the resource. The data can hold other resources, for example a value node of the same class, without the data needed to validate them.  When no data is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead. The validation report is returned as is, currently without any further processing.
+A resource is validated against each validation shape separately. The data of the resource is retrieved using a CONSTRUCT query as described above. The SHACL engine does not resolve the target of the shape, and only validates the resource. The data can hold other resources, for example a value node of the same class, without the data needed to validate them.  When no data is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.
+
+When a resource doesn't conform to a validation shape, the report of that shape is written as N-Triples to `/share/<timestamp>--report-<local name>.nt`, named after the shape.  Only the newest `MAX_REPORTS` reports are kept.
+
+With `REPORT_FORMAT` set to `json-ld`, the reports are written as JSON-LD instead, with the extension `.jsonld`.  Each report embeds the context in [config/contexts/validation-report.jsonld](config/contexts/validation-report.jsonld), which names the SHACL terms by their local name, e.g. `result`, `focusNode` and `resultMessage`, with the messages by language.  The report is canonicalised first, so the same report gives the same file.
+
+With `REPORT_DEBUG_RESULTS` set, the report also has a result for each passed validation, with severity `shn:Debug` (`https://schemas.link/shacl-next#Debug`), which doesn't affect `sh:conforms`.  A report is then written for each validation shape a resource is validated against, also when it conforms.
 
 ## Tests
 The tests check which resources the targets of a shape select, which rules apply to a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.

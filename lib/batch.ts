@@ -8,7 +8,7 @@ import { listRules, selectedFocusNodes } from "./rules";
  * the number of resources handled.
  */
 export async function validateTargetedResources(
-  handle: (uri: string) => Promise<unknown>,
+  handle: (uri: string) => Promise<void>,
   batchSize = env.BATCH_SIZE,
 ): Promise<number> {
   const handled = new Set<string>();

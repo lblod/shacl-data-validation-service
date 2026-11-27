@@ -21,6 +21,7 @@
     "body-parser": "^2.4.0",
     "cron": "^4.4.0",
     "env-var": "^7.5.0",
+    "jsonld": "^9.0.0",
     "lru-cache": "^5.1.1",
     "rdf-ext": "^2.6.0",
     "shacl-engine": "^1.1.2"

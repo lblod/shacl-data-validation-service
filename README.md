@@ -42,12 +42,13 @@ ext:activeOrganizationRule a sh:NodeShape ;
   ext:validationShape ext:organizationWithAltNameShape .
 ```
 
-A rule can link to several validation shapes, and several rules can link to the same validation shape: a resource is validated once against each validation shape the rules that apply to it link to.  The service doesn't start when a rule links to a validation shape that isn't loaded.
+A rule can link to several validation shapes using `ext:validationShape`. Vice versa, a validation shape can be used by multiple rules.
+This service doesn't start when a rule links to a validation shape that isn't configured.
 
 ### Validation shapes
-The SHACL node shapes used to actually validate data resources should be specified in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
+The SHACL node shapes used to actually validate data resources should be configured in turtle files in the `config/validation-shapes` folder.  The service will read and parse all turtle files in that folder on startup.
 
-The rules decide which resources a validation shape validates, so a validation shape doesn't need a target.  A target of a validation shape doesn't select resources to validate, but it does restrict the data retrieved to validate a resource to the resources it selects, so the service warns about it on startup.
+The rules decide which resources a validation shape validates, so a validation shape doesn't need a target.  A target of a validation shape has no effect: it doesn't select resources to validate, and it doesn't restrict the data retrieved to validate a resource.
 
 Node shapes *can* share a property shape by referring to its URI. A property shape is validated for each node shape that refers to it with `sh:property`. For example, organizations are expected to have at least one prefLabel:
 
@@ -69,26 +70,38 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |BATCH_SIZE         |The number of resources a rule selects at a time for the periodic validation                                        |100          |
 |CRON_SCHEDULE      |The cron expression of the periodic validation of the resources the rules target, e.g. `0 2 * * *`; unset, there is none|             |
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
-|FOCUS_NODE_LIMIT   |The maximum number of resources the targets of a rule select at a time                                              |100          |
-|KEEP_ALL_REPORTS   |Whether to keep all generated reports                                                                               |false        |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
+|MAX_REPORTS        |The number of reports to keep.  The oldest reports are removed.                                                     |100          |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
+|REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
+|REPORT_FORMAT      |The format of the report files: "n-triples" or "json-ld"                                                            |n-triples    |
 
 ## Methodology
-A resource is handled in two phases: the rules select whether, and against which validation shapes, it is validated, and it is then validated against those shapes.  Both phases retrieve the data with the same generated queries and validate it with the same validator, separately for each resource.
+A resource is handled in two phases: first, the rules are selected that target the resource (using a combination of a generated SELECT query and validation), and second, the resource gets validated with the validation shapes that are linked with the selected rules. Both phases retrieve the data of the resource with the same generated CONSTRUCT queries and validate it with the same validator.
 
-### Resource selection
-For each rule, `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query for the resources the targets of the rule select in the store, restricted to the resource being handled.  This query always has a `LIMIT`, `FOCUS_NODE_LIMIT` by default, and is ordered so an `OFFSET` selects the next resources: without a limit, a rule would retrieve and validate every resource its targets select.  For each selected resource separately, the data of the rule is retrieved and validated, as below, and the rule applies to the resource if it conforms.  The targets are selected in the store first, because the validator doesn't resolve the targets of a shape for a given resource.
-
-### Resource retrieval
-The data of a resource is retrieved with a CONSTRUCT query generated from a rule or a validation shape by `generateConstructQuery`: the triples along its property paths and the data of the shapes it refers to, such as `sh:node` and `sh:or`, for a resource its targets select.  The triples the targets select the resource on, such as its `rdf:type` for `sh:targetClass`, are not retrieved: the resource is validated as given, without resolving the targets again.  Only this data is retrieved, so a property the shape doesn't mention is not part of the data it is validated on.  The query always retrieves the data of a single resource.
+The data of a resource is retrieved with a CONSTRUCT query that `generateConstructQuery` generates from a rule or a validation shape: the triples along its property paths and the data of the shapes it refers to, such as `sh:node` and `sh:or`.  The query always retrieves the data of a single resource: its focus node variable is bound to the resource with `VALUES`.
 
 The queries run through sudo, bypassing the authorization of mu-authorization, and don't specify a `GRAPH`, so they read the data from all graphs.
 
 SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:select` are not supported.
 
+`sh:deactivated` is not supported: to stop using a rule, remove it or comment it out. A deactivated rule conforms, so it would apply to every resource its targets select.
+
+### Rule selection
+A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
+
+For the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.  For the periodic validation, the query selects `BATCH_SIZE` resources of a rule at a time, ordered by resource, so an `OFFSET` selects the next ones (see [Periodic validation](#periodic-validation)).
+
+If the query selects the resource, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
+
 ### Resource validation
-A resource is validated against each validation shape the rules that apply to it link to, separately, on the data retrieved for that shape.  A `shacl-engine/Validator` receives the shape with the shapes it refers to, as well as the data, and only validates the resource.  It does not resolve the target of the shape: the data can hold other resources, for example a value node of the same class, without the data needed to validate them.  shacl-engine skips the validation of an empty data graph.  When nothing is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.  The validation report is returned as is, currently without any further processing.
+A resource is validated against each validation shape separately. The data of the resource is retrieved using a CONSTRUCT query as described above. The SHACL engine does not resolve the target of the shape, and only validates the resource. The data can hold other resources, for example a value node of the same class, without the data needed to validate them.  When no data is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.
+
+When a resource doesn't conform to a validation shape, the report of that shape is written as N-Triples to `/share/<timestamp>--report-<local name>.nt`, named after the shape.  Only the newest `MAX_REPORTS` reports are kept.
+
+With `REPORT_FORMAT` set to `json-ld`, the reports are written as JSON-LD instead, with the extension `.jsonld`.  Each report embeds the context in [config/contexts/validation-report.jsonld](config/contexts/validation-report.jsonld), which names the SHACL terms by their local name, e.g. `result`, `focusNode` and `resultMessage`, with the messages by language.  The report is canonicalised first, so the same report gives the same file.
+
+With `REPORT_DEBUG_RESULTS` set, the report also has a result for each passed validation, with severity `shn:Debug` (`https://schemas.link/shacl-next#Debug`), which doesn't affect `sh:conforms`.  A report is then written for each validation shape a resource is validated against, also when it conforms.
 
 ### Periodic validation
 A resource is validated when a delta message mentions it, and, with `CRON_SCHEDULE` set, periodically.  A periodic run validates every resource the rules target, a batch at a time (see [lib/batch.ts](lib/batch.ts)): for each rule, its focus node query selects `BATCH_SIZE` resources, these are validated as above, and the next `BATCH_SIZE` resources are selected with an `OFFSET` once they are done.  A resource several rules target is validated once per run.  A run validates its resources one after the other, separately from the queue of the delta messages.  A run that is due while the previous one is still busy is skipped.  A run doesn't know which resources were validated before, so each run validates all of them.

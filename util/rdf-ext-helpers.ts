@@ -1,19 +1,16 @@
-import DataFactory from "@rdfjs/data-model/Factory.js";
-import DatasetFactory from "@rdfjs/dataset/Factory.js";
-import FormatsFactory from "@rdfjs/formats/Factory.js";
-import formats from "@rdfjs/formats/pretty.js";
 import * as datasetIo from "@rdfjs/io/dataset.js";
-import rdf, { Environment } from "rdf-ext";
-
-// TODO: Copied from rdfjs/io's test support,  it should be possible to simplify
-// this.
-const factory = new Environment([DataFactory, DatasetFactory, FormatsFactory]);
-
-factory.formats.import(formats);
+import rdf from "rdf-ext";
+import { BindingType } from "../constants";
 
 export async function insertContentInDataset(content, dataset) {
   // TODO: make text/turtle configurable?
-  const ds = await datasetIo.fromText("text/turtle", content, { factory });
+  // Parsed with rdf-ext, like the validation report, so their blank nodes get
+  // different labels from the same counter. With another factory, the blank
+  // node of a property shape could have the label of a node of the report,
+  // e.g. the report itself, and its sh:sourceShape would point at that node.
+  const ds = await datasetIo.fromText("text/turtle", content, {
+    factory: rdf,
+  });
   dataset.addAll(ds);
 
   return dataset;
@@ -30,14 +27,14 @@ export function getObjects(dataset, subject, predicate: string) {
 // query results JSON to rdf-ext objects
 export function toRdfExtTerm(term) {
   switch (term.type) {
-    case "uri":
+    case BindingType.Uri:
       return rdf.namedNode(term.value);
-    case "literal":
-    case "typed-literal": {
+    case BindingType.Literal:
+    case BindingType.TypedLiteral: {
       const datatype = term.datatype && rdf.namedNode(term.datatype);
       return rdf.literal(term.value, datatype || term["xml:lang"]);
     }
-    case "bnode":
+    case BindingType.BlankNode:
       return rdf.blankNode(term.value);
     default:
       return term;

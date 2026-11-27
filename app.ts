@@ -1,13 +1,14 @@
+import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import { CronJob } from "cron";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateTargetedResources } from "./lib/batch";
-import { writeReportFile } from "./lib/report";
+import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
-import { loadRules } from "./lib/rules";
-import { loadValidationShapes } from "./lib/validation-shapes";
+import { initRules } from "./lib/rules";
+import { initValidationShapes } from "./lib/validation-shapes";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
 import { SubjectQueue } from "./queue";
@@ -15,9 +16,10 @@ import { SubjectQueue } from "./queue";
 const subjectQueue = new SubjectQueue(handleResource);
 
 (async function startup() {
-  await loadValidationShapes();
+  await fs.mkdir(REPORTS_DIR, { recursive: true });
+  await initValidationShapes();
   // The rules link to the validation shapes, which are checked to be loaded
-  await loadRules();
+  await initRules();
 
   if (env.CRON_SCHEDULE) {
     CronJob.from({
@@ -72,28 +74,32 @@ function logInfo(message: string) {
 }
 
 /*
- * Validates a resource against each validation shape the rules that apply to
- * it link to, and writes the report of each shape it doesn't conform to.
- * Returns the results and errors per shape, or undefined if the resource
- * doesn't exist.
+ * Validates a resource against the validation shapes of the rules that apply
+ * to it. Writes a report for each validation shape it doesn't conform to, or
+ * for each validation shape with REPORT_DEBUG_RESULTS. The queue calls it
+ * asynchronously, so the outcome is only logged: depending on LOGLEVEL, and
+ * the errors always.
  */
-async function handleResource(namedNode: NamedNodeExt) {
+async function handleResource(namedNode: NamedNodeExt): Promise<void> {
   if (!(await resourceExists(namedNode.value))) {
     logInfo(`No resource found for ${namedNode}`);
-    return undefined;
+    return;
   }
 
-  const validation = await validateResource(namedNode.value);
-  const { results, errors } = validation;
+  const { results, errors } = await validateResource(namedNode.value);
   if (!results.length && !errors.length) {
     logInfo(`No rule applies to resource ${namedNode}`);
   }
 
   for (const { shape, report } of results) {
+    // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report of
+    // passed validations too
+    if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
+      await writeReportFile(report, shape);
+    }
     if (report.conforms) {
       logInfo(`Resource ${namedNode} conforms to ${shape.value}`);
     } else {
-      await writeReportFile(report, shape);
       logInfo(
         `Resource ${namedNode} doesn't conform to ${shape.value}, see report for result`,
       );
@@ -105,49 +111,25 @@ async function handleResource(namedNode: NamedNodeExt) {
       error,
     );
   }
-
-  return validation;
+  if (results.length || errors.length) {
+    logInfo(
+      `Validated ${namedNode} against ${results.length} shape(s)` +
+        (errors.length ? `, failed for ${errors.length} shape(s)` : ""),
+    );
+  }
 }
 
 /*
  * Internal API, used for testing and debugging only.
  */
 if (env.ENABLE_TEST_API) {
-  app.get("/test/validate/:uri", async function (req, res, next) {
-    try {
-      const uri = req.params.uri;
-      const validation = await handleResource(new NamedNodeExt(uri));
-      // The URI comes from the request, so it can't be sent as HTML
-      res.type("text/plain");
+  app.get("/test/validate/:uri", async function (req, res) {
+    const uri = req.params.uri;
+    await handleResource(new NamedNodeExt(uri));
 
-      if (!validation) {
-        res.send(`No resource found for ${uri}`);
-        return;
-      }
-
-      const { results, errors } = validation;
-      if (!results.length && !errors.length) {
-        res.status(400).send("No rule applies to the resource");
-      } else if (errors.length) {
-        const failed = errors.map(({ shape }) => shape.value);
-        const validated = results.map(({ shape }) => shape.value);
-        res
-          .status(500)
-          .send(
-            `Validation failed for shapes: ${failed.join(", ")}, see the logs.\n` +
-              `Validated against shapes: ${validated.join(", ") || "none"}`,
-          );
-      } else {
-        res.send(
-          `Resource ${uri} validated, see logs and/or reports for results`,
-        );
-      }
-    } catch (err) {
-      // Express doesn't catch rejections, which would stop the service
-      console.error(err);
-      err.status = 500;
-      next(err);
-    }
+    res
+      .send(`Resource ${uri} validated, see logs and/or report for results`)
+      .end();
   });
 }
 

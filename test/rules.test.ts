@@ -1,3 +1,4 @@
+import type { DatasetCore } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { VALIDATION_SHAPE_PREDICATE } from "../constants";
@@ -26,10 +27,12 @@ const loadFixture = async (name: string, dataset) =>
 
 const values = (terms) => [...terms].map((term) => term.value).sort();
 
+let rules: DatasetCore;
+
 beforeAll(async () => {
   // The rules link to the validation shapes, which are checked to be loaded
   await loadValidationShapes(FIXTURES + "validation-shapes/");
-  await loadRules(FIXTURES + "rules/");
+  rules = await loadRules(FIXTURES + "rules/");
   store.data = rdf.dataset();
   await loadFixture("data.ttl", store.data);
 });
@@ -94,12 +97,8 @@ describe("matchingFocusNodes", () => {
 });
 
 describe("checkRules", () => {
-  const rules = rdf.dataset();
+  // Added to the loaded rules for one test, and removed after it
   const added = [];
-
-  beforeAll(async () => {
-    await loadFixture("rules/rules.ttl", rules);
-  });
 
   const add = (...quad) => {
     const [subject, predicate, object] = quad.map((value) =>

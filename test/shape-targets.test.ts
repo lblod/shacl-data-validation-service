@@ -1,15 +1,16 @@
 import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
+import type { DatasetCore } from "@rdfjs/types";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { resourceExists } from "../lib/resource-retrieval";
 import {
-  focusNodeQuery,
   loadRules,
   matchingFocusNodes,
   rulesForResource,
   validationShapesOfRules,
 } from "../lib/rules";
+import { generateFocusNodeQuery } from "../lib/sparql-generation";
 import { validateResource, validateShape } from "../lib/validation";
 import {
   loadValidationShapes,
@@ -29,13 +30,15 @@ const FIXTURES = "test/fixtures/shape-targets/";
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
+// The rules, for the queries generated from them
+let rules: DatasetCore;
 const data = rdf.dataset();
 
 // Loaded once: loading the rules again would add their blank nodes again
 beforeAll(async () => {
   // The rules link to the validation shapes, which are checked to be loaded
   await loadValidationShapes(FIXTURES + "validation-shapes/");
-  await loadRules(FIXTURES + "rules/");
+  rules = await loadRules(FIXTURES + "rules/");
   await loadFixture("data.ttl", data);
 });
 
@@ -43,7 +46,7 @@ describe("generateFocusNodeQuery", () => {
   // The focus nodes the query generated for a rule selects in the data, in
   // the order of the query
   async function selectedFocusNodes(rule: string, options = {}) {
-    const query = focusNodeQuery(ex(rule), {
+    const query = generateFocusNodeQuery(rules, ex(rule), {
       limit: 10,
       ...options,
     });

@@ -13,6 +13,8 @@ const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
 // Only used through the functions of this module
 const VALIDATION_SHAPES = rdf.dataset();
 
+// Returns the loaded validation shapes, e.g. for tests that generate queries
+// from them
 export async function loadValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
   const shapeFiles = await listFiles(folder);
   for (const filePath of shapeFiles) {
@@ -20,6 +22,7 @@ export async function loadValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
     await insertContentInDataset(fileContents, VALIDATION_SHAPES);
   }
   checkReferencedShapes(VALIDATION_SHAPES, "Validation shapes");
+  return VALIDATION_SHAPES;
 }
 
 // Whether a validation shape is loaded

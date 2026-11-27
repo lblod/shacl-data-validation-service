@@ -1,5 +1,5 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
-import type { DatasetCore, Term } from "@rdfjs/types";
+import type { DatasetCore } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import {
   BindingType,
@@ -35,6 +35,7 @@ const RULES_FOLDER = "config/rules/";
 // Only used through the functions of this module
 const RULES = rdf.dataset();
 
+// Returns the loaded rules, e.g. for tests that generate queries from them
 export async function loadRules(folder = RULES_FOLDER) {
   const ruleFiles = await listFiles(folder);
   for (const filePath of ruleFiles) {
@@ -42,6 +43,7 @@ export async function loadRules(folder = RULES_FOLDER) {
     await insertContentInDataset(fileContents, RULES);
   }
   checkRules(RULES);
+  return RULES;
 }
 
 /*
@@ -107,13 +109,6 @@ async function conformsToRule(rule, uri: string) {
   return report.conforms;
 }
 
-// The SELECT query for the resources the targets of a rule select, see
-// generateFocusNodeQuery
-export const focusNodeQuery = (
-  rule: string | Term,
-  options: FocusNodeQueryOptions,
-) => generateFocusNodeQuery(RULES, rule, options);
-
 /*
  * The resources a rule applies to: of the resources its targets select, at
  * most limit of them, the ones that conform to the rule. The data of each
@@ -122,7 +117,7 @@ export const focusNodeQuery = (
  * fewer resources than the limit can match.
  */
 export async function matchingFocusNodes(rule, options: FocusNodeQueryOptions) {
-  const result = await query(focusNodeQuery(rule, options));
+  const result = await query(generateFocusNodeQuery(RULES, rule, options));
   // A target can select literals, which aren't resources to validate
   const candidates = (result?.results?.bindings ?? [])
     .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)

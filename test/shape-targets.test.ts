@@ -105,10 +105,14 @@ describe("generateFocusNodeQuery", () => {
     ]);
   });
 
-  test("selects at most limit focus nodes", async () => {
-    expect(await selectedFocusNodes("DocumentRule", { limit: 1 })).toEqual([
-      ex("document"),
-    ]);
+  test("selects at most limit focus nodes, offset selecting the next", async () => {
+    const pages = [];
+    for (const offset of [0, 1, 2]) {
+      pages.push(
+        await selectedFocusNodes("DocumentRule", { limit: 1, offset }),
+      );
+    }
+    expect(pages).toEqual([[ex("document")], [ex("report")], []]);
   });
 
   test("applies a rule without a target to the focus nodes", async () => {

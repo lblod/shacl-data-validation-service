@@ -1,5 +1,5 @@
 import { querySudo as query } from "@lblod/mu-auth-sudo";
-import type { DatasetCore } from "@rdfjs/types";
+import type { DatasetCore, Term } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import {
   BindingType,
@@ -118,6 +118,22 @@ async function conformsToRule(rule, uri: string) {
 }
 
 /*
+ * The resources the targets of a rule select in the store, at most limit of
+ * them, without checking whether they conform to the rule. The selection is
+ * ordered, so offset selects the next ones.
+ */
+export async function selectedFocusNodes(
+  rule: string | Term,
+  options: FocusNodeQueryOptions,
+): Promise<string[]> {
+  const result = await query(generateFocusNodeQuery(RULES, rule, options));
+  // A target can select literals, which aren't resources to validate
+  return (result?.results?.bindings ?? [])
+    .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)
+    .map(({ focusNode }) => focusNode.value);
+}
+
+/*
  * The resources a rule applies to: of the resources its targets select, at
  * most limit of them, the ones that conform to the rule. The data of each
  * resource is retrieved and validated separately, so the data of one resource
@@ -125,11 +141,7 @@ async function conformsToRule(rule, uri: string) {
  * fewer resources than the limit can match.
  */
 export async function matchingFocusNodes(rule, options: FocusNodeQueryOptions) {
-  const result = await query(generateFocusNodeQuery(RULES, rule, options));
-  // A target can select literals, which aren't resources to validate
-  const candidates = (result?.results?.bindings ?? [])
-    .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)
-    .map(({ focusNode }) => focusNode.value);
+  const candidates = await selectedFocusNodes(rule, options);
 
   const matching = [];
   // In series: one query at a time on the store

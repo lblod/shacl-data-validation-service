@@ -127,6 +127,9 @@ export type FocusNodeQueryOptions = {
   // The maximum number of focus nodes to select, which is required: without
   // it, a shape would select every resource its targets select
   limit: number;
+  // The number of focus nodes to skip, in the order of their IRIs, to select
+  // the next ones
+  offset?: number;
 };
 
 // An IRI and a language tag as SPARQL's IRIREF and LANGTAG allow them, using
@@ -957,8 +960,8 @@ ${renderUnion(rendered, options.graph)}
 
 /*
  * Generates a SELECT query for the focus nodes the targets of a shape select,
- * bound to ?focusNode: at most limit of them, ordered by focus node, so a
- * limit selects the same ones each time. A shape without a target selects the
+ * bound to ?focusNode: at most limit of them, ordered by focus node, so
+ * offset selects the next ones. A shape without a target selects the
  * given focus nodes, or else every resource, i.e. every node with a type.
  */
 export function generateFocusNodeQuery(
@@ -966,6 +969,8 @@ export function generateFocusNodeQuery(
   shape: string | Term,
   options: FocusNodeQueryOptions,
 ) {
+  const { limit, offset = 0 } = options;
+
   const sparqlGenerator = new SparqlGenerator(shapes);
   const branches = sparqlGenerator.getFocusNodeBranches(toTerm(shape), options);
 
@@ -973,5 +978,5 @@ export function generateFocusNodeQuery(
 ${renderUnion(renderDistinctBranches(branches), options.graph)}
 }
 ORDER BY ?focusNode
-LIMIT ${options.limit}`;
+LIMIT ${limit}${offset ? `\nOFFSET ${offset}` : ""}`;
 }

@@ -1,7 +1,9 @@
 import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
+import { CronJob } from "cron";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
+import { validateTargetedResources } from "./lib/batch";
 import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
@@ -11,14 +13,42 @@ import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
+const subjectQueue = new SubjectQueue(handleResource);
+
 (async function startup() {
   await fs.mkdir(REPORTS_DIR, { recursive: true });
   await initValidationShapes();
   // The rules link to the validation shapes, which are checked to be loaded
   await initRules();
+
+  if (env.CRON_SCHEDULE) {
+    CronJob.from({
+      cronTime: env.CRON_SCHEDULE,
+      onTick: validateAllTargetedResources,
+      // A run that is due while the previous one is busy is skipped
+      waitForCompletion: true,
+      errorHandler: (error) =>
+        console.error("\n>> ERROR: Periodic validation failed:", error),
+      start: true,
+    });
+    logInfo(`Periodic validation scheduled: ${env.CRON_SCHEDULE}`);
+  }
 })();
 
-const subjectQueue = new SubjectQueue(handleResource);
+/*
+ * Validates every resource the rules target, a batch at a time. The run is
+ * separate from the queue of the delta messages, so a run and a delta message
+ * can each be validating a resource at the same time.
+ */
+async function validateAllTargetedResources() {
+  const start = Date.now();
+  logInfo("Periodic validation started");
+  const count = await validateTargetedResources((uri) =>
+    handleResource(new NamedNodeExt(uri)),
+  );
+  const seconds = Math.round((Date.now() - start) / 1000);
+  logInfo(`Periodic validation of ${count} resources done in ${seconds}s`);
+}
 
 app.get("/health", async function (_req, res) {
   res.send({ status: "ok" });

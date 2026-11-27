@@ -1,8 +1,6 @@
 import * as datasetIo from "@rdfjs/io/dataset.js";
 import rdf from "rdf-ext";
-import DatasetExt from "rdf-ext/lib/Dataset";
-import NamedNodeExt from "rdf-ext/lib/NamedNode";
-import { resource } from "rdf-utils-dataset";
+import { BindingType } from "../constants";
 
 export async function insertContentInDataset(content, dataset) {
   // TODO: make text/turtle configurable?
@@ -18,35 +16,25 @@ export async function insertContentInDataset(content, dataset) {
   return dataset;
 }
 
-export function extractResource(
-  uri: NamedNodeExt,
-  dataset: DatasetExt,
-): DatasetExt {
-  return resource(dataset, uri);
-}
-
-// TODO: Can this be cleaner with a traverser?
-export function objectsForPredicate(predicate: string, dataset: DatasetExt) {
-  const objects = rdf.termSet();
-  dataset
-    .filter((quad) => quad.predicate.value === predicate)
-    .forEach((quad) => objects.add(quad.object));
-
-  return objects;
+// The objects of the triples in the dataset with the subject and predicate
+export function getObjects(dataset, subject, predicate: string) {
+  return [...dataset.match(subject, rdf.namedNode(predicate))].map(
+    ({ object }) => object,
+  );
 }
 
 // TODO: This should probably be(come) part of some factory to convert SPARQL
 // query results JSON to rdf-ext objects
 export function toRdfExtTerm(term) {
   switch (term.type) {
-    case "uri":
+    case BindingType.Uri:
       return rdf.namedNode(term.value);
-    case "literal":
-    case "typed-literal": {
+    case BindingType.Literal:
+    case BindingType.TypedLiteral: {
       const datatype = term.datatype && rdf.namedNode(term.datatype);
       return rdf.literal(term.value, datatype || term["xml:lang"]);
     }
-    case "bnode":
+    case BindingType.BlankNode:
       return rdf.blankNode(term.value);
     default:
       return term;

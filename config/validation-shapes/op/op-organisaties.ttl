@@ -85,6 +85,7 @@
 
 ent:Organisatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "organisatie" ;
   sh:targetClass org:Organization ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -143,6 +144,7 @@ ent:Organisatie
 
 ent:Bestuurseenheid
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuurseenheid" ;
   sh:targetClass besluit:Bestuurseenheid ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -202,6 +204,7 @@ ent:Bestuurseenheid
 
 ent:GeregistreerdeOrganisatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "geregistreerde organisatie" ;
   sh:targetClass regorg:RegisteredOrganization ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -245,6 +248,7 @@ ent:GeregistreerdeOrganisatie
 
 ent:KboOrganisatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "kbo-organisatie" ;
   sh:targetClass ext:KboOrganisatie ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -261,6 +265,7 @@ ent:KboOrganisatie
 
 ent:OrganisatieClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "organisatieclassificatie" ;
   sh:targetClass ext:OrganizationClassificationCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -270,6 +275,7 @@ ent:OrganisatieClassificatie
 
 ent:BestuurseenheidClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort bestuur" ;
   sh:targetClass code:BestuurseenheidClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -279,6 +285,7 @@ ent:BestuurseenheidClassificatie
 
 ent:GeregistreerdeOrganisatieClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort geregistreerde organisatie" ;
   sh:targetClass ext:GeregistreerdeOrganisatieClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -288,6 +295,7 @@ ent:GeregistreerdeOrganisatieClassificatie
 
 ent:OrganisatieStatus
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "organisatiestatus" ;
   sh:targetClass code:OrganisatieStatusCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -295,6 +303,7 @@ ent:OrganisatieStatus
 
 ent:Vestiging
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "vestiging" ;
   sh:targetClass org:Site ;
   sh:property [ sh:path dct:description ; sh:name "omschrijving" ;
@@ -312,6 +321,7 @@ ent:Vestiging
 
 ent:TypeVestiging
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "type vestiging" ;
   sh:targetClass code:TypeVestiging ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -319,6 +329,7 @@ ent:TypeVestiging
 
 ent:Adres
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "adres" ;
   sh:targetClass locn:Address ;
   sh:property [ sh:path locn:thoroughfare ; sh:name "straat" ;
@@ -345,6 +356,7 @@ ent:Adres
 
 ent:ContactPunt
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "contactpunt" ;
   sh:targetClass schema:ContactPoint ;
   sh:property [ sh:path schema:email ; sh:name "email" ;
@@ -363,6 +375,7 @@ ent:ContactPunt
 
 ent:Identificator
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "identificator" ;
   sh:targetClass adms:Identifier ;
   sh:property [ sh:path skos:notation ; sh:name "notatie" ;
@@ -373,6 +386,7 @@ ent:Identificator
 
 ent:GestructureerdeIdentificator
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "gestructureerde identificator" ;
   sh:targetClass generiek:GestructureerdeIdentificator ;
   sh:property [ sh:path generiek:lokaleIdentificator ; sh:name "lokale identificator" ;
@@ -380,6 +394,7 @@ ent:GestructureerdeIdentificator
 
 ent:Werkingsgebied
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "werkingsgebied" ;
   sh:targetClass prov:Location ;
   sh:property [ sh:path rdfs:label ; sh:name "naam" ;
@@ -396,6 +411,7 @@ ent:Werkingsgebied
 
 ent:Concept
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "concept" ;
   sh:targetClass skos:Concept ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -411,6 +427,7 @@ ent:Concept
 
 ent:ConceptSchema
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "conceptschema" ;
   sh:targetClass skos:ConceptScheme ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -418,6 +435,7 @@ ent:ConceptSchema
 
 ent:BijkomendeKwalificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bijkomende kwalificatie" ;
   sh:targetClass code:BijkomendeKwalificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -431,6 +449,7 @@ ent:BijkomendeKwalificatie
 
 ent:Sector
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "sector" ;
   sh:targetClass code:Sector ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -438,6 +457,7 @@ ent:Sector
 
 ent:NaceBelCode
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "nace-bel-code" ;
   sh:targetClass nacebel:NaceBelCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -447,6 +467,7 @@ ent:NaceBelCode
 
 ent:Lidmaatschap
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "lidmaatschap" ;
   sh:targetClass org:Membership ;
   sh:property [ sh:path org:member ; sh:name "lid" ;
@@ -462,6 +483,7 @@ ent:Lidmaatschap
 
 ent:LidmaatschapRol
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "lidmaatschapsrol" ;
   sh:targetClass org:Role ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -471,6 +493,7 @@ ent:LidmaatschapRol
 
 ent:Periode
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "periode" ;
   sh:targetClass <http://www.w3.org/2006/time#ProperInterval> ;
   sh:property [ sh:path <http://www.w3.org/2006/time#hasBeginning> ; sh:name "start" ;
@@ -480,6 +503,7 @@ ent:Periode
 
 ent:Veranderingsgebeurtenis
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "veranderingsgebeurtenis" ;
   sh:targetClass org:ChangeEvent ;
   sh:property [ sh:path dct:date ; sh:name "datum" ;
@@ -499,6 +523,7 @@ ent:Veranderingsgebeurtenis
 
 ent:VeranderingsgebeurtenisType
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "type veranderingsgebeurtenis" ;
   sh:targetClass code:Veranderingsgebeurtenis ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -506,6 +531,7 @@ ent:VeranderingsgebeurtenisType
 
 ent:VeranderingsgebeurtenisResultaat
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "veranderingsresultaat" ;
   sh:targetClass code:VeranderingsgebeurtenisResultaat ;
   sh:property [ sh:path ext:resultingOrganization ; sh:name "resulterende organisatie" ;
@@ -521,6 +547,7 @@ ent:VeranderingsgebeurtenisResultaat
 
 ent:Besluit
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "besluit" ;
   sh:targetClass besluit:Besluit ;
   sh:property [ sh:path eli:date_publication ; sh:name "publicatiedatum" ;
@@ -533,6 +560,7 @@ ent:Besluit
 
 ent:Beslissingsactiviteit
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "beslissingsactiviteit" ;
   sh:targetClass besluitvorming:Beslissingsactiviteit ;
   sh:property [ sh:path dossier:Activiteit.einddatum ; sh:name "einddatum" ;

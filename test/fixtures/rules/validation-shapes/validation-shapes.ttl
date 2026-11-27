@@ -1,0 +1,22 @@
+@prefix ex: <http://example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ex:AltLabelShape a sh:NodeShape ;
+  sh:property [
+    sh:path ex:altLabel ;
+    sh:minCount 1 ;
+  ] .
+
+# Its target selects no organization, but the rules decide what it validates
+ex:StatusShape a sh:NodeShape ;
+  sh:targetClass ex:Unrelated ;
+  sh:property [
+    sh:path ex:status ;
+    sh:minCount 1 ;
+  ] .
+
+ex:LocalShape a sh:NodeShape ;
+  sh:property [
+    sh:path ex:classification ;
+    sh:maxCount 1 ;
+  ] .

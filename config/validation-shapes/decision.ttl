@@ -5,6 +5,7 @@
 @prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
 
 <https://data.vlaanderen.be/shacl/besluit-publicatie#BesluitShape> a sh:NodeShape ;
+  sh:deactivated true ;
   sh:targetClass <http://data.vlaanderen.be/ns/besluit#Besluit> ;
   sh:property <https://data.vlaanderen.be/shacl/besluit-publicatie#besluit-description-validation> ;
   sh:property <https://data.vlaanderen.be/shacl/besluit-publicatie#besluit-article-container-validation> ;

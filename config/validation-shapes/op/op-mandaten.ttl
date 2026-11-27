@@ -103,6 +103,7 @@ ent:LeidinggevendeOrgaanClassificaties
 
 ent:Bestuursorgaan
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursorgaan" ;
   sh:targetClass besluit:Bestuursorgaan ;
   rep:discriminator [ sh:path generiek:isTijdspecialisatieVan ; sh:maxCount 0 ] ;
@@ -119,6 +120,7 @@ ent:Bestuursorgaan
 
 ent:LeidinggevendBestuursorgaan
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "leidinggevend bestuursorgaan" ;
   sh:targetClass besluit:Bestuursorgaan ;
   rep:discriminator [ sh:path generiek:isTijdspecialisatieVan ; sh:maxCount 0 ] ;
@@ -135,6 +137,7 @@ ent:LeidinggevendBestuursorgaan
 
 ent:BestuursorgaanInTijd
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursorgaanInTijd" ;
   sh:targetClass besluit:Bestuursorgaan ;
   rep:discriminator [ sh:path generiek:isTijdspecialisatieVan ; sh:minCount 1 ] ;
@@ -154,6 +157,7 @@ ent:BestuursorgaanInTijd
 
 ent:LeidinggevendBestuursorgaanInTijd
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "leidinggevend bestuursorgaanInTijd" ;
   sh:targetClass besluit:Bestuursorgaan ;
   rep:discriminator [ sh:path ( generiek:isTijdspecialisatieVan org:classification ) ; sh:in ent:LeidinggevendeOrgaanClassificaties ] ;
@@ -172,6 +176,7 @@ ent:LeidinggevendBestuursorgaanInTijd
 
 ent:BestuursorgaanClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort bestuursorgaan" ;
   sh:targetClass code:BestuursorgaanClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -182,6 +187,7 @@ ent:BestuursorgaanClassificatie
 
 ent:BestuurseenheidClassificatie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "soort bestuur" ;
   sh:targetClass code:BestuurseenheidClassificatieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -189,6 +195,7 @@ ent:BestuurseenheidClassificatie
 
 ent:Bestuurseenheid
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuurseenheid" ;
   sh:targetClass besluit:Bestuurseenheid ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -204,6 +211,7 @@ ent:Bestuurseenheid
 
 ent:Mandaat
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "mandaat" ;
   sh:targetClass mandaat:Mandaat ;
   sh:property [ sh:path mandaat:aantalHouders ; sh:name "aantal houders" ;
@@ -221,6 +229,7 @@ ent:Mandaat
 
 ent:BestuursfunctieCode
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursfunctie" ;
   sh:targetClass code:BestuursfunctieCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -231,6 +240,7 @@ ent:BestuursfunctieCode
 
 ent:Mandataris
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "mandataris" ;
   sh:targetClass mandaat:Mandataris ;
   sh:property [ sh:path mandaat:start ; sh:name "start" ;
@@ -253,6 +263,7 @@ ent:Mandataris
 
 ent:MandatarisStatus
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "status" ;
   sh:targetClass code:MandatarisStatusCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -260,6 +271,7 @@ ent:MandatarisStatus
 
 ent:LeidinggevendeBestuursfunctie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "bestuursfunctie" ;
   sh:targetClass lblodlg:Bestuursfunctie ;
   sh:property [ sh:path org:role ; sh:name "functie" ;
@@ -276,6 +288,7 @@ ent:LeidinggevendeBestuursfunctie
 
 ent:Functionaris
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "functionaris" ;
   sh:targetClass lblodlg:Functionaris ;
   sh:property [ sh:path mandaat:start ; sh:name "start" ;
@@ -295,6 +308,7 @@ ent:Functionaris
 
 ent:FunctionarisStatus
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "status" ;
   sh:targetClass lblodlg:FunctionarisStatusCode ;
   sh:property [ sh:path skos:prefLabel ; sh:name "naam" ;
@@ -302,6 +316,7 @@ ent:FunctionarisStatus
 
 ent:Persoon
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "persoon" ;
   sh:targetClass person:Person ;
   sh:property [ sh:path foaf:givenName ; sh:name "voornaam" ;
@@ -319,6 +334,7 @@ ent:Persoon
 
 ent:AgentInPositie
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "agent in positie" ;
   sh:targetClass ch:AgentInPositie ;
   sh:property [ sh:path ch:startdatum ; sh:name "startdatum" ;
@@ -332,6 +348,7 @@ ent:AgentInPositie
 
 ent:ContactPunt
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "contactpunt" ;
   sh:targetClass schema:ContactPoint ;
   sh:property [ sh:path schema:email ; sh:name "email" ;
@@ -350,6 +367,7 @@ ent:ContactPunt
 
 ent:Vestiging
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "hoofdvestiging" ;
   sh:targetClass org:Site ;
   sh:property [ sh:path dct:description ; sh:name "omschrijving" ;
@@ -363,6 +381,7 @@ ent:Vestiging
 
 ent:Adres
   a sh:NodeShape ;
+  sh:deactivated true ;
   rdfs:label "adres" ;
   sh:targetClass locn:Address ;
   sh:property [ sh:path locn:thoroughfare ; sh:name "straat" ;

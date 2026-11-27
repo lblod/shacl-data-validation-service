@@ -1,0 +1,44 @@
+@prefix ex: <http://example.org/> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ex:ActiveRule a sh:NodeShape ;
+  sh:targetClass ex:Organization ;
+  sh:property [
+    sh:path ex:status ;
+    sh:hasValue ex:active ;
+  ] ;
+  ext:validationShape ex:AltLabelShape .
+
+ex:SingleStatusRule a sh:NodeShape ;
+  sh:targetClass ex:Organization ;
+  sh:property [
+    sh:path ex:status ;
+    sh:maxCount 1 ;
+  ] ;
+  ext:validationShape ex:StatusShape .
+
+# Needs the data of the classification, retrieved through sh:node
+ex:LocalRule a sh:NodeShape ;
+  sh:targetClass ex:Organization ;
+  sh:property [
+    sh:path ex:classification ;
+    sh:minCount 1 ;
+    sh:node ex:LocalClassification ;
+  ] ;
+  ext:validationShape ex:LocalShape .
+
+ex:LocalClassification a sh:NodeShape ;
+  sh:property [
+    sh:path ex:level ;
+    sh:hasValue ex:localLevel ;
+  ] .
+
+ex:OpenRule a sh:NodeShape ;
+  sh:targetClass ex:Organization ;
+  sh:property [
+    sh:path ex:status ;
+    sh:minCount 1 ;
+    sh:or ( [ sh:hasValue ex:active ] [ sh:hasValue ex:pending ] ) ;
+  ] ;
+  ext:validationShape ex:AltLabelShape .

@@ -2,20 +2,20 @@ import * as fs from "node:fs/promises";
 import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
-import { validateResource } from "./lib/engine";
 import { REPORTS_DIR, writeReportFile } from "./lib/report";
-import { getResource } from "./lib/resource-retrieval";
-import { loadRules, rulesForResource } from "./lib/rules";
-import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
-import { objectsForPredicate } from "./util/rdf-ext-helpers";
+import { resourceExists } from "./lib/resource-retrieval";
+import { validateResource } from "./lib/validation";
+import { initRules } from "./lib/rules";
+import { initValidationShapes } from "./lib/validation-shapes";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
   await fs.mkdir(REPORTS_DIR, { recursive: true });
-  await loadRules();
-  await loadValidationShapes();
+  await initValidationShapes();
+  // The rules link to the validation shapes, which are checked to be loaded
+  await initRules();
 })();
 
 const subjectQueue = new SubjectQueue(handleResource);
@@ -39,73 +39,53 @@ app.post(
   },
 );
 
-async function handleResource(namedNode: NamedNodeExt) {
-  const resourceToValidate = await getResource(namedNode);
+function logInfo(message: string) {
+  if (env.LOGLEVEL === "info") console.log(`\n>> INFO: ${message}`);
+}
 
-  if (resourceToValidate) {
-    // Get a set<term> containing named nodes for a rule applicable for the
-    // given resource type
-    const rules = await rulesForResource(resourceToValidate);
+/*
+ * Validates a resource against the validation shapes of the rules that apply
+ * to it. Writes a report for each validation shape it doesn't conform to, or
+ * for each validation shape with REPORT_DEBUG_RESULTS. The queue calls it
+ * asynchronously, so the outcome is only logged: depending on LOGLEVEL, and
+ * the errors always.
+ */
+async function handleResource(namedNode: NamedNodeExt): Promise<void> {
+  if (!(await resourceExists(namedNode.value))) {
+    logInfo(`No resource found for ${namedNode}`);
+    return;
+  }
 
-    // FIXME: language server complains size property does not exist in
-    // DatasetExt...
-    if (rules.size > 0) {
-      // NOTE (22/10/2026): We lose the connection between validation shape and
-      // rule here, that might be an issue when interpreting the report.  It is
-      // probably nice if we can convert the engine's report to something more
-      // readable that says which rule was violated and why.
-      const validationShapeUris = objectsForPredicate(
-        "http://mu.semte.ch/vocabularies/ext/validationShape",
-        rules,
-      );
+  const { results, errors } = await validateResource(namedNode.value);
+  if (!results.length && !errors.length) {
+    logInfo(`No rule applies to resource ${namedNode}`);
+  }
 
-      if (validationShapeUris.size > 0) {
-        // NOTE (22/10/2026): We may need to retrieve extra resource triples
-        // depending on the validation shapes.  It is likely, the validation
-        // shapes require more input than the shapes in the rules. This becomes
-        // a concern when we flesh out the data retrieval to work based on the
-        // shapes.
-
-        const shapes = shapeResources(validationShapeUris);
-
-        const report = await validateResource(resourceToValidate, shapes, {
-          debug: env.REPORT_DEBUG_RESULTS,
-        });
-
-        // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report
-        // of passed validations too
-        if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
-          await writeReportFile(report);
-        }
-        if (report.conforms) {
-          if (env.LOGLEVEL === "info") {
-            console.log(
-              `\n>> INFO: Resource ${namedNode} was successfully validated`,
-            );
-          }
-        } else {
-          if (env.LOGLEVEL === "info") {
-            console.log(
-              `\n>> INFO: Resource ${namedNode} was not valid, see report for result`,
-            );
-          }
-        }
-      } else {
-        if (env.LOGLEVEL === "info") {
-          console.log(
-            `\n>> INFO: No applicable validation shapes for resource ${namedNode}`,
-          );
-        }
-      }
+  for (const { shape, report } of results) {
+    // With REPORT_DEBUG_RESULTS, a resource that conforms gets its report of
+    // passed validations too
+    if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
+      await writeReportFile(report, shape);
+    }
+    if (report.conforms) {
+      logInfo(`Resource ${namedNode} conforms to ${shape.value}`);
     } else {
-      if (env.LOGLEVEL === "info") {
-        console.log(`\n>> INFO: No applicable rules for resource ${namedNode}`);
-      }
+      logInfo(
+        `Resource ${namedNode} doesn't conform to ${shape.value}, see report for result`,
+      );
     }
-  } else {
-    if (env.LOGLEVEL === "info") {
-      console.log(`\n>> INFO: No resource found for ${namedNode}`);
-    }
+  }
+  for (const { shape, error } of errors) {
+    console.error(
+      `\n>> ERROR: Validation of ${namedNode} against ${shape.value} failed:`,
+      error,
+    );
+  }
+  if (results.length || errors.length) {
+    logInfo(
+      `Validated ${namedNode} against ${results.length} shape(s)` +
+        (errors.length ? `, failed for ${errors.length} shape(s)` : ""),
+    );
   }
 }
 

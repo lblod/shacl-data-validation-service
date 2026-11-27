@@ -1,10 +1,13 @@
 import rdf from "rdf-ext";
 import { PREFIXES } from "../constants";
+import * as env from "../env";
 import { getObjects } from "../util/rdf-ext-helpers";
 import { validateFocusNode } from "./engine";
-import { getShapeData } from "./resource-retrieval";
 import { rulesForResource, validationShapesOfRules } from "./rules";
-import { shapeWithReferencedShapes } from "./validation-shapes";
+import {
+  getValidationShapeData,
+  shapeWithReferencedShapes,
+} from "./validation-shapes";
 
 /*
  * Fills the variables of the result messages: {?value} with the value of the
@@ -57,7 +60,8 @@ function fillMessageVariables(report, shapes, data) {
 }
 
 // Validates a resource on its data against a validation shape, with the shapes
-// it refers to. The variables of the result messages are filled, see
+// it refers to. With REPORT_DEBUG_RESULTS, the report also has the passed
+// validations. The variables of the result messages are filled, see
 // fillMessageVariables.
 export async function validateShape(data, shape, uri: string) {
   const shapes = shapeWithReferencedShapes(shape);
@@ -66,6 +70,7 @@ export async function validateShape(data, shape, uri: string) {
     shapes,
     shape,
     rdf.namedNode(uri),
+    { debug: env.REPORT_DEBUG_RESULTS },
   );
   fillMessageVariables(report, shapes, data);
   return report;
@@ -86,7 +91,7 @@ export async function validateResource(uri: string) {
   const shapes = validationShapesOfRules(await rulesForResource(uri));
   for (const shape of shapes) {
     try {
-      const data = await getShapeData(shape, uri);
+      const data = await getValidationShapeData(shape, uri);
       results.push({ shape, report: await validateShape(data, shape, uri) });
     } catch (error) {
       errors.push({ shape, error });

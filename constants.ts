@@ -11,3 +11,19 @@ export const PREFIXES = {
 // Links a rule to the validation shapes the resources it applies to are
 // validated against
 export const VALIDATION_SHAPE_PREDICATE = PREFIXES.ext + "validationShape";
+
+// The term types of RDF/JS terms
+export enum TermType {
+  NamedNode = "NamedNode",
+  BlankNode = "BlankNode",
+  Literal = "Literal",
+}
+
+// The term types of SPARQL query results in JSON, with the older
+// "typed-literal" some endpoints still return
+export enum BindingType {
+  Uri = "uri",
+  Literal = "literal",
+  TypedLiteral = "typed-literal",
+  BlankNode = "bnode",
+}

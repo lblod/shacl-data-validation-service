@@ -17,9 +17,19 @@ const NOT_EMPTY = rdf.quad(
  * Validates a focus node against a shape. shapes also holds the shapes it refers
  * to. The validator doesn't resolve the target of the shape: the data can hold
  * other resources the target selects, without the data to validate those.
+ * With debug, the report also has a result for each passed validation, with
+ * severity shn:Debug (https://schemas.link/shacl-next#Debug), which doesn't
+ * affect conforms. The report's dataset is built with the factory, which needs
+ * dataset().
  */
-export async function validateFocusNode(data, shapes, shape, focusNode) {
-  const validator = new Validator(shapes, { factory: rdf });
+export async function validateFocusNode(
+  data,
+  shapes,
+  shape,
+  focusNode,
+  { debug = false } = {},
+) {
+  const validator = new Validator(shapes, { factory: rdf, debug });
   const dataset = data.size ? data : rdf.dataset([NOT_EMPTY]);
   return validator.validate({ dataset, terms: [focusNode] }, [
     { terms: [shape] },

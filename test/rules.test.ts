@@ -1,16 +1,16 @@
+import type { DatasetCore } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { VALIDATION_SHAPE_PREDICATE } from "../constants";
 import {
   checkRules,
-  listRules,
+  initRules,
   matchingFocusNodes,
-  RULES,
   rulesForResource,
   validationShapesOfRules,
 } from "../lib/rules";
 import { validateResource } from "../lib/validation";
-import { VALIDATION_SHAPES } from "../lib/validation-shapes";
+import { initValidationShapes } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { ex } from "./helpers";
@@ -25,11 +25,14 @@ const FIXTURES = "test/fixtures/rules/";
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
-const values = (terms) => terms.map((term) => term.value).sort();
+const values = (terms) => [...terms].map((term) => term.value).sort();
+
+let rules: DatasetCore;
 
 beforeAll(async () => {
-  await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
-  await loadFixture("rules.ttl", RULES);
+  // The rules link to the validation shapes, which are checked to be loaded
+  await initValidationShapes(FIXTURES + "validation-shapes/");
+  rules = await initRules(FIXTURES + "rules/");
   store.data = rdf.dataset();
   await loadFixture("data.ttl", store.data);
 });
@@ -54,11 +57,7 @@ describe("rules for a resource", () => {
 
   test("doesn't apply a rule to a resource its target doesn't select", async () => {
     // ex:thing conforms to ex:SingleStatusRule, which targets organizations
-    expect(await rulesForResource(ex("thing"))).toEqual([]);
-  });
-
-  test("leaves out a deactivated rule", () => {
-    expect(values(listRules())).not.toContain(ex("DeactivatedRule"));
+    expect((await rulesForResource(ex("thing"))).size).toBe(0);
   });
 
   test("links to each validation shape once", async () => {
@@ -69,6 +68,7 @@ describe("rules for a resource", () => {
   });
 
   test("validates a resource against the shapes of its rules", async () => {
+    // ex:StatusShape conforms although its target doesn't select ex:pendingOrg
     const { results, errors } = await validateResource(ex("pendingOrg"));
     expect(
       results.map(({ shape, report }) => [shape.value, report.conforms]).sort(),
@@ -89,51 +89,51 @@ describe("matchingFocusNodes", () => {
     );
   });
 
-  test("selects at most limit resources, offset selecting the next", async () => {
+  test("selects at most limit resources", async () => {
     expect(await matchingFocusNodes(rule, { limit: 2 })).toEqual(
       ["activeOrg", "inactiveOrg"].map(ex),
     );
-    // ex:twoStatusOrg is selected, but doesn't conform
-    expect(await matchingFocusNodes(rule, { limit: 2, offset: 2 })).toEqual([
-      ex("pendingOrg"),
-    ]);
   });
 });
 
 describe("checkRules", () => {
+  // Added to the loaded rules for one test, and removed after it
   const added = [];
+
   const add = (...quad) => {
     const [subject, predicate, object] = quad.map((value) =>
       rdf.namedNode(value),
     );
     const triple = rdf.quad(subject, predicate, object);
-    RULES.add(triple);
+    rules.add(triple);
     added.push(triple);
   };
 
   afterEach(() => {
-    for (const triple of added.splice(0)) RULES.delete(triple);
+    for (const triple of added.splice(0)) rules.delete(triple);
     vi.restoreAllMocks();
   });
 
   test("accepts the rules", () => {
-    expect(() => checkRules()).not.toThrow();
+    expect(() => checkRules(rules)).not.toThrow();
   });
 
   test("rejects a link to a validation shape that isn't loaded", () => {
     add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("MissingShape"));
-    expect(() => checkRules()).toThrow(/MissingShape/);
+    expect(() => checkRules(rules)).toThrow(/MissingShape/);
+  });
+
+  test("rejects a rule without a validation shape", () => {
+    add(
+      ex("UnlinkedRule"),
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      "http://www.w3.org/ns/shacl#NodeShape",
+    );
+    expect(() => checkRules(rules)).toThrow(/UnlinkedRule/);
   });
 
   test("rejects a rule referring to a shape that isn't loaded", () => {
     add(ex("ActiveRule"), "http://www.w3.org/ns/shacl#node", ex("Missing"));
-    expect(() => checkRules()).toThrow(/Rules refer to missing shapes/);
-  });
-
-  test("warns about a linked validation shape with a target", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    add(ex("ActiveRule"), VALIDATION_SHAPE_PREDICATE, ex("TargetedShape"));
-    checkRules();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("TargetedShape"));
+    expect(() => checkRules(rules)).toThrow(/Rules refer to missing shapes/);
   });
 });

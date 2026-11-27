@@ -1,6 +1,7 @@
 import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
 import type { DatasetCore } from "@rdfjs/types";
 import { Readable } from "node:stream";
+import { BindingType, TermType } from "../constants";
 
 // The store the service queries, as a dataset. Tests mock querySudo with
 // runOnStore:
@@ -11,13 +12,13 @@ export const store: { data?: DatasetCore } = {};
 
 function termToBinding(term) {
   switch (term.termType) {
-    case "NamedNode":
-      return { type: "uri", value: term.value };
-    case "BlankNode":
-      return { type: "bnode", value: term.value };
+    case TermType.NamedNode:
+      return { type: BindingType.Uri, value: term.value };
+    case TermType.BlankNode:
+      return { type: BindingType.BlankNode, value: term.value };
     default:
       return {
-        type: "literal",
+        type: BindingType.Literal,
         value: term.value,
         ...(term.language && { "xml:lang": term.language }),
         datatype: term.datatype.value,

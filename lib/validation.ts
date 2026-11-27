@@ -1,17 +1,22 @@
 import rdf from "rdf-ext";
+import * as env from "../env";
 import { validateFocusNode } from "./engine";
-import { getShapeData } from "./resource-retrieval";
 import { rulesForResource, validationShapesOfRules } from "./rules";
-import { shapeWithReferencedShapes } from "./validation-shapes";
+import {
+  getValidationShapeData,
+  shapeWithReferencedShapes,
+} from "./validation-shapes";
 
 // Validates a resource on its data against a validation shape, with the shapes
-// it refers to
+// it refers to. With REPORT_DEBUG_RESULTS, the report also has the passed
+// validations.
 export async function validateShape(data, shape, uri: string) {
   return validateFocusNode(
     data,
     shapeWithReferencedShapes(shape),
     shape,
     rdf.namedNode(uri),
+    { debug: env.REPORT_DEBUG_RESULTS },
   );
 }
 
@@ -30,7 +35,7 @@ export async function validateResource(uri: string) {
   const shapes = validationShapesOfRules(await rulesForResource(uri));
   for (const shape of shapes) {
     try {
-      const data = await getShapeData(shape, uri);
+      const data = await getValidationShapeData(shape, uri);
       results.push({ shape, report: await validateShape(data, shape, uri) });
     } catch (error) {
       errors.push({ shape, error });

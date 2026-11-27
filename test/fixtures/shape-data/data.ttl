@@ -20,13 +20,9 @@ ex:owner1 a ex:Employee .
 
 ex:Employee rdfs:subClassOf ex:Person .
 
-# The resources selected by their targets
+# A resource the target of ex:LabelledClassTargetShape selects
 ex:typed a ex:Typed ;
   ex:label "a typed label" .
-
-ex:subject ex:marker "a marker" .
-
-ex:session ex:heldBy ex:council .
 
 # Resources to validate with validation-shapes.ttl
 ex:validPerson a ex:ValidatedPerson ;

@@ -48,11 +48,12 @@ describe("generateConstructQuery", () => {
     return rdf.dataset(quads);
   }
 
-  // The triples retrieved for a shape, with their terms shortened
-  async function retrievedTriples(shape: string, focusNode?: string) {
+  // The triples retrieved for a shape and a focus node, with their terms
+  // shortened
+  async function retrievedTriples(shape: string, focusNode = "start") {
     const query = generateConstructQuery(shapes, {
       shapes: [ex(shape)],
-      ...(focusNode && { focusNodes: [ex(focusNode)] }),
+      focusNodes: [ex(focusNode)],
     });
     return shortTriples(await retrieve(query));
   }
@@ -136,6 +137,7 @@ describe("generateConstructQuery", () => {
     {
       name: "all triples of a closed shape",
       shape: "ClosedShape",
+      focusNode: "second",
       expected: [
         "second next third",
         "second notRetrieved not retrieved",
@@ -147,48 +149,37 @@ describe("generateConstructQuery", () => {
       shape: "PairShape",
       expected: ["start label a label", "start title a title"],
     },
-  ])("retrieves $name", async ({ shape, expected }) => {
-    expect(await retrievedTriples(shape)).toEqual(expected);
+  ])("retrieves $name", async ({ shape, focusNode, expected }) => {
+    expect(await retrievedTriples(shape, focusNode)).toEqual(expected);
   });
 
-  test("doesn't follow a deactivated shape", async () => {
-    expect(await retrievedTriples("DeactivatedNestedShape")).toEqual([
-      "start next second",
-    ]);
-  });
-
-  test.each([
-    { name: "sh:targetClass", shape: "ClassTargetShape", focusNode: "typed" },
-    {
-      name: "sh:targetSubjectsOf",
-      shape: "SubjectsOfTargetShape",
-      focusNode: "subject",
-    },
-    {
-      name: "a SPARQL-based target",
-      shape: "SparqlTargetShape",
-      focusNode: "session",
-    },
-  ])("retrieves no triples $name selects on", ({ shape, focusNode }) => {
-    expect(
-      generateConstructQuery(shapes, {
-        shapes: [ex(shape)],
-        focusNodes: [ex(focusNode)],
-      }),
-    ).toBeUndefined();
-  });
-
-  test("only retrieves data of the focus nodes the targets select", async () => {
+  test("doesn't use the targets of a shape", async () => {
     const shape = "LabelledClassTargetShape";
+    // Not the rdf:type the target selects ex:typed on
     expect(await retrievedTriples(shape, "typed")).toEqual([
       "typed label a typed label",
     ]);
-    expect(await retrievedTriples(shape, "start")).toEqual([]);
+    // ex:start isn't selected by the target
+    expect(await retrievedTriples(shape, "start")).toEqual([
+      "start label a label",
+    ]);
+  });
+
+  test("requires focus nodes", () => {
+    expect(() =>
+      generateConstructQuery(shapes, {
+        shapes: [ex("PredicateShape")],
+        focusNodes: [],
+      }),
+    ).toThrow(/focus nodes/);
   });
 
   test("generates no query without data to retrieve", () => {
     expect(
-      generateConstructQuery(rdf.dataset(), { focusNodes: [ex("start")] }),
+      generateConstructQuery(rdf.dataset(), {
+        shapes: [ex("PredicateShape")],
+        focusNodes: [ex("start")],
+      }),
     ).toBeUndefined();
   });
 

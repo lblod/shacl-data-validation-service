@@ -1,15 +1,19 @@
-import type { Term } from "@rdfjs/types";
+import type { DatasetCore, Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
 import {
   AstFactory,
   lex,
+  type PatternValues,
   type QueryConstruct,
   type QuerySelect,
+  type TermBlank,
+  type TermIriPrefixed,
+  type TermVariable,
 } from "@traqula/rules-sparql-1-1";
 import { sparqlEscapeString, sparqlEscapeUri } from "mu";
 import rdf from "rdf-ext";
-import { PREFIXES } from "../constants";
+import { PREFIXES, TermType } from "../constants";
 import { localName } from "../util/iri";
 import { getObjects } from "../util/rdf-ext-helpers";
 
@@ -17,15 +21,15 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * Generates SPARQL queries from SHACL shapes:
  * - a SELECT query for the focus nodes the targets of a shape select, at most
  *   a limited number at a time, e.g. the resources a rule may apply to
- * - a CONSTRUCT query retrieving the data needed to validate focus nodes against
- *   shapes, inspired by SHACL Play's SHACL2SPARQL
+ * - a CONSTRUCT query retrieving the data needed to validate given focus nodes
+ *   against shapes, inspired by SHACL Play's SHACL2SPARQL
  *   (https://shacl-play.sparna.fr/play/sparql)
  * - the CONSTRUCT queries of the SPARQL rules of those shapes (sh:rule), with
  *   $this bound to the resource, to add the triples they construct to its data
  *
- * Starting from the focus nodes, restricted to the ones the targets of a shape
- * select, the CONSTRUCT query follows the sh:path of its property shapes and
- * recurses into the shapes their value nodes have to conform to (sh:node,
+ * Only the SELECT query uses the targets of a shape. Starting from the given
+ * focus node(s), the CONSTRUCT query follows the sh:path of its property shapes
+ * and recurses into the shapes their value nodes have to conform to (sh:node,
  * sh:qualifiedValueShape, sh:and, sh:or, sh:xone, sh:not). It retrieves:
  * - the triples along the property paths, including sequence, alternative,
  *   inverse, zero-or-more, one-or-more and zero-or-one paths
@@ -38,19 +42,7 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * the values violating those constraints are exactly the ones the validator
  * has to see.
  *
- * Every target, and every way to reach data, is a branch of a UNION. A branch
- * only consists of plain graph patterns and subqueries, restricted to the focus
- * nodes, which keeps the variables of a branch bound when they are used in a
- * BIND or FILTER and lets the endpoint evaluate each branch from the focus nodes.
- * Every branch has its own variables: a CONSTRUCT template is instantiated for
- * every solution binding its variables, sharing variables would construct
- * triples of one branch out of the solutions of another (e.g. ?s <p> ?o out of a
- * solution of ?s (<p>|<q>) ?o matching <q>).
- *
- * The triples the targets select the focus nodes on aren't retrieved: the
- * focus nodes are validated as given, without resolving the targets again.
- *
- * Not supported: SPARQL-based constraints (sh:sparql) and SPARQL-based targets
+ * Not supported: SPARQL-based constraints (sh:sparql), SPARQL-based targets
  * without a sh:select, SPARQL rules with a sh:condition and triple rules
  * (sh:TripleRule).
  */
@@ -58,15 +50,6 @@ import { getObjects } from "../util/rdf-ext-helpers";
 const XSD_BOOLEAN = PREFIXES.xsd + "boolean";
 const XSD_STRING = PREFIXES.xsd + "string";
 
-// The predicates of the targets of a shape: SHACL Core's, and sh:target of
-// SHACL Advanced Features, e.g. a SPARQL-based target
-export const TARGET_PREDICATES = [
-  "targetClass",
-  "targetNode",
-  "targetSubjectsOf",
-  "targetObjectsOf",
-  "target",
-];
 const PAIR_PREDICATES = ["equals", "disjoint", "lessThan", "lessThanOrEqual"];
 const LOGICAL_LIST_PREDICATES = ["and", "or", "xone"];
 
@@ -75,12 +58,37 @@ const parser = new Parser();
 const generator = new Generator();
 const F = new AstFactory();
 
-type Path =
-  | { type: "predicate"; iri: string; inverse: boolean }
-  | { type: "sequence" | "alternative"; paths: Path[] }
-  | { type: "zeroOrMore" | "oneOrMore" | "zeroOrOne"; path: Path };
+enum PathType {
+  Predicate = "predicate",
+  Sequence = "sequence",
+  Alternative = "alternative",
+  ZeroOrMore = "zeroOrMore",
+  OneOrMore = "oneOrMore",
+  ZeroOrOne = "zeroOrOne",
+}
 
-const CLOSURE_OPERATORS = { zeroOrMore: "*", oneOrMore: "+", zeroOrOne: "?" };
+type ClosureType =
+  PathType.ZeroOrMore | PathType.OneOrMore | PathType.ZeroOrOne;
+
+type Path =
+  | { type: PathType.Predicate; iri: string; inverse: boolean }
+  | { type: PathType.Sequence | PathType.Alternative; paths: Path[] }
+  | { type: ClosureType; path: Path };
+
+const CLOSURE_OPERATORS: Record<ClosureType, string> = {
+  [PathType.ZeroOrMore]: "*",
+  [PathType.OneOrMore]: "+",
+  [PathType.ZeroOrOne]: "?",
+};
+// The SHACL predicates of the closure paths
+const CLOSURE_PATH_PREDICATES: Record<ClosureType, string> = {
+  [PathType.ZeroOrMore]: PREFIXES.sh + "zeroOrMorePath",
+  [PathType.OneOrMore]: PREFIXES.sh + "oneOrMorePath",
+  [PathType.ZeroOrOne]: PREFIXES.sh + "zeroOrOnePath",
+};
+
+// The variable SHACL pre-binds to the focus node, e.g. in a SPARQL-based target
+const THIS_VARIABLE = "this";
 
 // A variable, by its id, which gets its name when its branch is rendered
 type VariableNode = { variable: string };
@@ -102,14 +110,12 @@ type Target = { select: Fragment[] };
 type CreateTarget = (focus: VariableNode, focusNodes?: Term[]) => Target;
 
 export type SparqlGenerationOptions = {
-  // The shapes to check or retrieve data for, by default all shapes with a
-  // target
-  shapes?: (string | Term)[];
-  // Restricts the focus nodes of the shapes to these nodes, e.g. the resource
-  // being validated. Shapes without a target apply to these nodes instead of
-  // to every resource.
-  focusNodes?: (string | Term)[];
-  // Graph to select the focus nodes and retrieve the data in
+  // The shapes to retrieve data for
+  shapes: (string | Term)[];
+  // The focus nodes to retrieve data for, e.g. the resource being validated,
+  // whatever the targets of the shapes select
+  focusNodes: (string | Term)[];
+  // Graph to retrieve the data in
   graph?: string;
   // Maximum number of nested shapes to follow from a shape
   maxDepth?: number;
@@ -125,14 +131,12 @@ export type FocusNodeQueryOptions = {
   // The maximum number of focus nodes to select, which is required: without
   // it, a shape would select every resource its targets select
   limit: number;
-  // The number of focus nodes to skip, in the order of their IRIs, to select
-  // the next ones
-  offset?: number;
 };
 
-// An IRI as SPARQL's IRIREF allows it, using Traqula's lexer pattern
+// An IRI and a language tag as SPARQL's IRIREF and LANGTAG allow them, using
+// Traqula's lexer patterns
 const IRIREF = new RegExp(`^${lex.patterns.iriRefPattern.source}$`);
-const VALID_LANGUAGE = /^[A-Za-z]+(-[A-Za-z0-9]+)*$/;
+const VALID_LANGUAGE = new RegExp(`^${lex.patterns.langTagPattern.source}$`);
 
 function validIri(value: string) {
   if (!IRIREF.test(`<${value}>`)) throw new Error(`Invalid IRI ${value}`);
@@ -140,7 +144,7 @@ function validIri(value: string) {
 }
 
 function validLanguage(value: string) {
-  if (!VALID_LANGUAGE.test(value)) {
+  if (!VALID_LANGUAGE.test(`@${value}`)) {
     throw new Error(`Invalid language tag ${value}`);
   }
   return value;
@@ -166,11 +170,11 @@ function literalToString(
 // An RDF/JS term, e.g. of the shapes, in SPARQL syntax
 function termToString(term: Term) {
   switch (term.termType) {
-    case "NamedNode":
+    case TermType.NamedNode:
       return iriToString(term.value);
-    case "BlankNode":
+    case TermType.BlankNode:
       return `_:${term.value}`;
-    case "Literal":
+    case TermType.Literal:
       return literalToString(term.value, term.language || term.datatype);
     default:
       throw new Error(`Unsupported term ${term.value}`);
@@ -179,7 +183,7 @@ function termToString(term: Term) {
 
 // An RDF/JS term as a term of a Traqula AST
 function termToAst(term: Term) {
-  if (term.termType !== "Literal") {
+  if (term.termType !== TermType.Literal) {
     return F.termNamed(F.gen(), validIri(term.value));
   }
   if (term.language) {
@@ -201,28 +205,34 @@ const toTerm = (value: string | Term) =>
   typeof value === "string" ? rdf.namedNode(value) : value;
 
 const predicatePath = (value: string): Path => ({
-  type: "predicate",
+  type: PathType.Predicate,
   iri: value,
   inverse: false,
 });
 // rdf:type/rdfs:subClassOf*, the path sh:targetClass and sh:class rely on
 const TYPE_PATH: Path = {
-  type: "sequence",
+  type: PathType.Sequence,
   paths: [
     predicatePath(PREFIXES.rdf + "type"),
-    { type: "zeroOrMore", path: predicatePath(PREFIXES.rdfs + "subClassOf") },
+    {
+      type: PathType.ZeroOrMore,
+      path: predicatePath(PREFIXES.rdfs + "subClassOf"),
+    },
   ],
 };
 
 // Inverse paths are pushed down to their predicates, e.g. ^(p/q) is ^q/^p
 function invertPath(path: Path): Path {
   switch (path.type) {
-    case "predicate":
+    case PathType.Predicate:
       return { ...path, inverse: !path.inverse };
-    case "sequence":
-      return { type: "sequence", paths: path.paths.map(invertPath).reverse() };
-    case "alternative":
-      return { type: "alternative", paths: path.paths.map(invertPath) };
+    case PathType.Sequence:
+      return {
+        type: PathType.Sequence,
+        paths: path.paths.map(invertPath).reverse(),
+      };
+    case PathType.Alternative:
+      return { type: PathType.Alternative, paths: path.paths.map(invertPath) };
     default:
       return { type: path.type, path: invertPath(path.path) };
   }
@@ -230,11 +240,11 @@ function invertPath(path: Path): Path {
 
 function pathToString(path: Path): string {
   switch (path.type) {
-    case "predicate":
+    case PathType.Predicate:
       return (path.inverse ? "^" : "") + iriToString(path.iri);
-    case "sequence":
+    case PathType.Sequence:
       return `(${path.paths.map(pathToString).join("/")})`;
-    case "alternative":
+    case PathType.Alternative:
       return `(${path.paths.map(pathToString).join("|")})`;
     default:
       return `(${pathToString(path.path)})${CLOSURE_OPERATORS[path.type]}`;
@@ -281,6 +291,18 @@ function focusNodeRestriction(
   return [(name) => `VALUES ${nodeToString(focus, name)} { ${values} }`];
 }
 
+// The focus nodes as terms. Blank nodes aren't allowed in VALUES.
+function toFocusNodes(focusNodes?: (string | Term)[]) {
+  const terms = focusNodes?.map(toTerm);
+  const invalid = terms?.find(
+    (term) =>
+      term.termType !== TermType.NamedNode &&
+      term.termType !== TermType.Literal,
+  );
+  if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
+  return terms;
+}
+
 // The target of a shape without a target: every resource, i.e. every node
 // with a type
 const allResourcesTarget: CreateTarget = (focus) => ({
@@ -289,6 +311,16 @@ const allResourcesTarget: CreateTarget = (focus) => ({
       `${nodeToString(focus, name)} ${pathToString(predicatePath(PREFIXES.rdf + "type"))} [] .`,
   ],
 });
+
+// Traqula's guards, narrowing to its node types instead of to just their type
+// and subType
+const isTermVariable = (node: object): node is TermVariable =>
+  F.isTermVariable(node);
+const isTermBlank = (node: object): node is TermBlank => F.isTermBlank(node);
+const isPatternValues = (node: object): node is PatternValues =>
+  F.isPatternValues(node);
+const isTermIriPrefixed = (node: object): node is TermIriPrefixed =>
+  F.isTermNamedPrefixed(node);
 
 // Copies a Traqula AST, replacing the nodes replace returns a node for
 function transformAst(astNode, replace: (astNode) => unknown) {
@@ -311,15 +343,15 @@ function transformAst(astNode, replace: (astNode) => unknown) {
 function renameVariables(ast, rename: (variable: string) => string) {
   let anonymous = 0;
   const replace = (astNode) => {
-    if (astNode.type === "term" && astNode.subType === "variable") {
+    if (isTermVariable(astNode)) {
       return F.termVariable(rename(astNode.value), astNode.loc);
     }
-    if (astNode.type === "term" && astNode.subType === "blankNode") {
+    if (isTermBlank(astNode)) {
       const label = astNode.label ?? `anonymous_${++anonymous}`;
       return F.termVariable(rename(`_:${label}`), astNode.loc);
     }
     // The rows of VALUES are keyed by variable name, e.g. { x: <a> }
-    if (astNode.type === "pattern" && astNode.subType === "values") {
+    if (isPatternValues(astNode)) {
       return F.patternValues(
         transformAst(astNode.variables, replace),
         astNode.values.map((row) =>
@@ -338,11 +370,7 @@ function renameVariables(ast, rename: (variable: string) => string) {
 // Replaces prefixed names by full IRIs: a subquery can't declare prefixes
 function expandPrefixes(ast, prefixes: Record<string, string>) {
   return transformAst(ast, (astNode) => {
-    if (
-      astNode.type === "term" &&
-      astNode.subType === "namedNode" &&
-      astNode.prefix !== undefined
-    ) {
+    if (isTermIriPrefixed(astNode)) {
       if (!(astNode.prefix in prefixes)) {
         throw new Error(`Undeclared prefix ${astNode.prefix}:`);
       }
@@ -398,14 +426,14 @@ class SparqlGenerator {
   // The path of a sh:path
   parseShaclPath(shaclPath): Path {
     if (
-      shaclPath.termType === "NamedNode" &&
+      shaclPath.termType === TermType.NamedNode &&
       shaclPath.value !== PREFIXES.rdf + "nil"
     ) {
       return predicatePath(shaclPath.value);
     }
     if (this.getObjects(shaclPath, PREFIXES.rdf + "first").length) {
       return {
-        type: "sequence",
+        type: PathType.Sequence,
         paths: this.getListItems(shaclPath).map((item) =>
           this.parseShaclPath(item),
         ),
@@ -419,16 +447,16 @@ class SparqlGenerator {
     );
     if (alternatives) {
       return {
-        type: "alternative",
+        type: PathType.Alternative,
         paths: this.getListItems(alternatives).map((item) =>
           this.parseShaclPath(item),
         ),
       };
     }
-    for (const type of Object.keys(CLOSURE_OPERATORS)) {
-      const [path] = this.getObjects(shaclPath, `${PREFIXES.sh}${type}Path`);
+    for (const [type, predicate] of Object.entries(CLOSURE_PATH_PREDICATES)) {
+      const [path] = this.getObjects(shaclPath, predicate);
       if (path) {
-        return { type, path: this.parseShaclPath(path) } as Path;
+        return { type: type as ClosureType, path: this.parseShaclPath(path) };
       }
     }
     throw new Error(`Unsupported SHACL path ${shaclPath.value}`);
@@ -440,7 +468,7 @@ class SparqlGenerator {
    */
   getPathBranches(path: Path, start: QueryNode, end?: QueryNode): Branch[] {
     switch (path.type) {
-      case "predicate": {
+      case PathType.Predicate: {
         const target = end ?? this.createVariable(path.iri);
         const predicate = { constant: iriToString(path.iri) };
         const pattern = path.inverse
@@ -448,7 +476,7 @@ class SparqlGenerator {
           : triplePattern(start, predicate, target);
         return [{ patterns: [pattern], templates: [pattern], end: target }];
       }
-      case "sequence":
+      case PathType.Sequence:
         return path.paths.reduce(
           (branches, step, index) =>
             branchProduct(branches, (branch) =>
@@ -460,19 +488,19 @@ class SparqlGenerator {
             ),
           [emptyBranch(start)],
         );
-      case "alternative":
+      case PathType.Alternative:
         return this.getAlternativeBranches(path.paths, start, end);
-      case "zeroOrOne":
+      case PathType.ZeroOrOne:
         return [
           this.getZeroLengthBranch(start, end),
           ...this.getPathBranches(path.path, start, end),
         ];
-      case "zeroOrMore":
+      case PathType.ZeroOrMore:
         return [
           this.getZeroLengthBranch(start, end),
           ...this.getOneOrMoreBranches(path.path, start, end),
         ];
-      case "oneOrMore":
+      case PathType.OneOrMore:
         return this.getOneOrMoreBranches(path.path, start, end);
     }
   }
@@ -482,7 +510,9 @@ class SparqlGenerator {
     const branches = [];
     for (const inverse of [false, true]) {
       const iris = paths.flatMap((path) =>
-        path.type === "predicate" && path.inverse === inverse ? [path.iri] : [],
+        path.type === PathType.Predicate && path.inverse === inverse
+          ? [path.iri]
+          : [],
       );
       if (iris.length) {
         branches.push(
@@ -491,7 +521,7 @@ class SparqlGenerator {
       }
     }
     for (const path of paths) {
-      if (path.type !== "predicate") {
+      if (path.type !== PathType.Predicate) {
         branches.push(...this.getPathBranches(path, start, end));
       }
     }
@@ -509,7 +539,7 @@ class SparqlGenerator {
   ): Branch {
     if (iris.length === 1) {
       return this.getPathBranches(
-        { type: "predicate", iri: iris[0], inverse },
+        { type: PathType.Predicate, iri: iris[0], inverse },
         start,
         end,
       )[0];
@@ -586,12 +616,7 @@ class SparqlGenerator {
    */
   getShapeBranches(shape, focus: QueryNode, visited: string[]): Branch[] {
     const key = `${shape.termType}:${shape.value}`;
-    if (
-      visited.includes(key) ||
-      this.hasTrueValue(shape, PREFIXES.sh + "deactivated")
-    ) {
-      return [];
-    }
+    if (visited.includes(key)) return [];
     if (visited.length >= this.maxDepth) {
       console.warn(
         `Not retrieving the data of ${shape.value}: it is nested deeper than ${this.maxDepth} shapes`,
@@ -754,10 +779,10 @@ class SparqlGenerator {
     focusNodes?: Term[],
   ): Target {
     // sh:select holds a SELECT query
-    const parsed: QuerySelect = this.parseQuery(target, select);
+    const parsed = this.parseQuery(target, select) as QuerySelect;
     const ids = new Map<string, string>();
     const query = renameVariables(parsed, (variable) => {
-      if (variable === "this") return focus.variable;
+      if (variable === THIS_VARIABLE) return focus.variable;
       if (!ids.has(variable)) {
         ids.set(variable, this.createVariable(variable).variable);
       }
@@ -780,16 +805,17 @@ class SparqlGenerator {
     };
   }
 
+  // The prefixes declared for a SPARQL-based target (sh:prefixes/sh:declare)
   /*
    * Parses the query of a SPARQL-based target or rule, with the prefixes it
    * declares in sh:prefixes and in the query itself expanded to full IRIs
    */
-  parseQuery(node, queryString: string) {
+  parseQuery(node: Term, queryString: string) {
     const prefixes = this.getPrefixes(node);
     const parsed = parser.parse(queryString, { prefixes }) as
       QuerySelect | QueryConstruct;
     for (const declaration of parsed.context) {
-      if (declaration.subType === "prefix") {
+      if (F.isContextDefinitionPrefix(declaration)) {
         prefixes[declaration.key] = declaration.value.value;
       }
     }
@@ -798,7 +824,7 @@ class SparqlGenerator {
 
   // The prefixes declared for a SPARQL-based target or rule
   // (sh:prefixes/sh:declare)
-  getPrefixes(node) {
+  getPrefixes(node: Term) {
     const prefixes: Record<string, string> = {};
     const prefixLists = this.getObjects(node, PREFIXES.sh + "prefixes");
     for (const declarations of prefixLists) {
@@ -815,87 +841,52 @@ class SparqlGenerator {
     return prefixes;
   }
 
-  // Shapes with a target, as the validator would select them
-  getTargetedShapes() {
-    const shapes = rdf.termSet();
-    for (const target of TARGET_PREDICATES) {
-      const quads = this.shapes.match(
-        null,
-        rdf.namedNode(PREFIXES.sh + target),
-      );
-      for (const quad of quads) shapes.add(quad.subject);
-    }
-    for (const type of ["NodeShape", "PropertyShape"]) {
-      const quads = this.shapes.match(
-        null,
-        rdf.namedNode(PREFIXES.rdf + "type"),
-        rdf.namedNode(PREFIXES.sh + type),
-      );
-      for (const quad of quads) {
-        if (this.isClass(quad.subject)) shapes.add(quad.subject);
-      }
-    }
-    return [...shapes];
+  // A focus node variable restricted to the focus nodes, if any
+  getRestrictedFocus(focusNodes?: Term[]) {
+    const focus = this.createVariable(THIS_VARIABLE);
+    const restricted: Branch = {
+      ...emptyBranch(focus),
+      patterns: focusNodeRestriction(focus, focusNodes),
+    };
+    return { focus, restricted };
   }
 
-  getSelectedShapes(options: SparqlGenerationOptions) {
-    const shapes = options.shapes?.map(toTerm) ?? this.getTargetedShapes();
-    return shapes.filter(
-      (shape) => !this.hasTrueValue(shape, PREFIXES.sh + "deactivated"),
-    );
-  }
-
-  // The targets of the shapes, each with its own focus node variable
-  // restricted to the focus nodes
-  getFocusTargets(shapes, options: { focusNodes?: (string | Term)[] }) {
-    const focusNodes = options.focusNodes?.map(toTerm);
-    // Blank nodes aren't allowed in VALUES
-    const invalid = focusNodes?.find(
-      (term) => term.termType !== "NamedNode" && term.termType !== "Literal",
-    );
-    if (invalid) throw new Error(`Invalid focus node ${invalid.value}`);
-    return shapes.flatMap((shape, index) => {
-      let targets = this.getTargets(shape);
-      // A shape without a target applies to the given focus nodes, or else to
-      // every resource
-      if (!targets.length) {
-        targets = [focusNodes ? () => ({ select: [] }) : allResourcesTarget];
-      }
-      return targets.map((createTarget) => {
-        const focus = this.createVariable("this");
-        const restricted: Branch = {
-          ...emptyBranch(focus),
-          patterns: focusNodeRestriction(focus, focusNodes),
-        };
-        const target = createTarget(focus, focusNodes);
-        return { shape, index, focus, restricted, target };
-      });
-    });
-  }
-
-  // The branches retrieving the data to validate the focus nodes the targets
-  // select
+  // The branches retrieving the data to validate the focus nodes against the
+  // shapes, without their targets
   getDataBranches(options: SparqlGenerationOptions): Branch[] {
-    const shapes = this.getSelectedShapes(options);
+    const focusNodes = toFocusNodes(options.focusNodes);
+    if (!focusNodes?.length) {
+      throw new Error("No focus nodes to retrieve the data of");
+    }
     const branches = [];
-    const focusTargets = this.getFocusTargets(shapes, options);
-    for (const { shape, focus, restricted, target } of focusTargets) {
-      const selection = {
-        ...restricted,
-        patterns: [...restricted.patterns, ...target.select],
-      };
+    for (const shape of options.shapes.map(toTerm)) {
+      const { focus, restricted } = this.getRestrictedFocus(focusNodes);
       for (const branch of this.getShapeBranches(shape, focus, [])) {
-        branches.push(joinBranches(selection, branch));
+        branches.push(joinBranches(restricted, branch));
       }
     }
     return branches.filter((branch) => branch.templates.length);
   }
 
+  // The targets of a shape, each with its own focus node variable restricted
+  // to the focus nodes. A shape without a target applies to the given focus
+  // nodes, or else to every resource.
+  getFocusTargets(shape, focusNodes?: Term[]) {
+    const targets = this.getTargets(shape);
+    if (!targets.length) {
+      targets.push(focusNodes ? () => ({ select: [] }) : allResourcesTarget);
+    }
+    return targets.map((createTarget) => {
+      const { focus, restricted } = this.getRestrictedFocus(focusNodes);
+      return { focus, restricted, target: createTarget(focus, focusNodes) };
+    });
+  }
+
   // A branch per target of the shape, binding the focus nodes it selects to
   // ?focusNode
   getFocusNodeBranches(shape, options: FocusNodeQueryOptions): Branch[] {
-    const shapes = this.getSelectedShapes({ shapes: [shape] });
-    const focusTargets = this.getFocusTargets(shapes, options);
+    const focusNodes = toFocusNodes(options.focusNodes);
+    const focusTargets = this.getFocusTargets(shape, focusNodes);
     return focusTargets.map(({ focus, restricted, target }) => ({
       ...restricted,
       patterns: [
@@ -912,11 +903,11 @@ class SparqlGenerator {
    * of the focus nodes
    */
   getRuleQueries(options: SparqlGenerationOptions): string[] {
-    const focusNodes = options.focusNodes?.map(toTerm) ?? [];
+    const focusNodes = toFocusNodes(options.focusNodes) ?? [];
     const queries = [];
-    for (const shape of this.getSelectedShapes(options)) {
-      for (const rule of this.getObjects(shape, PREFIXES.sh + "rule")) {
-        if (this.hasTrueValue(rule, PREFIXES.sh + "deactivated")) continue;
+    for (const shape of options.shapes.map(toTerm)) {
+      const rules = this.getObjects(shape, PREFIXES.sh + "rule");
+      for (const rule of rules) {
         // Only SPARQL rules have a sh:construct, not triple rules
         const [construct] = this.getObjects(rule, PREFIXES.sh + "construct");
         if (!construct) continue;
@@ -930,9 +921,7 @@ class SparqlGenerator {
         const query = this.parseQuery(rule, construct.value);
         for (const focusNode of focusNodes) {
           const bound = transformAst(query, (astNode) =>
-            astNode.type === "term" &&
-            astNode.subType === "variable" &&
-            astNode.value === "this"
+            isTermVariable(astNode) && astNode.value === THIS_VARIABLE
               ? termToAst(focusNode)
               : undefined,
           );
@@ -991,13 +980,13 @@ function renderUnion(rendered: { patterns: string[] }[], graph?: string) {
 }
 
 /*
- * Generates a CONSTRUCT query retrieving the data to validate the focus nodes
- * of the given shapes, see the top of this file. Returns undefined when the
- * shapes don't need any data.
+ * Generates a CONSTRUCT query retrieving the data to validate the given focus
+ * nodes against the given shapes, see the top of this file. Returns undefined
+ * when the shapes don't need any data.
  */
 export function generateConstructQuery(
   shapes,
-  options: SparqlGenerationOptions = {},
+  options: SparqlGenerationOptions,
 ) {
   const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
   const branches = sparqlGenerator.getDataBranches(options);
@@ -1014,9 +1003,6 @@ ${renderUnion(rendered, options.graph)}
 }`;
 }
 
-const isCount = (value: number, minimum: number) =>
-  Number.isInteger(value) && value >= minimum;
-
 /*
  * Generates the CONSTRUCT queries of the SPARQL rules of the given shapes, with
  * $this bound to each of the focus nodes. Run on the store, they construct the
@@ -1025,8 +1011,8 @@ const isCount = (value: number, minimum: number) =>
  * determines the graphs it reads from.
  */
 export function generateRuleQueries(
-  shapes,
-  options: SparqlGenerationOptions = {},
+  shapes: DatasetCore,
+  options: SparqlGenerationOptions,
 ) {
   const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
   return sparqlGenerator.getRuleQueries(options);
@@ -1034,29 +1020,21 @@ export function generateRuleQueries(
 
 /*
  * Generates a SELECT query for the focus nodes the targets of a shape select,
- * bound to ?focusNode: at most limit of them, ordered so offset selects the
- * next ones. A shape without a target selects the given focus nodes, or else
- * every resource, i.e. every node with a type. Returns undefined for a
- * deactivated shape.
+ * bound to ?focusNode: at most limit of them, ordered by focus node, so a
+ * limit selects the same ones each time. A shape without a target selects the
+ * given focus nodes, or else every resource, i.e. every node with a type.
  */
 export function generateFocusNodeQuery(
   shapes,
   shape: string | Term,
   options: FocusNodeQueryOptions,
 ) {
-  const { limit, offset = 0 } = options;
-  if (!isCount(limit, 1)) {
-    throw new Error(`Invalid limit ${limit}, a positive integer is required`);
-  }
-  if (!isCount(offset, 0)) throw new Error(`Invalid offset ${offset}`);
-
   const sparqlGenerator = new SparqlGenerator(shapes);
   const branches = sparqlGenerator.getFocusNodeBranches(toTerm(shape), options);
-  if (!branches.length) return undefined;
 
   return `SELECT DISTINCT ?focusNode WHERE {
 ${renderUnion(renderDistinctBranches(branches), options.graph)}
 }
 ORDER BY ?focusNode
-LIMIT ${limit}${offset ? `\nOFFSET ${offset}` : ""}`;
+LIMIT ${options.limit}`;
 }

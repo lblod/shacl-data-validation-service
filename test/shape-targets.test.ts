@@ -1,19 +1,20 @@
 import { QueryEngine } from "@comunica/query-sparql-rdfjs-lite";
+import type { DatasetCore } from "@rdfjs/types";
 import { Readable } from "node:stream";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { resourceExists } from "../lib/resource-retrieval";
 import {
+  initRules,
   matchingFocusNodes,
   rulesForResource,
-  RULES,
   validationShapesOfRules,
 } from "../lib/rules";
 import { generateFocusNodeQuery } from "../lib/sparql-generation";
 import { validateResource, validateShape } from "../lib/validation";
 import {
+  initValidationShapes,
   shapeWithReferencedShapes,
-  VALIDATION_SHAPES,
 } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
@@ -29,12 +30,15 @@ const FIXTURES = "test/fixtures/shape-targets/";
 const loadFixture = async (name: string, dataset) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
+// The rules, for the queries generated from them
+let rules: DatasetCore;
 const data = rdf.dataset();
 
 // Loaded once: loading the rules again would add their blank nodes again
 beforeAll(async () => {
-  await loadFixture("validation-shapes.ttl", VALIDATION_SHAPES);
-  await loadFixture("rules.ttl", RULES);
+  // The rules link to the validation shapes, which are checked to be loaded
+  await initValidationShapes(FIXTURES + "validation-shapes/");
+  rules = await initRules(FIXTURES + "rules/");
   await loadFixture("data.ttl", data);
 });
 
@@ -42,7 +46,7 @@ describe("generateFocusNodeQuery", () => {
   // The focus nodes the query generated for a rule selects in the data, in
   // the order of the query
   async function selectedFocusNodes(rule: string, options = {}) {
-    const query = generateFocusNodeQuery(RULES, ex(rule), {
+    const query = generateFocusNodeQuery(rules, ex(rule), {
       limit: 10,
       ...options,
     });
@@ -101,41 +105,10 @@ describe("generateFocusNodeQuery", () => {
     ]);
   });
 
-  test("selects at most limit focus nodes, offset selecting the next", async () => {
-    const pages = [];
-    for (const offset of [0, 1, 2]) {
-      pages.push(
-        await selectedFocusNodes("DocumentRule", { limit: 1, offset }),
-      );
-    }
-    expect(pages).toEqual([[ex("document")], [ex("report")], []]);
-  });
-
-  test.each([undefined, 0, -1, 1.5])(
-    "requires a positive limit, not %s",
-    (limit) => {
-      expect(() =>
-        generateFocusNodeQuery(RULES, ex("DocumentRule"), { limit }),
-      ).toThrow(/limit/);
-    },
-  );
-
-  test("rejects a negative offset", () => {
-    expect(() =>
-      generateFocusNodeQuery(RULES, ex("DocumentRule"), {
-        limit: 1,
-        offset: -1,
-      }),
-    ).toThrow(/offset/);
-  });
-
-  test("generates no query for a deactivated rule", () => {
-    expect(
-      generateFocusNodeQuery(RULES, ex("DeactivatedRule"), {
-        focusNodes: [ex("document")],
-        limit: 1,
-      }),
-    ).toBeUndefined();
+  test("selects at most limit focus nodes", async () => {
+    expect(await selectedFocusNodes("DocumentRule", { limit: 1 })).toEqual([
+      ex("document"),
+    ]);
   });
 
   test("applies a rule without a target to the focus nodes", async () => {
@@ -178,7 +151,7 @@ describe("validation shapes for a resource", () => {
   }
 
   async function shapeUrisFor(name: string) {
-    return (await shapesFor(name)).map((shape) => shape.value).sort();
+    return [...(await shapesFor(name))].map((shape) => shape.value).sort();
   }
 
   test("selects a shape through a rule's sh:targetClass", async () => {

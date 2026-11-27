@@ -1,9 +1,10 @@
+import type { DatasetCore } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import { RULES, rulesForResource } from "../lib/rules";
+import { initRules, rulesForResource } from "../lib/rules";
 import { generateRuleQueries } from "../lib/sparql-generation";
 import { validateResource } from "../lib/validation";
-import { VALIDATION_SHAPES } from "../lib/validation-shapes";
+import { initValidationShapes } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { EX, ex } from "./helpers";
@@ -15,18 +16,21 @@ vi.mock("@lblod/mu-auth-sudo", async () => ({
 
 const FIXTURES = "test/fixtures/sparql-rules/";
 
-const loadFixture = async (name: string, dataset) =>
+const loadFixture = async (name: string, dataset: DatasetCore) =>
   insertContentInDataset(await readFile(FIXTURES + name), dataset);
 
 describe("SPARQL rules", () => {
+  let shapes: DatasetCore;
+
   beforeAll(async () => {
-    await loadFixture("shapes.ttl", VALIDATION_SHAPES);
-    await loadFixture("rules.ttl", RULES);
+    // The rules link to the validation shapes, which are checked to be loaded
+    shapes = await initValidationShapes(FIXTURES + "validation-shapes/");
+    await initRules(FIXTURES + "rules/");
     store.data = await loadFixture("data.ttl", rdf.dataset());
   });
 
   test("bind $this to the focus node", async () => {
-    const queries = generateRuleQueries(VALIDATION_SHAPES, {
+    const queries = generateRuleQueries(shapes, {
       shapes: [ex("DocumentShape")],
       focusNodes: [ex("document")],
     });
@@ -62,7 +66,7 @@ describe("SPARQL rules", () => {
 
   test("add the triples a rule's SPARQL rules construct to check a resource against it", async () => {
     const rules = async (name: string) =>
-      (await rulesForResource(ex(name))).map((rule) => rule.value).sort();
+      [...(await rulesForResource(ex(name)))].map((rule) => rule.value).sort();
     // ex:document has no source in the store, only a link
     expect(await rules("document")).toEqual([
       ex("DocumentRule"),

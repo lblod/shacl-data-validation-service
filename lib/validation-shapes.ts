@@ -1,23 +1,44 @@
+import type { DatasetCore, Term } from "@rdfjs/types";
 import rdf from "rdf-ext";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { listFiles, readFile } from "../util/config";
-import { PREFIXES } from "../constants";
+import { PREFIXES, TermType } from "../constants";
+import { getShapeData } from "./resource-retrieval";
 
 const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
 
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
 
-export const VALIDATION_SHAPES = rdf.dataset();
+// Only used through the functions of this module, set by initValidationShapes
+let VALIDATION_SHAPES = rdf.dataset();
 
-export async function loadValidationShapes() {
-  const shapeFiles = await listFiles(VALIDATION_SHAPES_FOLDER);
+// The validation shapes in the turtle files of the folder, checked
+async function loadValidationShapes(folder: string) {
+  const shapes = rdf.dataset();
+  const shapeFiles = await listFiles(folder);
   for (const filePath of shapeFiles) {
     const fileContents = await readFile(filePath);
-    await insertContentInDataset(fileContents, VALIDATION_SHAPES);
+    await insertContentInDataset(fileContents, shapes);
   }
-  checkReferencedShapes(VALIDATION_SHAPES, "Validation shapes");
+  checkReferencedShapes(shapes, "Validation shapes");
+  return shapes;
 }
+
+// Loads the validation shapes the functions of this module use. Returns them,
+// e.g. for tests that generate queries from them.
+export async function initValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
+  VALIDATION_SHAPES = await loadValidationShapes(folder);
+  return VALIDATION_SHAPES;
+}
+
+// Whether a validation shape is loaded
+export const hasValidationShape = (shape: Term) =>
+  VALIDATION_SHAPES.match(shape).size > 0;
+
+// The data of a resource needed to validate it against a validation shape
+export const getValidationShapeData = (shape: Term, uri: string) =>
+  getShapeData(shape, uri, VALIDATION_SHAPES);
 
 // The members of an RDF list in the shapes
 function getListMembers(shapes, list) {
@@ -36,10 +57,9 @@ function getListMembers(shapes, list) {
   return members;
 }
 
-// The validator treats a reference to a shape that isn't loaded as a shape
-// without constraints, so its checks would silently never run. The description
-// names the shapes in the error, e.g. "Rules".
-export function checkReferencedShapes(shapes, description: string) {
+// The shapes the shapes refer to, e.g. with sh:node, each with the shape that
+// refers to it
+export function listShapeReferences(shapes: DatasetCore) {
   const references = [];
   for (const name of SHAPE_REFERENCES) {
     const quads = shapes.match(null, rdf.namedNode(PREFIXES.sh + name));
@@ -57,6 +77,14 @@ export function checkReferencedShapes(shapes, description: string) {
     }
   }
 
+  return references;
+}
+
+// The validator treats a reference to a shape that isn't loaded as a shape
+// without constraints, so its checks would silently never run. The description
+// names the shapes in the error, e.g. "Rules".
+export function checkReferencedShapes(shapes, description: string) {
+  const references = listShapeReferences(shapes);
   const missing = references.filter(({ shape }) => !shapes.match(shape).size);
   if (missing.length) {
     const details = missing
@@ -79,7 +107,7 @@ export function shapeWithReferencedShapes(shape, shapes = VALIDATION_SHAPES) {
     visited.add(term);
     for (const quad of shapes.match(term)) {
       result.add(quad);
-      if (quad.object.termType !== "Literal") {
+      if (quad.object.termType !== TermType.Literal) {
         toVisit.push(quad.object);
       }
     }

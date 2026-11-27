@@ -67,7 +67,6 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 |Name               |Description                                                                                                         |Default value|
 |-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
-|BATCH_SIZE         |The number of resources a rule selects at a time for the periodic validation                                        |100          |
 |CRON_SCHEDULE      |The cron expression of the periodic validation of the resources the rules target, e.g. `0 2 * * *`; unset, there is none|             |
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
@@ -75,6 +74,7 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
 |REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
 |REPORT_FORMAT      |The format of the report files: "n-triples" or "json-ld"                                                            |n-triples    |
+|TARGET_BATCH_SIZE  |The number of resources a rule selects at a time for the periodic validation                                        |100          |
 
 ## Methodology
 A resource is handled in two phases: first, the rules are selected that target the resource (using a combination of a generated SELECT query and validation), and second, the resource gets validated with the validation shapes that are linked with the selected rules. Both phases retrieve the data of the resource with the same generated CONSTRUCT queries and validate it with the same validator.
@@ -90,7 +90,7 @@ SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:se
 ### Rule selection
 A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
 
-For the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.  For the periodic validation, the query selects `BATCH_SIZE` resources of a rule at a time, ordered by resource, so an `OFFSET` selects the next ones (see [Periodic validation](#periodic-validation)).
+For the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.  For the periodic validation, the query selects `TARGET_BATCH_SIZE` resources of a rule at a time, ordered by resource, so an `OFFSET` selects the next ones (see [Periodic validation](#periodic-validation)).
 
 If the query selects the resource, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
 
@@ -104,7 +104,7 @@ With `REPORT_FORMAT` set to `json-ld`, the reports are written as JSON-LD instea
 With `REPORT_DEBUG_RESULTS` set, the report also has a result for each passed validation, with severity `shn:Debug` (`https://schemas.link/shacl-next#Debug`), which doesn't affect `sh:conforms`.  A report is then written for each validation shape a resource is validated against, also when it conforms.
 
 ### Periodic validation
-A resource is validated when a delta message mentions it, and, with `CRON_SCHEDULE` set, periodically.  A periodic run validates every resource the rules target, a batch at a time (see [lib/batch.ts](lib/batch.ts)): for each rule, its focus node query selects `BATCH_SIZE` resources, these are validated as above, and the next `BATCH_SIZE` resources are selected with an `OFFSET` once they are done.  A resource several rules target is validated once per run.  A run validates its resources one after the other, separately from the queue of the delta messages.  A run that is due while the previous one is still busy is skipped.  A run doesn't know which resources were validated before, so each run validates all of them.
+A resource is validated when a delta message mentions it, and, with `CRON_SCHEDULE` set, periodically.  A periodic run validates every resource the rules target, a batch at a time (see [lib/batch.ts](lib/batch.ts)): for each rule, its focus node query selects `TARGET_BATCH_SIZE` resources, these are validated as above, and the next `TARGET_BATCH_SIZE` resources are selected with an `OFFSET` once they are done.  A resource several rules target is validated once per run.  A run validates its resources one after the other, separately from the queue of the delta messages.  A run that is due while the previous one is still busy is skipped.  A run doesn't know which resources were validated before, so each run validates all of them.
 
 ## Tests
 The tests check which resources the targets of a shape select, which rules apply to a resource, which data the generated queries retrieve and the validation per shape, without a triplestore.  Run them with `npm test`.

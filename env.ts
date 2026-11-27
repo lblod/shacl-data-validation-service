@@ -23,7 +23,10 @@ export const REPORT_DEBUG_RESULTS = envvar
 export const CRON_SCHEDULE = envvar.get("CRON_SCHEDULE").asString();
 
 // The number of resources a rule selects at a time for the periodic validation
-export const BATCH_SIZE = envvar.get("BATCH_SIZE").default(100).asIntPositive();
+export const TARGET_BATCH_SIZE = envvar
+  .get("TARGET_BATCH_SIZE")
+  .default(100)
+  .asIntPositive();
 
 export const ENABLE_TEST_API = envvar
   .get("ENABLE_TEST_API")

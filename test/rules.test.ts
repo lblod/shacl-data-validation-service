@@ -4,13 +4,13 @@ import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { VALIDATION_SHAPE_PREDICATE } from "../constants";
 import {
   checkRules,
-  loadRules,
+  initRules,
   matchingFocusNodes,
   rulesForResource,
   validationShapesOfRules,
 } from "../lib/rules";
 import { validateResource } from "../lib/validation";
-import { loadValidationShapes } from "../lib/validation-shapes";
+import { initValidationShapes } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
 import { insertContentInDataset } from "../util/rdf-ext-helpers";
 import { ex } from "./helpers";
@@ -31,8 +31,8 @@ let rules: DatasetCore;
 
 beforeAll(async () => {
   // The rules link to the validation shapes, which are checked to be loaded
-  await loadValidationShapes(FIXTURES + "validation-shapes/");
-  rules = await loadRules(FIXTURES + "rules/");
+  await initValidationShapes(FIXTURES + "validation-shapes/");
+  rules = await initRules(FIXTURES + "rules/");
   store.data = rdf.dataset();
   await loadFixture("data.ttl", store.data);
 });

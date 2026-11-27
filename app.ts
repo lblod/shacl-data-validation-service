@@ -5,17 +5,17 @@ import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { REPORTS_DIR, writeReportFile } from "./lib/report";
 import { resourceExists } from "./lib/resource-retrieval";
 import { validateResource } from "./lib/validation";
-import { loadRules } from "./lib/rules";
-import { loadValidationShapes } from "./lib/validation-shapes";
+import { initRules } from "./lib/rules";
+import { initValidationShapes } from "./lib/validation-shapes";
 import { listUniqueSubjects } from "./util/delta-message";
 import * as env from "./env";
 import { SubjectQueue } from "./queue";
 
 (async function startup() {
   await fs.mkdir(REPORTS_DIR, { recursive: true });
-  await loadValidationShapes();
+  await initValidationShapes();
   // The rules link to the validation shapes, which are checked to be loaded
-  await loadRules();
+  await initRules();
 })();
 
 const subjectQueue = new SubjectQueue(handleResource);

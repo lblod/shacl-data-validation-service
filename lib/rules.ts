@@ -32,17 +32,25 @@ import {
 
 const RULES_FOLDER = "config/rules/";
 
-// Only used through the functions of this module
-const RULES = rdf.dataset();
+// Only used through the functions of this module, set by initRules
+let RULES = rdf.dataset();
 
-// Returns the loaded rules, e.g. for tests that generate queries from them
-export async function loadRules(folder = RULES_FOLDER) {
+// The rules in the turtle files of the folder, checked
+async function loadRules(folder: string) {
+  const rules = rdf.dataset();
   const ruleFiles = await listFiles(folder);
   for (const filePath of ruleFiles) {
     const fileContents = await readFile(filePath);
-    await insertContentInDataset(fileContents, RULES);
+    await insertContentInDataset(fileContents, rules);
   }
-  checkRules(RULES);
+  checkRules(rules);
+  return rules;
+}
+
+// Loads the rules the functions of this module use. Returns them, e.g. for
+// tests that generate queries from them.
+export async function initRules(folder = RULES_FOLDER) {
+  RULES = await loadRules(folder);
   return RULES;
 }
 

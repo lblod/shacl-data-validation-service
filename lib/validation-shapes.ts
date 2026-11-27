@@ -10,18 +10,25 @@ const VALIDATION_SHAPES_FOLDER = "config/validation-shapes/";
 const SHAPE_REFERENCES = ["node", "property", "qualifiedValueShape", "not"];
 const SHAPE_LIST_REFERENCES = ["and", "or", "xone"];
 
-// Only used through the functions of this module
-const VALIDATION_SHAPES = rdf.dataset();
+// Only used through the functions of this module, set by initValidationShapes
+let VALIDATION_SHAPES = rdf.dataset();
 
-// Returns the loaded validation shapes, e.g. for tests that generate queries
-// from them
-export async function loadValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
+// The validation shapes in the turtle files of the folder, checked
+async function loadValidationShapes(folder: string) {
+  const shapes = rdf.dataset();
   const shapeFiles = await listFiles(folder);
   for (const filePath of shapeFiles) {
     const fileContents = await readFile(filePath);
-    await insertContentInDataset(fileContents, VALIDATION_SHAPES);
+    await insertContentInDataset(fileContents, shapes);
   }
-  checkReferencedShapes(VALIDATION_SHAPES, "Validation shapes");
+  checkReferencedShapes(shapes, "Validation shapes");
+  return shapes;
+}
+
+// Loads the validation shapes the functions of this module use. Returns them,
+// e.g. for tests that generate queries from them.
+export async function initValidationShapes(folder = VALIDATION_SHAPES_FOLDER) {
+  VALIDATION_SHAPES = await loadValidationShapes(folder);
   return VALIDATION_SHAPES;
 }
 

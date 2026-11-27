@@ -5,7 +5,7 @@ import rdf from "rdf-ext";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { resourceExists } from "../lib/resource-retrieval";
 import {
-  loadRules,
+  initRules,
   matchingFocusNodes,
   rulesForResource,
   validationShapesOfRules,
@@ -13,7 +13,7 @@ import {
 import { generateFocusNodeQuery } from "../lib/sparql-generation";
 import { validateResource, validateShape } from "../lib/validation";
 import {
-  loadValidationShapes,
+  initValidationShapes,
   shapeWithReferencedShapes,
 } from "../lib/validation-shapes";
 import { readFile } from "../util/config";
@@ -37,8 +37,8 @@ const data = rdf.dataset();
 // Loaded once: loading the rules again would add their blank nodes again
 beforeAll(async () => {
   // The rules link to the validation shapes, which are checked to be loaded
-  await loadValidationShapes(FIXTURES + "validation-shapes/");
-  rules = await loadRules(FIXTURES + "rules/");
+  await initValidationShapes(FIXTURES + "validation-shapes/");
+  rules = await initRules(FIXTURES + "rules/");
   await loadFixture("data.ttl", data);
 });
 

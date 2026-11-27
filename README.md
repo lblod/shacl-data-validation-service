@@ -85,6 +85,26 @@ SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:se
 
 `sh:deactivated` is not supported: to stop using a rule, remove it or comment it out. A deactivated rule conforms, so it would apply to every resource its targets select.
 
+#### SPARQL rules
+A validation shape can add triples to the data of a resource with [SPARQL rules](https://www.w3.org/TR/shacl-af/#SPARQLRule), for example to repair a link with a fragment that the shape would otherwise reject.  `generateRuleQueries` binds `$this` in the `sh:construct` query of each `sh:rule` of the shape to the resource.  These queries run on the store, through sudo like the other queries, and the triples they construct are added to the data before the resource is validated against that shape.  Only the SPARQL rules of the validation shape being validated run.  A rule can have SPARQL rules as well: the triples they construct are added to the data a resource is checked against the rule on, so they count towards whether the rule applies.  The targets of the rule select resources on the store's data, without the constructed triples.
+
+```ttl
+ext:documentShape a sh:NodeShape ;
+  sh:property ext:hasSource ;
+  sh:rule [
+    a sh:SPARQLRule ;
+    sh:construct """
+      PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+      CONSTRUCT { $this ext:source ?source . }
+      WHERE {
+        $this ext:link ?link .
+        BIND(IRI(REPLACE(STR(?link), "#.*$", "")) AS ?source)
+      }"""
+  ] .
+```
+
+Each rule runs on the store's data, so a rule doesn't see the triples other rules construct and `sh:order` has no effect.  The data query follows the property paths over the store's data as well: the data of a node that is only linked through a constructed triple is not retrieved.  Rules with a `sh:condition` are not supported, validating against such a shape gives an error, and triple rules (`sh:TripleRule`) are ignored.
+
 ### Rule selection
 A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
 

@@ -1,10 +1,11 @@
-import type { Term } from "@rdfjs/types";
+import type { DatasetCore, Term } from "@rdfjs/types";
 import { Generator } from "@traqula/generator-sparql-1-1";
 import { Parser } from "@traqula/parser-sparql-1-1";
 import {
   AstFactory,
   lex,
   type PatternValues,
+  type QueryConstruct,
   type QuerySelect,
   type TermBlank,
   type TermIriPrefixed,
@@ -23,6 +24,8 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * - a CONSTRUCT query retrieving the data needed to validate given focus nodes
  *   against shapes, inspired by SHACL Play's SHACL2SPARQL
  *   (https://shacl-play.sparna.fr/play/sparql)
+ * - the CONSTRUCT queries of the SPARQL rules of those shapes (sh:rule), with
+ *   $this bound to the resource, to add the triples they construct to its data
  *
  * Only the SELECT query uses the targets of a shape. Starting from the given
  * focus node(s), the CONSTRUCT query follows the sh:path of its property shapes
@@ -39,8 +42,9 @@ import { getObjects } from "../util/rdf-ext-helpers";
  * the values violating those constraints are exactly the ones the validator
  * has to see.
  *
- * Not supported: SPARQL-based constraints (sh:sparql) and SPARQL-based targets
- * without a sh:select.
+ * Not supported: SPARQL-based constraints (sh:sparql), SPARQL-based targets
+ * without a sh:select, SPARQL rules with a sh:condition and triple rules
+ * (sh:TripleRule).
  */
 
 const XSD_BOOLEAN = PREFIXES.xsd + "boolean";
@@ -774,25 +778,16 @@ class SparqlGenerator {
     focus: VariableNode,
     focusNodes?: Term[],
   ): Target {
-    const prefixes = this.getPrefixes(target);
     // sh:select holds a SELECT query
-    const parsed = parser.parse(select, { prefixes }) as QuerySelect;
-    for (const declaration of parsed.context) {
-      if (F.isContextDefinitionPrefix(declaration)) {
-        prefixes[declaration.key] = declaration.value.value;
-      }
-    }
+    const parsed = this.parseQuery(target, select) as QuerySelect;
     const ids = new Map<string, string>();
-    const query = renameVariables(
-      expandPrefixes({ ...parsed, context: [] }, prefixes),
-      (variable) => {
-        if (variable === THIS_VARIABLE) return focus.variable;
-        if (!ids.has(variable)) {
-          ids.set(variable, this.createVariable(variable).variable);
-        }
-        return ids.get(variable);
-      },
-    );
+    const query = renameVariables(parsed, (variable) => {
+      if (variable === THIS_VARIABLE) return focus.variable;
+      if (!ids.has(variable)) {
+        ids.set(variable, this.createVariable(variable).variable);
+      }
+      return ids.get(variable);
+    });
     const where = query.where.patterns;
     if (focusNodes) {
       const values = F.patternValues(
@@ -811,9 +806,27 @@ class SparqlGenerator {
   }
 
   // The prefixes declared for a SPARQL-based target (sh:prefixes/sh:declare)
-  getPrefixes(target) {
-    const prefixes = {};
-    const prefixLists = this.getObjects(target, PREFIXES.sh + "prefixes");
+  /*
+   * Parses the query of a SPARQL-based target or rule, with the prefixes it
+   * declares in sh:prefixes and in the query itself expanded to full IRIs
+   */
+  parseQuery(node: Term, queryString: string) {
+    const prefixes = this.getPrefixes(node);
+    const parsed = parser.parse(queryString, { prefixes }) as
+      QuerySelect | QueryConstruct;
+    for (const declaration of parsed.context) {
+      if (F.isContextDefinitionPrefix(declaration)) {
+        prefixes[declaration.key] = declaration.value.value;
+      }
+    }
+    return expandPrefixes({ ...parsed, context: [] }, prefixes);
+  }
+
+  // The prefixes declared for a SPARQL-based target or rule
+  // (sh:prefixes/sh:declare)
+  getPrefixes(node: Term) {
+    const prefixes: Record<string, string> = {};
+    const prefixLists = this.getObjects(node, PREFIXES.sh + "prefixes");
     for (const declarations of prefixLists) {
       const declared = this.getObjects(declarations, PREFIXES.sh + "declare");
       for (const declaration of declared) {
@@ -882,6 +895,41 @@ class SparqlGenerator {
         (name) => `BIND(${nodeToString(focus, name)} AS ?focusNode)`,
       ],
     }));
+  }
+
+  /*
+   * The CONSTRUCT queries of the SPARQL rules of the shapes
+   * (sh:rule [ a sh:SPARQLRule ; sh:construct … ]), with $this bound to each
+   * of the focus nodes
+   */
+  getRuleQueries(options: SparqlGenerationOptions): string[] {
+    const focusNodes = toFocusNodes(options.focusNodes) ?? [];
+    const queries = [];
+    for (const shape of options.shapes.map(toTerm)) {
+      const rules = this.getObjects(shape, PREFIXES.sh + "rule");
+      for (const rule of rules) {
+        // Only SPARQL rules have a sh:construct, not triple rules
+        const [construct] = this.getObjects(rule, PREFIXES.sh + "construct");
+        if (!construct) continue;
+        // Running the rule without its condition would construct triples for
+        // focus nodes it doesn't apply to
+        if (this.getObjects(rule, PREFIXES.sh + "condition").length) {
+          throw new Error(
+            `SPARQL rule ${rule.value} has a sh:condition, which is not supported`,
+          );
+        }
+        const query = this.parseQuery(rule, construct.value);
+        for (const focusNode of focusNodes) {
+          const bound = transformAst(query, (astNode) =>
+            isTermVariable(astNode) && astNode.value === THIS_VARIABLE
+              ? termToAst(focusNode)
+              : undefined,
+          );
+          queries.push(generator.generate(bound));
+        }
+      }
+    }
+    return queries;
   }
 }
 
@@ -953,6 +1001,21 @@ export function generateConstructQuery(
 } WHERE {
 ${renderUnion(rendered, options.graph)}
 }`;
+}
+
+/*
+ * Generates the CONSTRUCT queries of the SPARQL rules of the given shapes, with
+ * $this bound to each of the focus nodes. Run on the store, they construct the
+ * triples to add to the data before validation, e.g. to repair data the shapes
+ * would otherwise reject. The graph option doesn't apply: a rule's query
+ * determines the graphs it reads from.
+ */
+export function generateRuleQueries(
+  shapes: DatasetCore,
+  options: SparqlGenerationOptions,
+) {
+  const sparqlGenerator = new SparqlGenerator(shapes, options.maxDepth);
+  return sparqlGenerator.getRuleQueries(options);
 }
 
 /*

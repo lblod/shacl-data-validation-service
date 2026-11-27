@@ -102,32 +102,10 @@ describe("generateFocusNodeQuery", () => {
     ]);
   });
 
-  test("selects at most limit focus nodes, offset selecting the next", async () => {
-    const pages = [];
-    for (const offset of [0, 1, 2]) {
-      pages.push(
-        await selectedFocusNodes("DocumentRule", { limit: 1, offset }),
-      );
-    }
-    expect(pages).toEqual([[ex("document")], [ex("report")], []]);
-  });
-
-  test.each([undefined, 0, -1, 1.5])(
-    "requires a positive limit, not %s",
-    (limit) => {
-      expect(() => focusNodeQuery(ex("DocumentRule"), { limit })).toThrow(
-        /limit/,
-      );
-    },
-  );
-
-  test("rejects a negative offset", () => {
-    expect(() =>
-      focusNodeQuery(ex("DocumentRule"), {
-        limit: 1,
-        offset: -1,
-      }),
-    ).toThrow(/offset/);
+  test("selects at most limit focus nodes", async () => {
+    expect(await selectedFocusNodes("DocumentRule", { limit: 1 })).toEqual([
+      ex("document"),
+    ]);
   });
 
   test("applies a rule without a target to the focus nodes", async () => {

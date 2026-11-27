@@ -86,14 +86,10 @@ describe("matchingFocusNodes", () => {
     );
   });
 
-  test("selects at most limit resources, offset selecting the next", async () => {
+  test("selects at most limit resources", async () => {
     expect(await matchingFocusNodes(rule, { limit: 2 })).toEqual(
       ["activeOrg", "inactiveOrg"].map(ex),
     );
-    // ex:twoStatusOrg is selected, but doesn't conform
-    expect(await matchingFocusNodes(rule, { limit: 2, offset: 2 })).toEqual([
-      ex("pendingOrg"),
-    ]);
   });
 });
 

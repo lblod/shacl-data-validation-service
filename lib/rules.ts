@@ -6,7 +6,6 @@ import {
   PREFIXES,
   VALIDATION_SHAPE_PREDICATE,
 } from "../constants";
-import * as env from "../env";
 import { listFiles, readFile } from "../util/config";
 import { getObjects, insertContentInDataset } from "../util/rdf-ext-helpers";
 import { validateFocusNode } from "./engine";
@@ -108,16 +107,6 @@ async function conformsToRule(rule, uri: string) {
   return report.conforms;
 }
 
-export type MatchOptions = {
-  // Restricts the resources to these, e.g. the resource being validated
-  focusNodes?: string[];
-  // The maximum number of resources the targets select, FOCUS_NODE_LIMIT by
-  // default
-  limit?: number;
-  // The number of resources the targets select to skip, to get the next ones
-  offset?: number;
-};
-
 // The SELECT query for the resources the targets of a rule select, see
 // generateFocusNodeQuery
 export const focusNodeQuery = (
@@ -129,12 +118,11 @@ export const focusNodeQuery = (
  * The resources a rule applies to: of the resources its targets select, at
  * most limit of them, the ones that conform to the rule. The data of each
  * resource is retrieved and validated separately, so the data of one resource
- * can't make another conform. The limit and offset apply to the selected
- * resources, so a page can hold fewer matching resources than the limit.
+ * can't make another conform. The limit applies to the selected resources, so
+ * fewer resources than the limit can match.
  */
-export async function matchingFocusNodes(rule, options: MatchOptions = {}) {
-  const { limit = env.FOCUS_NODE_LIMIT, ...rest } = options;
-  const result = await query(focusNodeQuery(rule, { ...rest, limit }));
+export async function matchingFocusNodes(rule, options: FocusNodeQueryOptions) {
+  const result = await query(focusNodeQuery(rule, options));
   // A target can select literals, which aren't resources to validate
   const candidates = (result?.results?.bindings ?? [])
     .filter(({ focusNode }) => focusNode?.type === BindingType.Uri)

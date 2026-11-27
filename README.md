@@ -68,7 +68,6 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 |Name               |Description                                                                                                         |Default value|
 |-------------------|--------------------------------------------------------------------------------------------------------------------|-------------|
 |ENABLE_TEST_API    |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
-|FOCUS_NODE_LIMIT   |The maximum number of resources the targets of a rule select at a time                                              |100          |
 |LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                                 |silent       |
 |MAX_REPORTS        |The number of reports to keep.  The oldest reports are removed.                                                     |100          |
 |QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                                     |100          |
@@ -89,11 +88,9 @@ SPARQL-based constraints (`sh:sparql`) and SPARQL-based targets without a `sh:se
 ### Rule selection
 A rule applies to a resource when its targets select the resource and the resource conforms to the rule.  `generateFocusNodeQuery` (see [lib/sparql-generation.ts](lib/sparql-generation.ts)) generates a SELECT query from the [target declarations](https://www.w3.org/TR/shacl/#targets) of a rule.  Each target becomes a graph pattern binding `?focusNode`, and the patterns of the targets are the branches of a `UNION`. A rule without targets selects every resource with a type.
 
-The query is used in two ways:
-- **For one resource**, e.g. the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.
-- **For all resources a rule targets**, the query selects at most `FOCUS_NODE_LIMIT` resources at a time.  It is ordered by resource, so an `OFFSET` selects the next ones.  The limit and offset apply to the selected resources before they are validated with the rule, so a page can hold fewer resources the rule applies to than the limit.
+For the resource being handled, the query is restricted to that resource with a `LIMIT` of 1, for each rule.
 
-For each resource the query selects, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
+If the query selects the resource, the data needed for the property shapes of the rule is retrieved, as described above, and validated. If the resource conforms, the rule applies to the resource.
 
 ### Resource validation
 A resource is validated against each validation shape separately. The data of the resource is retrieved using a CONSTRUCT query as described above. The SHACL engine does not resolve the target of the shape, and only validates the resource. The data can hold other resources, for example a value node of the same class, without the data needed to validate them.  When no data is retrieved for a resource, it is validated on a placeholder triple that no shape refers to instead.

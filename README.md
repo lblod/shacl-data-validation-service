@@ -48,14 +48,19 @@ For more information on defining SHACL node shapes see the [SHACL](https://www.w
 
 ### Environment variables.
 
-|Name               |Description                                                                                                |Default value|
-|-------------------|-----------------------------------------------------------------------------------------------------------|-------------|
-|MAX_REPORTS        |The number of reports to keep.  The oldest reports are removed.                                            |100          |
-|REPORT_FORMAT      |The format of the report files: "n-triples" or "json-ld"                                                   |n-triples    |
-|REPORT_DEBUG_RESULTS|Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false        |
-|LOGLEVEL           |Level of logging to the console: "silent" or "info"                                                        |silent       |
-|QUEUE_POLL_INTERVAL|The number of milliseconds to wait before rechecking the queue.                                            |100          |
-|ENABLE_TEST_API |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development|false        |
+|Name                   |Description                                                                                                                        |Default value                                      |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+|REPORT_GRAPH           |The graph to which validation reports are written.                                                                                 |http://mu.semte.ch/graphs/shacl-validation-reports |
+|REPORT_RESOURCE_BASE   |The base URI used for resources in the validation reports.                                                                         |http://data.lblod.info/id/shacl-validation-reports/|
+|MAX_REPORTS            |The number of reports to keep, unless `ONLY_KEEP_LATEST_REPORT` is set.  The oldest reports are removed.                           |100                                                |
+|ONLY_KEEP_LATEST_REPORT|Whether to only keep the most recent version of a report: writing a report deletes its older versions.                             |false                                              |
+|REPORT_FORMAT          |The format of the report files: "n-triples" or "json-ld"                                                                           |n-triples                                          |
+|REPORT_DEBUG_RESULTS   |Whether reports also hold a result for each passed validation, with severity `shn:Debug`.  Resources that conform get a report too.|false                                              |
+|LOGLEVEL               |Level of logging to the console: "silent" or "info"                                                                                |silent                                             |
+|QUEUE_POLL_INTERVAL    |The number of milliseconds to wait before rechecking the queue.                                                                    |100                                                |
+|ENABLE_TEST_API        |Whether to enable the endpoints under `/test`, these should only be used for testing and debugging during development              |false                                              |
+|BATCH_SIZE             |The maximum number of triples written into the store in a single `INSERT` query                                                    |100                                                |
+|SLEEP_TIME             |The time (in milliseconds) to wait between insert queries                                                                          |1000                                               |
 
 ## Methodology
 ### Resource retrieval

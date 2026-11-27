@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { app, errorHandler } from "mu";
 import NamedNodeExt from "rdf-ext/lib/NamedNode.js";
 import { validateResource } from "./lib/engine";
-import { REPORTS_DIR, writeReportFile } from "./lib/report";
+import { REPORTS_DIR, insertReport, writeReportFile } from "./lib/report";
 import { getResource } from "./lib/resource-retrieval";
 import { loadRules, rulesForResource } from "./lib/rules";
 import { loadValidationShapes, shapeResources } from "./lib/validation-shapes";
@@ -77,6 +77,12 @@ async function handleResource(namedNode: NamedNodeExt) {
         if (!report.conforms || env.REPORT_DEBUG_RESULTS) {
           await writeReportFile(report);
         }
+
+        // NOTE (24/11/2026): While processing the report for insertion, it's
+        // dataset may be modified.  Therefore, the report should be written to
+        // a file before inserting it in the triplestore.
+        await insertReport(report);
+
         if (report.conforms) {
           if (env.LOGLEVEL === "info") {
             console.log(
